@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { KEYWORDS } from "@/lib/keywords";
 import { STOCKS } from "@/lib/stocks";
 import { THEMES } from "@/lib/themes";
+import { DAILY_RESULTS } from "@/lib/results";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
@@ -26,6 +27,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "daily" as const,
     priority: t.tier === 1 ? 0.85 : 0.65,
   }));
+  const resultPages = DAILY_RESULTS.map((r) => ({
+    url: `${SITE_URL}/results/${r.date}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.8,
+  }));
   return [
     {
       url: SITE_URL,
@@ -33,8 +40,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "hourly",
       priority: 1,
     },
+    {
+      url: `${SITE_URL}/results`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
     ...keywordPages,
     ...stockPages,
     ...themePages,
+    ...resultPages,
   ];
 }

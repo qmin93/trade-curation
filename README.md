@@ -6,7 +6,8 @@
 
 ```bash
 npm install
-npm run dev    # http://localhost:3001
+cp .env.local.example .env.local      # 키 채워넣기
+npm run dev                            # http://localhost:3001
 ```
 
 ## 디자인 시스템
@@ -15,7 +16,6 @@ npm run dev    # http://localhost:3001
 |------|----|----|
 | `--bg` | `#0a0e1a` | 메인 배경 (네이비 다크) |
 | `--bg-elevated` | `#131829` | 카드·헤더 |
-| `--bg-subtle` | `#1c2236` | 보조 표면 |
 | `--accent` | `#3e6ae1` | 메인 CTA·링크·Tier 3 |
 | `--red` | `#ef4444` | 시초 상승·Tier 1 |
 | `--green` | `#10b981` | 시초 하락 |
@@ -23,174 +23,214 @@ npm run dev    # http://localhost:3001
 
 폰트: **Pretendard** (한글) + **JetBrains Mono** (시세·날짜).
 
-## 폴더 구조
+## 라우트 구조 (26 routes)
 
 ```
-app/
-  page.tsx                  메인 (Hero + KeywordGrid + EventTimeline + NewsFeed)
-  layout.tsx                글로벌 (TickerBar + Header + Footer + metadata)
-  globals.css               다크 디자인 시스템 + 애니메이션
-  sitemap.ts                동적 sitemap
-  robots.ts                 robots.txt
-  opengraph-image.tsx       다크 OG (Edge Runtime · 1200x630)
-  keyword/[slug]/page.tsx   키워드 페이지 (Hero gradient + News grid + ISR 30분)
-
-components/
-  TickerBar.tsx             상단 실시간 시세 ticker (스크롤 애니메이션)
-  Header.tsx                다크 헤더 + 네비 + KRX OPEN 인디케이터
-  HeroSection.tsx           메인 히어로 (gradient + radial bg)
-  KeywordGrid.tsx           키워드 카드 그리드 (tier 그라데이션 + 호버 글로우)
-  KeywordChip.tsx           키워드 칩 (인라인)
-  NewsCard.tsx              뉴스 카드 (다크 + 호버 lift + accent 글로우)
-  EventTimeline.tsx         6월 이벤트 타임라인 (세로 줄)
-  SectionHeader.tsx         섹션 헤더 (mono label + title + href)
-
-lib/
-  keywords.ts               키워드 매트릭스 + Tier 1~4 + 6월 이벤트
-  personas.ts               6 페르소나 시그너처 (Day 3에 재활성)
-  news-mock.ts              텔방 corpus 본문 요약 (6/9 6건)
-  naver-search.ts           네이버 검색 API 클라이언트
-  rss-fetcher.ts            매경·연합·한경 RSS
-  news-fetcher.ts           통합 fetcher (mock + 네이버 + RSS dedup)
+/                          메인 (성과·Movers·키워드·뉴스·캘린더·테마)
+/keyword/[slug]            키워드 5개 (하이닉스·삼성전자·연금·HBM·코스피)
+/stock/[ticker]            종목 10개 (시세 + 스파크라인 + 관련 뉴스)
+/theme/[slug]              테마 8개 (반도체·AI 데이터센터·HBM·SMR·전력·로봇·2차전지·ChatGPT)
+/results                   누적 성과 + 일자별 결과 목록
+/results/[date]            일자별 결과 상세 (대원강업 +1.4% 등)
+/search?q=…                통합 검색 (키워드+종목+테마+뉴스)
+/api/refresh               캐시 갱신 endpoint (Vercel Cron 호출)
+/sitemap.xml /robots.txt /opengraph-image  SEO
 ```
 
 ---
 
-## 🔑 네이버 검색 API 발급 (10분)
+## 🔄 자동 갱신 메커니즘
 
-실시간 키워드 뉴스 흡수를 위한 무료 API.
+| 레이어 | 갱신 주기 | 트리거 |
+|------|--------|------|
+| **ISR** (`revalidate = 1800`) | 30분 | 사용자 페이지 접속 시 백그라운드 갱신 |
+| 네이버 API fetch cache | 30분 | 자동 |
+| 매체 RSS fetch cache | 30분 | 자동 |
+| **Vercel Cron** (`/api/refresh`) | **매 30분** | 사용자 접속 X에도 강제 갱신 (배포 후 자동) |
 
-### 1단계 — 가입
-[https://developers.naver.com/main/](https://developers.naver.com/main/) 접속 → 우측 상단 **로그인** (네이버 계정).
+배포 후 사용자가 사이트 방문하지 않아도 매 30분 뉴스가 자동으로 흡수·갱신됨.
 
-### 2단계 — Application 등록
-1. 상단 **"Application > 애플리케이션 등록"** 클릭
-2. 약관 동의
-3. **애플리케이션 이름**: `단타 트레이드 큐레이션`
-4. **사용 API**: `검색` 체크
-5. **비로그인 오픈 API 서비스 환경**:
-   - WEB 설정 → 웹 서비스 URL: `http://localhost:3001` (개발용·배포 후 수정)
-
-### 3단계 — 키 저장
-등록 완료 → "Client ID" + "Client Secret" 표시됨.
-
+### Vercel Cron 인증
+프로덕션에서는 `CRON_SECRET` 환경변수로 인증:
 ```bash
-# trade-curation 폴더에서
-cp .env.local.example .env.local
+vercel env add CRON_SECRET production
+# → 랜덤 문자열 입력 (예: openssl rand -hex 32)
 ```
 
-`.env.local`에 키 입력:
+---
+
+## 🔑 네이버 검색 API (필수)
+
+### 발급 4단계
+1. [https://developers.naver.com/main/](https://developers.naver.com/main/) → 로그인
+2. **Application > 애플리케이션 등록**
+3. **사용 API**: `검색` 체크 (데이터랩 X·**검색** ✓)
+4. **WEB 서비스 URL**: `http://localhost:3001` (배포 후 실제 도메인 추가)
+
+### `.env.local` 입력
 ```env
-NAVER_CLIENT_ID=발급받은_ID
-NAVER_CLIENT_SECRET=발급받은_SECRET
+NAVER_CLIENT_ID=발급_ID
+NAVER_CLIENT_SECRET=발급_SECRET
 NEXT_PUBLIC_SITE_URL=http://localhost:3001
 ```
 
-### 4단계 — 재시작
-```bash
-# Ctrl+C로 dev 서버 종료 후
-npm run dev
+**무료 한도**: 일 25,000회.
+
+---
+
+## 🗄 Supabase DB 통합 (선택·영속화)
+
+mock 데이터 + 네이버/RSS 실시간만으로도 동작·하지만 텔방 corpus·결과 영속화하려면 Supabase.
+
+### 셋업 4단계
+
+#### 1. 프로젝트 생성
+[https://supabase.com/dashboard](https://supabase.com/dashboard) → New Project (무료 500MB DB).
+
+#### 2. 키 복사
+**Settings > API**:
+- `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
+- `service_role` (Secret) → `SUPABASE_SERVICE_ROLE_KEY`
+
+#### 3. 스키마 실행
+**SQL Editor > New Query** → `lib/db/schema.sql` 내용 붙여넣기 → Run.
+
+→ `news`·`pick_results` 테이블 + `monthly_stats` 뷰 + RLS 정책 자동 생성.
+
+#### 4. `.env.local` 추가
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJh...
 ```
 
-→ 자동으로 키워드별 실시간 뉴스 흡수.
-
-**무료 한도**: 일 25,000회 호출 (충분).
+`npm run dev` 재시작 → 자동 활성.
 
 ---
 
 ## 🚀 Vercel 배포 (5분)
 
-### 옵션 A — Vercel CLI
+### 옵션 A — GitHub repo (자동 배포·추천)
 
 ```bash
-npm install -g vercel
-cd "C:/Users/yangjong/OneDrive/바탕 화면/trade-curation"
-vercel login    # GitHub 연결 권장
-vercel link     # 새 프로젝트 생성
-```
-
-환경변수 추가:
-```bash
-vercel env add NAVER_CLIENT_ID production
-vercel env add NAVER_CLIENT_SECRET production
-vercel env add NEXT_PUBLIC_SITE_URL production
-# → 입력: https://your-vercel-domain.vercel.app
-```
-
-배포:
-```bash
-vercel --prod
-```
-
-→ `https://trade-curation-xxx.vercel.app` 무료 도메인 발급.
-
-### 옵션 B — GitHub repo 연결 (자동 배포·추천)
-
-```bash
-git init
-git add .
-git commit -m "feat: 단타 트레이드 키워드 큐레이션 초기 셋업"
 gh repo create trade-curation --public --source=. --push
 ```
 
-→ [vercel.com/new](https://vercel.com/new) → GitHub repo 선택 → "Import" → 환경변수 설정 → Deploy.
+→ [vercel.com/new](https://vercel.com/new) → repo 선택 → Import:
+- 환경변수 **모두** 입력 (네이버·Supabase·CRON_SECRET·SITE_URL)
+- Region: **icn1** (서울)
+- Deploy
 
 → 이후 `git push` 시 자동 배포.
 
+### 옵션 B — Vercel CLI
+
+```bash
+npm install -g vercel
+vercel login
+vercel link
+vercel env add NAVER_CLIENT_ID production
+vercel env add NAVER_CLIENT_SECRET production
+vercel env add NEXT_PUBLIC_SITE_URL production
+vercel env add CRON_SECRET production
+vercel --prod
+```
+
+→ `https://trade-curation-xxx.vercel.app` 발급.
+
+### 배포 후 환경변수 갱신
+1. Vercel Dashboard → Project → Settings → Environment Variables
+2. `NEXT_PUBLIC_SITE_URL`을 배포 도메인으로 수정
+3. Redeploy
+
 ---
 
-## 🌐 도메인 결정 (옵션)
+## 🌐 도메인 결정
 
-Vercel 무료 도메인 사용 가능. 자체 도메인 원할 시:
+| 옵션 | 비용 | 비고 |
+|------|----|----|
+| `trade.managerkim.com` | ₩0 (서브도메인) | managerkim DNS에 CNAME 추가만 |
+| `dantatrade.com` | ~₩20k/년 | 신규·짧음 |
+| `keywordkospi.com` | ~₩20k/년 | 키워드 직관적 |
+| `장전키워드.com` | ~₩30k/년 | 한글 IDN |
 
-### 추천 도메인
-- `trade.managerkim.com` (managerkim 서브도메인 — DNS만 추가)
-- `dantatrade.com` (신규·약 ₩20k/년)
-- `keywordkospi.com`
-- `장전키워드.com` (한글)
-
-### 적용 (Vercel 대시보드)
+### Vercel에 도메인 연결
 1. Project → Settings → Domains
-2. "Add Domain" → 도메인 입력
-3. DNS 레코드 추가 안내 따르기 (CNAME 또는 A 레코드)
-4. SSL 자동 발급 (Let's Encrypt)
+2. "Add Domain" → 입력
+3. DNS 안내 (CNAME 또는 A 레코드) 따르기
+4. SSL 자동 발급
 
 ---
 
-## 🔍 Google Search Console 등록
+## 🔍 Google Search Console 등록 (배포 후)
 
-배포 후:
-1. [search.google.com/search-console](https://search.google.com/search-console) 접속
-2. URL 접두어 방식 → 도메인 입력
-3. 소유권 확인 (HTML 메타 또는 DNS 레코드)
-4. **Sitemap 제출**: `https://your-domain.com/sitemap.xml`
+1. [search.google.com/search-console](https://search.google.com/search-console)
+2. URL 접두어 → 도메인 입력
+3. HTML 메타 태그 인증 (Vercel 배포 시 layout.tsx에 추가) 또는 DNS TXT
+4. **Sitemap 제출**: `https://your-domain/sitemap.xml`
 
-→ 약 1~2주 내 크롤링 시작.
+→ 약 1~2주 내 크롤링 시작·키워드별 트래픽 모니터링.
+
+---
+
+## 📦 폴더 구조
+
+```
+app/
+  page.tsx                  메인
+  layout.tsx                글로벌 (TickerBar + Header + Footer + metadata)
+  globals.css               다크 디자인 시스템 + 애니메이션
+  sitemap.ts                동적 sitemap (26+ URL)
+  robots.ts                 robots.txt
+  opengraph-image.tsx       다크 OG (1200x630·Edge)
+  api/refresh/route.ts      캐시 갱신 endpoint (Vercel Cron)
+  keyword/[slug]/page.tsx
+  stock/[ticker]/page.tsx
+  theme/[slug]/page.tsx
+  results/page.tsx
+  results/[date]/page.tsx
+  search/page.tsx
+  not-found.tsx
+  loading.tsx
+
+components/
+  TickerBar / Header / HeroSection / SearchInput / MobileNav
+  KeywordGrid / KeywordChip / SectionHeader
+  NewsCard / StockCard / SparklineChart
+  ResultCard / PerformanceStats
+  EventTimeline
+
+lib/
+  keywords.ts               키워드 매트릭스 + Tier 1~4 + 6월 이벤트
+  stocks.ts                 10 종목 + 스파크라인 + 테마
+  themes.ts                 8 테마
+  personas.ts               6 페르소나 (Day 3에 활성)
+  results.ts                일자별·월간 결과
+  news-mock.ts              텔방 corpus 본문 요약
+  naver-search.ts           네이버 검색 API
+  rss-fetcher.ts            매경·연합·한경 RSS
+  news-fetcher.ts           통합 (mock + 네이버 + RSS dedup)
+  supabase.ts               Supabase 클라이언트
+  db/schema.sql             테이블 스키마
+```
 
 ---
 
 ## 📊 다음 단계 로드맵
 
-### 즉시 (오늘)
-- [x] Day 1: Next.js 14 init + 5 키워드 페이지
-- [x] Day 2: 텔방 corpus mock + 네이버 API + RSS 통합
-- [x] 다크 트레이딩 터미널 디자인 완성
-- [ ] 네이버 API 키 발급 + .env.local 설정
-- [ ] Vercel 배포
-
 ### 이번 주
-- [ ] Google Search Console 등록
-- [ ] 자체 도메인 결정·연결
-- [ ] OG 이미지 시각 검증·조정
+- [x] Day 1~2: Next.js init + 5 키워드 + 10 종목 + 8 테마 + 검색
+- [x] Day 3: 다크 트레이딩 터미널 디자인
+- [x] Day 4: 결과 페이지 + 자동 갱신 + Supabase 셋업
+- [ ] 네이버 키 발급·`.env.local` 입력 ✅
+- [ ] Vercel 배포·도메인 연결
 
-### 다음 주 (Week 2~3)
-- [ ] 텔방 corpus → Supabase DB 자동 적재 (cron)
-- [ ] Claude API 6 페르소나 코멘트 자동 생성 (Day 3 활성)
-- [ ] 종목별 페이지 추가 (`/stock/[ticker]`)
-- [ ] 테마별 페이지 추가 (`/theme/[slug]`)
+### Week 2~3
+- [ ] Supabase 프로젝트 생성·스키마 실행·키 입력
+- [ ] 텔방 corpus → Supabase 자동 적재 (cron)
+- [ ] Claude API 6 페르소나 코멘트 자동 생성 (옵션)
+- [ ] Google Search Console 등록·Sitemap 제출
 
 ### Week 4+
-- [ ] 일자별 아카이브 (`/archive/[date]`)
 - [ ] 키워드 트래픽 분석 대시보드
 - [ ] Threads/텔방 funnel 측정
 - [ ] 광고 (애드센스) 또는 VIP funnel

@@ -32,6 +32,12 @@ export function Header() {
               {k.label}
             </Link>
           ))}
+          <Link
+            href="/results"
+            className="px-3 py-1.5 rounded-md text-[var(--accent)] hover:bg-[var(--bg-elevated)] transition-colors font-medium"
+          >
+            Results
+          </Link>
         </nav>
 
         <div className="hidden md:block flex-1 max-w-sm">
