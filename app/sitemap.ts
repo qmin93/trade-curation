@@ -4,10 +4,18 @@ import { STOCKS } from "@/lib/stocks";
 import { THEMES } from "@/lib/themes";
 import { DAILY_RESULTS } from "@/lib/results";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
+export const dynamic = "force-dynamic";
+
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return explicit.replace(/\/$/, "");
+  const vercel = process.env.VERCEL_URL;
+  if (vercel) return `https://${vercel}`;
+  return "http://localhost:3001";
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const SITE_URL = resolveSiteUrl();
   const now = new Date();
   const keywordPages = KEYWORDS.map((k) => ({
     url: `${SITE_URL}/keyword/${k.slug}`,
