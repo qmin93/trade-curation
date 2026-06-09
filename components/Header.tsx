@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getHotKeywords } from "@/lib/keywords";
 import { SearchInput } from "./SearchInput";
 import { MobileNav } from "./MobileNav";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   const hot = getHotKeywords();
@@ -44,12 +45,18 @@ export function Header() {
           <SearchInput />
         </div>
 
-        <div className="hidden md:flex items-center gap-2 mono text-[10px] text-[var(--text-caption)] uppercase tracking-widest shrink-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] pulse-dot" />
-          KRX OPEN
+        <div className="hidden md:flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 mono text-[10px] text-[var(--text-caption)] uppercase tracking-widest">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] pulse-dot" />
+            KRX OPEN
+          </div>
+          <ThemeToggle />
         </div>
 
-        <MobileNav keywords={hot} />
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
+          <MobileNav keywords={hot} />
+        </div>
       </div>
     </header>
   );

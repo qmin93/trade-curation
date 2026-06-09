@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-:root {
-  /* 다크 트레이딩 터미널 — Bloomberg·Robinhood 영감 */
+/* 다크 (기본) — Bloomberg + Robinhood */
+:root,
+:root[data-theme="dark"] {
   --bg: #0a0e1a;
   --bg-elevated: #131829;
   --bg-subtle: #1c2236;
@@ -30,8 +31,44 @@
   --tier3: #3e6ae1;
   --tier4: #64748b;
 
-  --background: var(--bg);
-  --foreground: var(--text);
+  --noise-opacity: 0.02;
+  --hero-glow-blue: rgba(62, 106, 225, 0.25);
+  --hero-glow-red: rgba(239, 68, 68, 0.15);
+}
+
+/* 라이트 — Tesla / Stripe 영감 */
+:root[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-elevated: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --bg-hover: #e2e8f0;
+
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --text: #0f172a;
+  --text-muted: #475569;
+  --text-caption: #64748b;
+
+  --accent: #2563eb;
+  --accent-glow: rgba(37, 99, 235, 0.25);
+  --accent-dim: rgba(37, 99, 235, 0.08);
+
+  --red: #dc2626;
+  --red-glow: rgba(220, 38, 38, 0.18);
+  --green: #059669;
+  --green-glow: rgba(5, 150, 105, 0.18);
+  --amber: #d97706;
+  --amber-glow: rgba(217, 119, 6, 0.18);
+
+  --tier1: #dc2626;
+  --tier2: #d97706;
+  --tier3: #2563eb;
+  --tier4: #64748b;
+
+  --noise-opacity: 0.015;
+  --hero-glow-blue: rgba(37, 99, 235, 0.1);
+  --hero-glow-red: rgba(220, 38, 38, 0.06);
 }
 
 @theme inline {
@@ -83,6 +120,7 @@ body {
   font-feature-settings: "tnum", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 h1, h2, h3, h4 {
@@ -100,7 +138,6 @@ a {
   font-feature-settings: "tnum";
 }
 
-/* 글로우 호버 효과 */
 .glow-accent {
   transition: all 0.2s ease-out;
 }
@@ -117,7 +154,6 @@ a {
   border-color: var(--green);
 }
 
-/* 노이즈 텍스처 (subtle) */
 .noise-bg {
   position: relative;
 }
@@ -126,11 +162,10 @@ a {
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E");
-  opacity: 0.02;
+  opacity: var(--noise-opacity);
   pointer-events: none;
 }
 
-/* 펄스 — 실시간 ticker */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
@@ -147,12 +182,17 @@ a {
   animation: ticker-slide 40s linear infinite;
 }
 
-/* 그라데이션 텍스트 */
 .gradient-text {
-  background: linear-gradient(135deg, #3e6ae1 0%, #60a5fa 50%, #93c5fd 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 50%, #93c5fd 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+:root[data-theme="light"] .gradient-text {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 ::selection {
@@ -160,7 +200,6 @@ a {
   color: white;
 }
 
-/* 스크롤바 */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb {
