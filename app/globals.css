@@ -1,26 +1,170 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 다크 트레이딩 터미널 — Bloomberg·Robinhood 영감 */
+  --bg: #0a0e1a;
+  --bg-elevated: #131829;
+  --bg-subtle: #1c2236;
+  --bg-hover: #232a40;
+
+  --border: #2a3149;
+  --border-strong: #3a4262;
+
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-caption: #64748b;
+
+  --accent: #3e6ae1;
+  --accent-glow: rgba(62, 106, 225, 0.5);
+  --accent-dim: rgba(62, 106, 225, 0.15);
+
+  --red: #ef4444;
+  --red-glow: rgba(239, 68, 68, 0.4);
+  --green: #10b981;
+  --green-glow: rgba(16, 185, 129, 0.4);
+  --amber: #f59e0b;
+  --amber-glow: rgba(245, 158, 11, 0.4);
+
+  --tier1: #ef4444;
+  --tier2: #f59e0b;
+  --tier3: #3e6ae1;
+  --tier4: #64748b;
+
+  --background: var(--bg);
+  --foreground: var(--text);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-red: var(--red);
+  --color-green: var(--green);
+  --color-amber: var(--amber);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-caption: var(--text-caption);
+  --font-sans:
+    "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:
+    "JetBrains Mono", "Geist Mono", "SF Mono", Consolas, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/PretendardVariable.woff2")
+    format("woff2-variations");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/variable/JetBrainsMono[wght].woff2")
+    format("woff2-variations");
+}
+
+* {
+  border-color: var(--border);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-feature-settings: "tnum", "ss01";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+h1, h2, h3, h4 {
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mono {
+  font-family: "JetBrains Mono", "Geist Mono", monospace;
+  font-feature-settings: "tnum";
+}
+
+/* 글로우 호버 효과 */
+.glow-accent {
+  transition: all 0.2s ease-out;
+}
+.glow-accent:hover {
+  box-shadow: 0 0 24px var(--accent-glow);
+  border-color: var(--accent);
+}
+.glow-red:hover {
+  box-shadow: 0 0 24px var(--red-glow);
+  border-color: var(--red);
+}
+.glow-green:hover {
+  box-shadow: 0 0 24px var(--green-glow);
+  border-color: var(--green);
+}
+
+/* 노이즈 텍스처 (subtle) */
+.noise-bg {
+  position: relative;
+}
+.noise-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
+}
+
+/* 펄스 — 실시간 ticker */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@keyframes ticker-slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-track {
+  animation: ticker-slide 40s linear infinite;
+}
+
+/* 그라데이션 텍스트 */
+.gradient-text {
+  background: linear-gradient(135deg, #3e6ae1 0%, #60a5fa 50%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+::selection {
+  background: var(--accent);
+  color: white;
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
