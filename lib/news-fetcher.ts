@@ -67,6 +67,20 @@ async function enrichWithSummaryAndImages(
  * 헤드라인을 정규화한 키. [속보]·(…) 같은 장식과 공백·기호를 제거해
  * 다른 매체가 같은 사건을 보도한 경우(다른 URL)도 같은 키로 묶이게 한다.
  */
+/**
+ * 자동수집(naver/rss) 헤드라인의 기계 느낌 제거 — 맨 앞 [속보]류 태그, 끝 말줄임표,
+ * 매체 꼬리를 보수적으로 정리. 사실은 그대로 두고 장식만 덜어낸다.
+ * (큐레이션 mock 제목은 이미 사람이 쓴 톤이라 건드리지 않는다.)
+ */
+export function cleanHeadline(h: string): string {
+  return h
+    .replace(/^\s*\[[^\]]*\]\s*/u, "")
+    .replace(/\s*[…]+\s*$/u, "")
+    .replace(/\.{2,}\s*$/u, "")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
+
 function titleKey(headline: string): string {
   return headline
     .replace(/\[[^\]]*\]/gu, "")
@@ -137,7 +151,7 @@ function rssToUnified(r: RssItem, keyword: string): UnifiedNewsItem {
   return {
     id: `rss-${r.source}-${pubDate.getTime()}`,
     date: dateStr,
-    headline: r.title,
+    headline: cleanHeadline(r.title),
     summary: r.description.slice(0, 200),
     source: r.source,
     sourceUrl: r.link,
@@ -167,7 +181,11 @@ export async function getNewsByKeywordUnified(
 
   const naverUnified: UnifiedNewsItem[] = naverItems.map((item) => {
     const normalized = normalizeNaverNews(item, [keywordLabel], []);
-    return { ...normalized, origin: "naver" as const };
+    return {
+      ...normalized,
+      headline: cleanHeadline(normalized.headline),
+      origin: "naver" as const,
+    };
   });
 
   const rssMatched = filterByKeyword(rssItems, keywordLabel);
@@ -205,7 +223,11 @@ export async function getRecentNewsUnified(
       searchNaverNews(k, { display: 5, sort: "date" }).then((items) =>
         items.map((item) => {
           const normalized = normalizeNaverNews(item, [k], []);
-          return { ...normalized, origin: "naver" as const };
+          return {
+            ...normalized,
+            headline: cleanHeadline(normalized.headline),
+            origin: "naver" as const,
+          };
         }),
       ),
     ),
