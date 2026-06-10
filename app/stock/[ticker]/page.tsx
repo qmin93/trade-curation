@@ -7,7 +7,7 @@ import { SparklineChart } from "@/components/SparklineChart";
 import { StockCard } from "@/components/StockCard";
 import { SectionHeader } from "@/components/SectionHeader";
 
-export const revalidate = 1800;
+export const revalidate = 600;
 
 export function generateStaticParams() {
   return STOCKS.map((s) => ({ ticker: s.ticker }));

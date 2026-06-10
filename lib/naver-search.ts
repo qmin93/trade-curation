@@ -60,7 +60,7 @@ export async function searchNaverNews(
         "X-Naver-Client-Id": clientId,
         "X-Naver-Client-Secret": clientSecret,
       },
-      next: { revalidate: 1800 },
+      next: { revalidate: 600 },
     });
     if (!res.ok) {
       console.error("[naver-search] HTTP", res.status, await res.text());

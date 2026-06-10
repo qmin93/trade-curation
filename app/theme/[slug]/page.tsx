@@ -7,7 +7,7 @@ import { NewsCard } from "@/components/NewsCard";
 import { StockCard } from "@/components/StockCard";
 import { SectionHeader } from "@/components/SectionHeader";
 
-export const revalidate = 1800;
+export const revalidate = 600;
 
 export function generateStaticParams() {
   return THEMES.map((t) => ({ slug: t.slug }));

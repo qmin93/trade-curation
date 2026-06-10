@@ -7,7 +7,7 @@ import { HeroNews } from "@/components/HeroNews";
 import { NewsListItem } from "@/components/NewsListItem";
 import { KeywordChip } from "@/components/KeywordChip";
 
-export const revalidate = 1800;
+export const revalidate = 600;
 
 export default async function Home() {
   const news = await getRecentNewsUnified(20);

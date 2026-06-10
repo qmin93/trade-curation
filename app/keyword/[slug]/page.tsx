@@ -6,7 +6,7 @@ import { NewsCard } from "@/components/NewsCard";
 import { KeywordGrid } from "@/components/KeywordGrid";
 import { SectionHeader } from "@/components/SectionHeader";
 
-export const revalidate = 1800;
+export const revalidate = 600;
 
 export function generateStaticParams() {
   return KEYWORDS.map((k) => ({ slug: k.slug }));

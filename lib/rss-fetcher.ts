@@ -75,7 +75,7 @@ function parseRssXml(xml: string, source: string): RssItem[] {
 export async function fetchRssFeed(feed: RssFeed): Promise<RssItem[]> {
   try {
     const res = await fetch(feed.url, {
-      next: { revalidate: 1800 },
+      next: { revalidate: 600 },
       headers: {
         "User-Agent":
           "Mozilla/5.0 (compatible; managerkim-trade-curation/1.0)",
