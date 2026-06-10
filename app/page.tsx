@@ -1,152 +1,94 @@
 import { KEYWORDS } from "@/lib/keywords";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
-import { getTopMovers } from "@/lib/stocks";
 import { THEMES } from "@/lib/themes";
-import { getRecentResults, MONTHLY_STATS } from "@/lib/results";
+import { TOP_VOLUME, TOP_GAINERS } from "@/lib/market-snapshot";
 import { getDailyQuote } from "@/lib/quotes";
-import { HeroSection } from "@/components/HeroSection";
-import { KeywordGrid } from "@/components/KeywordGrid";
-import { EventTimeline } from "@/components/EventTimeline";
-import { NewsCard } from "@/components/NewsCard";
-import { SectionHeader } from "@/components/SectionHeader";
-import { StockCard } from "@/components/StockCard";
-import { ResultCard } from "@/components/ResultCard";
-import { PerformanceStats } from "@/components/PerformanceStats";
-import { AlertFeed } from "@/components/AlertFeed";
-import { TradingCalendar } from "@/components/TradingCalendar";
-import { BacktestChart } from "@/components/BacktestChart";
-import { QuoteCard } from "@/components/QuoteCard";
+import { IndexBoard } from "@/components/dashboard/IndexBoard";
+import { InvestorFlowCard } from "@/components/dashboard/InvestorFlow";
+import { SectorHeatmap } from "@/components/dashboard/SectorHeatmap";
+import { RankingList } from "@/components/dashboard/RankingList";
+import { HighLowCard } from "@/components/dashboard/HighLowCard";
+import { PremarketCard } from "@/components/dashboard/PremarketCard";
+import { CompactNewsList } from "@/components/dashboard/CompactNewsList";
+import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
+import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
+import { PerformanceStrip } from "@/components/dashboard/PerformanceStrip";
+import { KeywordChip } from "@/components/KeywordChip";
 import Link from "next/link";
 
 export const revalidate = 1800;
 
 export default async function Home() {
-  const recentNews = await getRecentNewsUnified(6);
-  const movers = getTopMovers(4);
-  const results = getRecentResults(3);
+  const recentNews = await getRecentNewsUnified(10);
   const quote = getDailyQuote();
   return (
-    <>
-      <HeroSection />
-
-      <div className="max-w-[1400px] mx-auto px-4 py-12 space-y-16">
-        <section className="grid lg:grid-cols-[1fr_360px] gap-6">
-          <AlertFeed limit={6} />
-          <TradingCalendar />
-        </section>
-
-        <section>
-          <SectionHeader
-            label="01 · Performance"
-            title={`${MONTHLY_STATS.month} 누적 성과`}
-            href="/results"
-            hrefLabel="결과 전체"
-          />
-          <PerformanceStats stats={MONTHLY_STATS} />
-          {results.length > 0 && (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-              {results.map((r) => (
-                <ResultCard key={r.date} result={r} />
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section>
-          <SectionHeader
-            label="02 · Backtest"
-            title="과거 픽 검증"
-            href="/backtest"
-            hrefLabel="상세"
-          />
-          <BacktestChart />
-        </section>
-
-        <section>
-          <SectionHeader
-            label="03 · Top Movers"
-            title="오늘의 시초 변동률 TOP"
-            href="/keyword/kospi"
-            hrefLabel="시장 전체"
-          />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {movers.map((s) => (
-              <StockCard key={s.ticker} stock={s} />
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <SectionHeader
-            label="04 · Hot Keywords"
-            title="오늘의 핫 키워드"
-            href="/keyword/hynix"
-            hrefLabel="전체"
-          />
-          <KeywordGrid keywords={KEYWORDS} />
-        </section>
-
-        <section className="grid lg:grid-cols-[1fr_360px] gap-8">
-          <div>
-            <SectionHeader label="05 · News Feed" title="최신 뉴스" />
-            <div className="grid sm:grid-cols-2 gap-4">
-              {recentNews.map((n) => (
-                <NewsCard
-                  key={n.id}
-                  news={{
-                    id: n.id,
-                    date: n.date,
-                    headline: n.headline,
-                    summary: n.summary,
-                    source: n.source,
-                    sourceUrl: n.sourceUrl,
-                    keywords: n.keywords,
-                    stocks: n.stocks,
-                    personaComments: {},
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-          <aside>
-            <SectionHeader
-              label="06 · Macro"
-              title="6월 트래픽 이벤트"
-            />
-            <EventTimeline />
-          </aside>
-        </section>
-
-        <section className="border-t border-[var(--border)] pt-12">
-          <QuoteCard quote={quote} large />
-        </section>
-
-        <section>
-          <SectionHeader
-            label="07 · Themes"
-            title="단타 테마 라인업"
-          />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {THEMES.map((t) => (
-              <Link
-                key={t.slug}
-                href={`/theme/${t.slug}`}
-                className="group rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-4 transition-all hover:border-[var(--accent)]/50 hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(62,106,225,0.15)]"
-              >
-                <div className="mono text-[9px] uppercase tracking-widest text-[var(--accent)] mb-2">
-                  Tier {t.tier}
-                </div>
-                <div className="font-semibold text-[var(--text)] group-hover:text-white transition-colors mb-1">
-                  {t.label}
-                </div>
-                <p className="text-xs text-[var(--text-muted)] line-clamp-2">
-                  {t.description}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
+    <div className="max-w-[1600px] mx-auto px-3 py-3 space-y-3">
+      {/* Headline strip */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-1">
+        <div>
+          <h1 className="text-lg font-bold tracking-tight text-[var(--text)]">
+            근거 분명한 자리만.
+          </h1>
+          <p className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] mt-0.5">
+            "{quote.text}" — {quote.attribution}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {KEYWORDS.map((k) => (
+            <KeywordChip key={k.slug} keyword={k} />
+          ))}
+        </div>
       </div>
-    </>
+
+      {/* Performance strip */}
+      <PerformanceStrip />
+
+      {/* Row 1 — Market overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <IndexBoard />
+        <InvestorFlowCard />
+        <PremarketCard />
+        <HighLowCard />
+      </div>
+
+      {/* Row 2 — Rankings + Sectors */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <RankingList title="Top Gainers" items={TOP_GAINERS} />
+        <RankingList
+          title="Top Volume"
+          items={TOP_VOLUME.slice(0, 6)}
+          showVolume
+        />
+        <SectorHeatmap />
+      </div>
+
+      {/* Row 3 — Live streams */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <CompactAlerts limit={6} />
+        <CompactNewsList items={recentNews} />
+        <CompactCalendar />
+      </div>
+
+      {/* Themes strip */}
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
+        <div className="mono text-[9px] uppercase tracking-widest text-[var(--text-caption)] mb-2 flex items-center justify-between">
+          <span>Themes</span>
+          <Link href="/keyword/hynix" className="hover:text-[var(--accent)]">
+            Keywords ↗
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-1.5">
+          {THEMES.map((t) => (
+            <Link
+              key={t.slug}
+              href={`/theme/${t.slug}`}
+              className="rounded px-2 py-1.5 bg-[var(--bg-subtle)] border border-[var(--border)] hover:border-[var(--accent)]/50 text-[11px] font-semibold text-[var(--text)] text-center transition-colors truncate"
+            >
+              {t.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

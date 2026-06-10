@@ -67,7 +67,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <TickerBar />
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 max-w-full">{children}</main>
         <ChatBot />
         <footer className="border-t border-[var(--border)] bg-[var(--bg-elevated)]">
           <div className="max-w-[1400px] mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
