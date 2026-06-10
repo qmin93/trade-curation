@@ -57,20 +57,20 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
           setOpen((v) => !v);
         }
       }}
-      className="group block py-4 border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--bg-elevated)] -mx-3 px-3 rounded-md transition-all cursor-pointer"
+      className="card-surface group block p-3.5 md:p-4 cursor-pointer hover:border-[var(--accent)]/40"
     >
       <div className="flex gap-4 items-start">
         {news.imageUrl ? (
-          <div className="w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-md overflow-hidden bg-[var(--bg-subtle)]">
+          <div className="w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-lg overflow-hidden bg-[var(--bg-subtle)] ring-1 ring-[var(--border)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={news.imageUrl}
               alt=""
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           </div>
         ) : (
-          <div className="w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-md bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-subtle)] border border-[var(--border)] flex items-center justify-center">
+          <div className="w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-lg bg-gradient-to-br from-[var(--bg-subtle)] to-[var(--bg-hover)] ring-1 ring-[var(--border)] flex items-center justify-center">
             <span className={`mono text-[10px] uppercase tracking-widest ${tintForSource(news.source)}`}>
               {news.source}
             </span>

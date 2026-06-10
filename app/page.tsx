@@ -49,7 +49,7 @@ export default async function Home() {
               {rest.length} stories
             </span>
           </div>
-          <div className="divide-y divide-[var(--border)]">
+          <div className="space-y-3 mt-4">
             {rest.map((n) => (
               <NewsListItem key={n.id} news={n} />
             ))}
