@@ -22,12 +22,7 @@ function gradientForSource(source: string): string {
 export function HeroNews({ news }: { news: UnifiedNewsItem }) {
   const grad = gradientForSource(news.source);
   return (
-    <a
-      href={news.sourceUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block relative overflow-hidden rounded-2xl border border-[var(--border)] aspect-[16/9] md:aspect-[21/9]"
-    >
+    <div className="group block relative overflow-hidden rounded-2xl border border-[var(--border)] aspect-[16/9] md:aspect-[21/9]">
       {news.imageUrl ? (
         <>
           <div className="absolute inset-0">
@@ -66,20 +61,27 @@ export function HeroNews({ news }: { news: UnifiedNewsItem }) {
           <span className="mono text-[10px] text-white/70 tabular-nums">
             {news.date}
           </span>
+          <span className="text-white/30">·</span>
+          <span className="text-[10px] text-white/70">직접 정리</span>
         </div>
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.1] mb-4 max-w-3xl line-clamp-3 group-hover:text-white transition-colors">
           {news.headline}
         </h2>
-        <p className="text-sm md:text-base text-white/85 leading-relaxed max-w-2xl line-clamp-2 mb-5">
+        <p className="text-sm md:text-base text-white/85 leading-relaxed max-w-2xl line-clamp-3 mb-5">
           {news.summary}
         </p>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-2 mono text-[11px] uppercase tracking-widest text-white font-semibold">
-            Read article
-            <span className="transition-transform group-hover:translate-x-1">
-              →
+          <a
+            href={news.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-4 py-2 mono text-[11px] uppercase tracking-widest text-white font-semibold backdrop-blur-sm hover:bg-white/20 transition-colors"
+          >
+            출처 가기
+            <span className="transition-transform group-hover:translate-x-1" aria-hidden>
+              ↗
             </span>
-          </span>
+          </a>
           {news.keywords.slice(0, 3).map((k) => (
             <span
               key={k}
@@ -90,6 +92,6 @@ export function HeroNews({ news }: { news: UnifiedNewsItem }) {
           ))}
         </div>
       </div>
-    </a>
+    </div>
   );
 }

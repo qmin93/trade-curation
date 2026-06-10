@@ -43,19 +43,24 @@ async function enrichWithSummaryAndImages(
     3,
   );
 
+  // summaryMap 값이 null이면 off-topic → 목록에서 제외
+  const dropUrls = new Set<string>();
+  for (const [url, val] of summaryMap) {
+    if (val === null) dropUrls.add(url);
+  }
+
   const imageMap = await getOgImagesBatch(
     toEnrich.map((n) => n.sourceUrl),
     5,
   );
 
-  return items.map((n, i) => {
-    if (i >= enrichLimit) return n;
-    return {
+  return items
+    .filter((n) => !dropUrls.has(n.sourceUrl))
+    .map((n) => ({
       ...n,
       summary: summaryMap.get(n.sourceUrl) ?? n.summary,
       imageUrl: imageMap.get(n.sourceUrl) ?? null,
-    };
-  });
+    }));
 }
 
 export interface UnifiedNewsItem {
