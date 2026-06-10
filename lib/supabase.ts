@@ -85,6 +85,50 @@ export async function fetchNewsByKeyword(
   return data ?? [];
 }
 
+export async function fetchRecentNews(limit = 30): Promise<NewsRow[]> {
+  const sb = getServerSupabase();
+  if (!sb) return [];
+  const { data, error } = await sb
+    .from("news")
+    .select("*")
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("[supabase] fetchRecentNews", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
+export interface AlertRow {
+  id: string;
+  time: string;
+  ticker?: string | null;
+  stock_name?: string | null;
+  type: string;
+  message: string;
+  source: string;
+  source_url: string;
+  severity: number;
+  created_at?: string;
+}
+
+export async function fetchRecentAlerts(limit = 20): Promise<AlertRow[]> {
+  const sb = getServerSupabase();
+  if (!sb) return [];
+  const { data, error } = await sb
+    .from("alerts")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("[supabase] fetchRecentAlerts", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
 export async function insertPickResult(row: PickResultRow): Promise<void> {
   const sb = getServerSupabase();
   if (!sb) return;

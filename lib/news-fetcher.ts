@@ -15,6 +15,11 @@ import {
   type RssItem,
 } from "./rss-fetcher";
 import { applyFilters } from "./news-filters";
+import {
+  fetchNewsByKeyword as fetchSupabaseByKeyword,
+  fetchRecentNews as fetchSupabaseRecent,
+  type NewsRow,
+} from "./supabase";
 
 export interface UnifiedNewsItem {
   id: string;
@@ -38,6 +43,20 @@ function newsMockToUnified(n: NewsItem): UnifiedNewsItem {
     sourceUrl: n.sourceUrl,
     keywords: n.keywords,
     stocks: n.stocks,
+    origin: "mock",
+  };
+}
+
+function supabaseToUnified(r: NewsRow): UnifiedNewsItem {
+  return {
+    id: r.id,
+    date: r.date,
+    headline: r.headline,
+    summary: r.summary,
+    source: r.source,
+    sourceUrl: r.source_url,
+    keywords: r.keywords,
+    stocks: r.stocks,
     origin: "mock",
   };
 }
@@ -67,10 +86,14 @@ export async function getNewsByKeywordUnified(
     ),
   ).map(newsMockToUnified);
 
-  const [naverItems, rssItems] = await Promise.all([
+  const [supabaseRows, naverItems, rssItems] = await Promise.all([
+    fetchSupabaseByKeyword(keywordLabel, 20),
     searchNaverNews(keywordLabel, { display: 8, sort: "date" }),
     fetchAllRss(),
   ]);
+
+  const supabaseUnified = supabaseRows.map(supabaseToUnified);
+  mockMatches.unshift(...supabaseUnified);
 
   const naverUnified: UnifiedNewsItem[] = naverItems.map((item) => {
     const normalized = normalizeNaverNews(item, [keywordLabel], []);
@@ -98,6 +121,9 @@ export async function getRecentNewsUnified(
 ): Promise<UnifiedNewsItem[]> {
   const mockUnified = NEWS_MOCK.map(newsMockToUnified);
 
+  const supabaseRows = await fetchSupabaseRecent(30);
+  const supabaseUnified = supabaseRows.map(supabaseToUnified);
+
   const naverResults = await Promise.all(
     keywords.map((k) =>
       searchNaverNews(k, { display: 5, sort: "date" }).then((items) =>
@@ -119,7 +145,7 @@ export async function getRecentNewsUnified(
     if (matchedKw) rssUnified.push(rssToUnified(item, matchedKw));
   }
 
-  const all = [...mockUnified, ...naverUnified, ...rssUnified];
+  const all = [...supabaseUnified, ...mockUnified, ...naverUnified, ...rssUnified];
   const seen = new Set<string>();
   const deduped = all.filter((item) => {
     const key = item.sourceUrl;
