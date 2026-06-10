@@ -93,9 +93,41 @@ export async function getNewsByKeywordUnified(
 
 export async function getRecentNewsUnified(
   limit = 10,
+  keywords: string[] = ["하이닉스", "삼성전자", "코스피", "HBM", "연금"],
 ): Promise<UnifiedNewsItem[]> {
-  return [...NEWS_MOCK]
-    .map(newsMockToUnified)
+  const mockUnified = NEWS_MOCK.map(newsMockToUnified);
+
+  const naverResults = await Promise.all(
+    keywords.map((k) =>
+      searchNaverNews(k, { display: 5, sort: "date" }).then((items) =>
+        items.map((item) => {
+          const normalized = normalizeNaverNews(item, [k], []);
+          return { ...normalized, origin: "naver" as const };
+        }),
+      ),
+    ),
+  );
+  const naverUnified = naverResults.flat();
+
+  const rssItems = await fetchAllRss();
+  const rssUnified: UnifiedNewsItem[] = [];
+  for (const item of rssItems) {
+    const matchedKw = keywords.find((k) =>
+      `${item.title} ${item.description}`.toLowerCase().includes(k.toLowerCase()),
+    );
+    if (matchedKw) rssUnified.push(rssToUnified(item, matchedKw));
+  }
+
+  const all = [...mockUnified, ...naverUnified, ...rssUnified];
+  const seen = new Set<string>();
+  const deduped = all.filter((item) => {
+    const key = item.sourceUrl;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return deduped
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, limit);
 }

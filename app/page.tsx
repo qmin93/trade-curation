@@ -1,5 +1,5 @@
 import { KEYWORDS } from "@/lib/keywords";
-import { getRecentNews } from "@/lib/news-mock";
+import { getRecentNewsUnified } from "@/lib/news-fetcher";
 import { getTopMovers } from "@/lib/stocks";
 import { THEMES } from "@/lib/themes";
 import { getRecentResults, MONTHLY_STATS } from "@/lib/results";
@@ -13,8 +13,10 @@ import { ResultCard } from "@/components/ResultCard";
 import { PerformanceStats } from "@/components/PerformanceStats";
 import Link from "next/link";
 
-export default function Home() {
-  const recentNews = getRecentNews(8);
+export const revalidate = 1800;
+
+export default async function Home() {
+  const recentNews = await getRecentNewsUnified(8);
   const movers = getTopMovers(8);
   const results = getRecentResults(3);
   return (
@@ -68,7 +70,20 @@ export default function Home() {
             <SectionHeader label="04 · News Feed" title="최신 뉴스" />
             <div className="grid sm:grid-cols-2 gap-4">
               {recentNews.map((n) => (
-                <NewsCard key={n.id} news={n} />
+                <NewsCard
+                  key={n.id}
+                  news={{
+                    id: n.id,
+                    date: n.date,
+                    headline: n.headline,
+                    summary: n.summary,
+                    source: n.source,
+                    sourceUrl: n.sourceUrl,
+                    keywords: n.keywords,
+                    stocks: n.stocks,
+                    personaComments: {},
+                  }}
+                />
               ))}
             </div>
           </div>
