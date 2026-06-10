@@ -14,6 +14,7 @@ import {
   filterByKeyword,
   type RssItem,
 } from "./rss-fetcher";
+import { applyFilters } from "./news-filters";
 
 export interface UnifiedNewsItem {
   id: string;
@@ -88,7 +89,7 @@ export async function getNewsByKeywordUnified(
     return true;
   });
 
-  return deduped.sort((a, b) => b.date.localeCompare(a.date));
+  return applyFilters(deduped);
 }
 
 export async function getRecentNewsUnified(
@@ -127,7 +128,5 @@ export async function getRecentNewsUnified(
     return true;
   });
 
-  return deduped
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, limit);
+  return applyFilters(deduped).slice(0, limit);
 }

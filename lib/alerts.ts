@@ -12,6 +12,18 @@ export interface AlertItem {
 
 export const RECENT_ALERTS: AlertItem[] = [
   {
+    id: "20260610-001-result",
+    time: "16:12",
+    ticker: "093370",
+    stockName: "후성",
+    type: "급등",
+    message:
+      "후성 +3.62% 도달 (포착 16,020 → 최고 16,600·67분). 2차 목표가 근접.",
+    source: "내부 결과",
+    sourceUrl: "/results/2026-06-10",
+    severity: 3,
+  },
+  {
     id: "20260610-001",
     time: "09:05",
     ticker: "093370",

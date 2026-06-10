@@ -26,6 +26,24 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-06-10",
+    totalReturn: 3.62,
+    summary:
+      "다중 기술지표 동시 돌파·세력 매집 자리. 67분 만에 2차 목표가 근접 도달 후 정직 정리.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "후성",
+        ticker: "093370",
+        entryPrice: 16020,
+        targetReached: 2,
+        resultPercent: 3.62,
+        status: "hit",
+        note: "포착가 16,020 → 최고가 16,600 (+3.62%·67분)",
+      },
+    ],
+  },
+  {
     date: "2026-06-09",
     totalReturn: 1.4,
     summary: "어제 검은 월요일 폭락 후 반등 자리·1차 도달 단발 정직 정리.",
@@ -45,10 +63,10 @@ export const DAILY_RESULTS: DailyResult[] = [
 
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
-  hitCount: 2,
+  hitCount: 3,
   missCount: 1,
-  winRate: 66.7,
-  cumulativeReturn: 2.27,
+  winRate: 75.0,
+  cumulativeReturn: 5.89,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
