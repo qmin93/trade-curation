@@ -3,6 +3,7 @@ import { getRecentNewsUnified } from "@/lib/news-fetcher";
 import { getTopMovers } from "@/lib/stocks";
 import { THEMES } from "@/lib/themes";
 import { getRecentResults, MONTHLY_STATS } from "@/lib/results";
+import { getDailyQuote } from "@/lib/quotes";
 import { HeroSection } from "@/components/HeroSection";
 import { KeywordGrid } from "@/components/KeywordGrid";
 import { EventTimeline } from "@/components/EventTimeline";
@@ -14,14 +15,16 @@ import { PerformanceStats } from "@/components/PerformanceStats";
 import { AlertFeed } from "@/components/AlertFeed";
 import { TradingCalendar } from "@/components/TradingCalendar";
 import { BacktestChart } from "@/components/BacktestChart";
+import { QuoteCard } from "@/components/QuoteCard";
 import Link from "next/link";
 
 export const revalidate = 1800;
 
 export default async function Home() {
-  const recentNews = await getRecentNewsUnified(8);
-  const movers = getTopMovers(8);
+  const recentNews = await getRecentNewsUnified(6);
+  const movers = getTopMovers(4);
   const results = getRecentResults(3);
+  const quote = getDailyQuote();
   return (
     <>
       <HeroSection />
@@ -112,6 +115,10 @@ export default async function Home() {
             />
             <EventTimeline />
           </aside>
+        </section>
+
+        <section className="border-t border-[var(--border)] pt-12">
+          <QuoteCard quote={quote} large />
         </section>
 
         <section>

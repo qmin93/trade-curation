@@ -72,6 +72,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.75,
     },
+    {
+      url: `${SITE_URL}/philosophy`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     ...keywordPages,
     ...stockPages,
     ...themePages,
