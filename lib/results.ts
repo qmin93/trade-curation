@@ -27,9 +27,9 @@ export interface MonthlyStats {
 export const DAILY_RESULTS: DailyResult[] = [
   {
     date: "2026-06-10",
-    totalReturn: 3.62,
+    totalReturn: 3.40,
     summary:
-      "다중 기술지표 동시 돌파·세력 매집 자리. 67분 만에 2차 목표가 근접 도달 후 정직 정리.",
+      "다중 기술지표 동시 돌파·세력 매집 자리. 1차·2차 목표가 모두 달성·시장 V자 데드캣 속 단발 정통.",
     picks: [
       {
         rank: 1,
@@ -37,9 +37,9 @@ export const DAILY_RESULTS: DailyResult[] = [
         ticker: "093370",
         entryPrice: 16020,
         targetReached: 2,
-        resultPercent: 3.62,
+        resultPercent: 3.40,
         status: "hit",
-        note: "포착가 16,020 → 최고가 16,600 (+3.62%·67분)",
+        note: "1차 (+1.4%)·2차 (+3.4%) 모두 달성. KOSPI -4.52% 약세 속 후성 마감 +20.12%",
       },
     ],
   },
@@ -66,7 +66,7 @@ export const MONTHLY_STATS: MonthlyStats = {
   hitCount: 3,
   missCount: 1,
   winRate: 75.0,
-  cumulativeReturn: 5.89,
+  cumulativeReturn: 5.67,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
