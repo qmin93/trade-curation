@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { TickerBar } from "@/components/TickerBar";
 import { ChatBot } from "@/components/ChatBot";
+import { TELEGRAM_INVITE_URL } from "@/lib/site";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
@@ -79,8 +80,18 @@ export default function RootLayout({
                 단타 트레이드 · 키워드 큐레이션 터미널
               </span>
             </div>
-            <div className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)]">
-              정보 공유 목적 · 종목 추천 아님 · 매매 본인 책임
+            <div className="flex items-center gap-5">
+              <a
+                href={TELEGRAM_INVITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)] hover:opacity-80 transition-opacity"
+              >
+                텔레그램 무료 알림 →
+              </a>
+              <div className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)]">
+                정보 공유 목적 · 종목 추천 아님 · 매매 본인 책임
+              </div>
             </div>
           </div>
         </footer>

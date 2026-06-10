@@ -6,6 +6,7 @@ import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
 import { HeroNews } from "@/components/HeroNews";
 import { NewsListItem } from "@/components/NewsListItem";
 import { KeywordChip } from "@/components/KeywordChip";
+import { TelegramCTA } from "@/components/TelegramCTA";
 
 export const revalidate = 600;
 
@@ -53,10 +54,16 @@ export default async function Home() {
 
         {/* Sidebar */}
         <aside className="space-y-3 lg:sticky lg:top-24 lg:self-start">
+          <TelegramCTA />
           <IndexBoard />
           <CompactAlerts limit={5} />
           <CompactCalendar />
         </aside>
+      </div>
+
+      {/* 리드 퍼널 CTA — 무료 텔레그램 알림으로 유도 */}
+      <div className="mt-12">
+        <TelegramCTA variant="banner" />
       </div>
     </div>
   );

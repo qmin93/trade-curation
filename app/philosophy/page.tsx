@@ -1,6 +1,7 @@
 import { CORE_PRINCIPLES, TRADER_QUOTES } from "@/lib/quotes";
 import { QuoteCard } from "@/components/QuoteCard";
 import { SectionHeader } from "@/components/SectionHeader";
+import { TelegramCTA } from "@/components/TelegramCTA";
 
 export const metadata = {
   title: "운영 철학 · 3 원칙",
@@ -27,6 +28,32 @@ export default function PhilosophyPage() {
       </section>
 
       <div className="max-w-3xl mx-auto px-4 py-16 md:py-24 space-y-20">
+        <section>
+          <div className="mono text-[10px] uppercase tracking-[0.3em] text-[var(--text-caption)] mb-8 text-center">
+            Who Curates
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-5 text-center">
+            누가 정리하나
+          </h2>
+          <div className="space-y-4 text-base text-[var(--text-muted)] leading-relaxed">
+            <p>
+              단타 트레이드는 매일 직접 매매하는 한 명의 단타 트레이더가 운영합니다.
+              매일 아침, 단타 텔레그램·증권 매체에 흩어진 재료를 직접 읽고 — 단타에
+              쓸모없는 건 버리고, 쓸 만한 것만 <strong className="text-[var(--text)]">원문 출처와 함께</strong> 정리합니다.
+            </p>
+            <p>
+              저도 물려도 보고, 손절도 합니다. 그래서 &ldquo;사라&rdquo;고 하지 않습니다.
+              대신 <strong className="text-[var(--text)]">&ldquo;오늘 이게 왜 도는지&rdquo;</strong>를 정리합니다.
+              자리는 보여드리되, 들어갈지 말지는 본인의 기준입니다.
+            </p>
+            <p>
+              모든 카드는 헤드라인이 아니라 직접 쓴 요약이고, &ldquo;출처 가기&rdquo;
+              버튼으로 원문을 그대로 확인할 수 있습니다. 가공된 정보가 아니라,
+              검증할 수 있는 정보를 지향합니다.
+            </p>
+          </div>
+        </section>
+
         <section>
           <div className="mono text-[10px] uppercase tracking-[0.3em] text-[var(--text-caption)] mb-8 text-center">
             Three Principles
@@ -76,6 +103,8 @@ export default function PhilosophyPage() {
             — 마이클 마커스
           </p>
         </section>
+
+        <TelegramCTA variant="banner" />
       </div>
     </>
   );
