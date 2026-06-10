@@ -63,6 +63,33 @@ async function enrichWithSummaryAndImages(
     }));
 }
 
+/**
+ * 헤드라인을 정규화한 키. [속보]·(…) 같은 장식과 공백·기호를 제거해
+ * 다른 매체가 같은 사건을 보도한 경우(다른 URL)도 같은 키로 묶이게 한다.
+ */
+function titleKey(headline: string): string {
+  return headline
+    .replace(/\[[^\]]*\]/gu, "")
+    .replace(/\([^)]*\)/gu, "")
+    .replace(/[^\p{L}\p{N}]/gu, "")
+    .toLowerCase()
+    .slice(0, 14);
+}
+
+/** URL 완전일치 + 헤드라인 정규화 키, 두 기준으로 중복 제거. */
+function dedupeByUrlAndTitle(items: UnifiedNewsItem[]): UnifiedNewsItem[] {
+  const seenUrl = new Set<string>();
+  const seenTitle = new Set<string>();
+  return items.filter((item) => {
+    const tk = titleKey(item.headline);
+    if (seenUrl.has(item.sourceUrl)) return false;
+    if (tk.length >= 6 && seenTitle.has(tk)) return false;
+    seenUrl.add(item.sourceUrl);
+    if (tk.length >= 6) seenTitle.add(tk);
+    return true;
+  });
+}
+
 export interface UnifiedNewsItem {
   id: string;
   date: string;
@@ -147,13 +174,7 @@ export async function getNewsByKeywordUnified(
   const rssUnified = rssMatched.map((r) => rssToUnified(r, keywordLabel));
 
   const all = [...mockMatches, ...naverUnified, ...rssUnified];
-  const seen = new Set<string>();
-  const deduped = all.filter((item) => {
-    const key = item.sourceUrl;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  const deduped = dedupeByUrlAndTitle(all);
 
   const filtered = applyFilters(deduped);
   return enrichWithSummaryAndImages(filtered, 12);
@@ -201,13 +222,7 @@ export async function getRecentNewsUnified(
   }
 
   const all = [...supabaseUnified, ...mockUnified, ...naverUnified, ...rssUnified];
-  const seen = new Set<string>();
-  const deduped = all.filter((item) => {
-    const key = item.sourceUrl;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  const deduped = dedupeByUrlAndTitle(all);
 
   const filtered = applyFilters(deduped).slice(0, limit);
   return enrichWithSummaryAndImages(filtered, limit);
