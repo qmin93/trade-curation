@@ -19,6 +19,26 @@ function gradientForSource(source: string): string {
   return sourceGradient[key] ?? sourceGradient.default;
 }
 
+/** 게시 시각을 한국시간 "MM-DD HH:mm"로. 시각 정보 없으면 날짜만. */
+function formatStamp(news: UnifiedNewsItem): string {
+  if (news.publishedAt) {
+    const d = new Date(news.publishedAt);
+    if (!isNaN(d.getTime())) {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Seoul",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).formatToParts(d);
+      const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+      return `${get("month")}-${get("day")} ${get("hour")}:${get("minute")}`;
+    }
+  }
+  return news.date;
+}
+
 export function HeroNews({ news }: { news: UnifiedNewsItem }) {
   const grad = gradientForSource(news.source);
   return (
@@ -59,10 +79,8 @@ export function HeroNews({ news }: { news: UnifiedNewsItem }) {
           </span>
           <span className="text-white/30">·</span>
           <span className="mono text-[10px] text-white/70 tabular-nums">
-            {news.date}
+            {formatStamp(news)}
           </span>
-          <span className="text-white/30">·</span>
-          <span className="text-[10px] text-white/70">직접 정리</span>
         </div>
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.1] mb-4 max-w-3xl line-clamp-3 group-hover:text-white transition-colors">
           {news.headline}

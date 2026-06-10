@@ -90,6 +90,7 @@ export function normalizeNaverNews(
   sourceUrl: string;
   keywords: string[];
   stocks: string[];
+  publishedAt: string;
 } {
   const cleanTitle = item.title
     .replace(/<[^>]*>/g, "")
@@ -120,5 +121,6 @@ export function normalizeNaverNews(
     sourceUrl: item.originallink || item.link,
     keywords,
     stocks,
+    publishedAt: pubDate.toISOString(),
   };
 }

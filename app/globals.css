@@ -36,39 +36,39 @@
   --hero-glow-red: rgba(239, 68, 68, 0.15);
 }
 
-/* 라이트 — Tesla / Stripe 영감 */
+/* 라이트 (기본) — Linear / Vercel 영감·인디고 액센트 */
 :root[data-theme="light"] {
-  --bg: #ffffff;
-  --bg-elevated: #f8fafc;
-  --bg-subtle: #f1f5f9;
-  --bg-hover: #e2e8f0;
+  --bg: #fbfbfd;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #f4f5f8;
+  --bg-hover: #eceef3;
 
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
+  --border: #e7e8ee;
+  --border-strong: #d3d6e0;
 
-  --text: #0f172a;
-  --text-muted: #475569;
-  --text-caption: #64748b;
+  --text: #14151a;
+  --text-muted: #5b6170;
+  --text-caption: #8b91a1;
 
-  --accent: #2563eb;
-  --accent-glow: rgba(37, 99, 235, 0.25);
-  --accent-dim: rgba(37, 99, 235, 0.08);
+  --accent: #4f46e5;
+  --accent-glow: rgba(79, 70, 229, 0.22);
+  --accent-dim: rgba(79, 70, 229, 0.08);
 
-  --red: #dc2626;
-  --red-glow: rgba(220, 38, 38, 0.18);
-  --green: #059669;
-  --green-glow: rgba(5, 150, 105, 0.18);
-  --amber: #d97706;
-  --amber-glow: rgba(217, 119, 6, 0.18);
+  --red: #e0322f;
+  --red-glow: rgba(224, 50, 47, 0.16);
+  --green: #0ca678;
+  --green-glow: rgba(12, 166, 120, 0.16);
+  --amber: #e8950c;
+  --amber-glow: rgba(232, 149, 12, 0.16);
 
-  --tier1: #dc2626;
-  --tier2: #d97706;
-  --tier3: #2563eb;
-  --tier4: #64748b;
+  --tier1: #e0322f;
+  --tier2: #e8950c;
+  --tier3: #4f46e5;
+  --tier4: #8b91a1;
 
-  --noise-opacity: 0.015;
-  --hero-glow-blue: rgba(37, 99, 235, 0.1);
-  --hero-glow-red: rgba(220, 38, 38, 0.06);
+  --noise-opacity: 0.01;
+  --hero-glow-blue: rgba(79, 70, 229, 0.1);
+  --hero-glow-red: rgba(224, 50, 47, 0.06);
 }
 
 @theme inline {
@@ -190,7 +190,7 @@ a {
 }
 
 :root[data-theme="light"] .gradient-text {
-  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #8b5cf6 100%);
   -webkit-background-clip: text;
   background-clip: text;
 }

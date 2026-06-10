@@ -54,13 +54,20 @@ async function enrichWithSummaryAndImages(
     5,
   );
 
+  // 같은 og:image가 여러 카드에 반복되지 않도록 — 먼저 쓰인 카드만 이미지 유지, 이후 중복은 플레이스홀더 처리
+  const usedImages = new Set<string>();
   return items
     .filter((n) => !dropUrls.has(n.sourceUrl))
-    .map((n) => ({
-      ...n,
-      summary: summaryMap.get(n.sourceUrl) ?? n.summary,
-      imageUrl: imageMap.get(n.sourceUrl) ?? null,
-    }));
+    .map((n) => {
+      let img = imageMap.get(n.sourceUrl) ?? n.imageUrl ?? null;
+      if (img && usedImages.has(img)) img = null;
+      if (img) usedImages.add(img);
+      return {
+        ...n,
+        summary: summaryMap.get(n.sourceUrl) ?? n.summary,
+        imageUrl: img,
+      };
+    });
 }
 
 /**
@@ -115,6 +122,8 @@ export interface UnifiedNewsItem {
   stocks: string[];
   origin: "mock" | "naver" | "rss";
   imageUrl?: string | null;
+  /** 기사 게시 시각 (ISO). naver/rss는 pubDate에서 채움. mock은 보통 날짜만. */
+  publishedAt?: string | null;
 }
 
 function newsMockToUnified(n: NewsItem): UnifiedNewsItem {
@@ -158,6 +167,7 @@ function rssToUnified(r: RssItem, keyword: string): UnifiedNewsItem {
     keywords: [keyword],
     stocks: [],
     origin: "rss",
+    publishedAt: r.pubDate ? pubDate.toISOString() : null,
   };
 }
 

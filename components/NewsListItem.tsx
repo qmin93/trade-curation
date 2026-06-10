@@ -22,6 +22,26 @@ function tintForSource(source: string): string {
   return sourceTint[key] ?? sourceTint.default;
 }
 
+/** 게시 시각을 한국시간 "MM-DD HH:mm"로. 시각 정보 없으면 날짜만 "MM-DD". */
+function formatStamp(news: UnifiedNewsItem): string {
+  if (news.publishedAt) {
+    const d = new Date(news.publishedAt);
+    if (!isNaN(d.getTime())) {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Seoul",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).formatToParts(d);
+      const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+      return `${get("month")}-${get("day")} ${get("hour")}:${get("minute")}`;
+    }
+  }
+  return news.date.slice(5);
+}
+
 export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
   const [open, setOpen] = useState(false);
 
@@ -59,18 +79,14 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1.5 text-[10px] mono uppercase tracking-widest">
             <span className={tintForSource(news.source)}>{news.source}</span>
-            <span className="text-[var(--text-caption)]">·</span>
-            <span className="text-[var(--text-caption)] tabular-nums">
-              {news.date.slice(5)}
-            </span>
             {news.keywords[0] && (
               <>
                 <span className="text-[var(--text-caption)]">·</span>
                 <span className="text-[var(--text-muted)]">#{news.keywords[0]}</span>
               </>
             )}
-            <span className="ml-auto normal-case tracking-normal text-[var(--text-caption)]">
-              직접 정리
+            <span className="ml-auto tabular-nums text-[var(--text-caption)]">
+              {formatStamp(news)}
             </span>
           </div>
           <h3 className="text-base md:text-lg font-semibold text-[var(--text)] leading-snug group-hover:text-[var(--accent)] transition-colors line-clamp-2">
