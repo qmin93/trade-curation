@@ -7,7 +7,6 @@ import { ThemeToggle } from "./ThemeToggle";
 const TOP_NAV = [
   { href: "/alerts", label: "호재" },
   { href: "/calendar", label: "캘린더" },
-  { href: "/backtest", label: "백테스트" },
   { href: "/results", label: "결과" },
   { href: "/philosophy", label: "철학" },
 ];

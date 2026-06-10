@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { TickerBar } from "@/components/TickerBar";
-import { ChatBot } from "@/components/ChatBot";
 import { TELEGRAM_INVITE_URL } from "@/lib/site";
 
 const SITE_URL =
@@ -69,7 +68,6 @@ export default function RootLayout({
         <TickerBar />
         <Header />
         <main className="flex-1 max-w-full">{children}</main>
-        <ChatBot />
         <footer className="border-t border-[var(--border)] bg-[var(--bg-elevated)]">
           <div className="max-w-[1400px] mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">

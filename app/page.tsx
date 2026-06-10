@@ -7,6 +7,7 @@ import { HeroNews } from "@/components/HeroNews";
 import { NewsListItem } from "@/components/NewsListItem";
 import { KeywordChip } from "@/components/KeywordChip";
 import { TelegramCTA } from "@/components/TelegramCTA";
+import { PickSpotlight } from "@/components/PickSpotlight";
 
 export const revalidate = 600;
 
@@ -15,6 +16,9 @@ export default async function Home() {
   const [hero, ...rest] = news;
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-6">
+      {/* 오늘의 픽 스포트라이트 */}
+      <PickSpotlight />
+
       {/* Headline strip */}
       <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
