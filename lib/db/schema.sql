@@ -52,11 +52,31 @@ select
 from public.pick_results
 group by to_char(date, 'YYYY-MM');
 
+-- 3.5. 호재 알림 테이블
+create table if not exists public.alerts (
+  id text primary key,
+  time text not null,
+  ticker text,
+  stock_name text,
+  type text not null,
+  message text not null,
+  source text not null,
+  source_url text not null,
+  severity int not null default 2,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists alerts_created_idx on public.alerts(created_at desc);
+
 -- 4. RLS (모든 사용자 읽기 가능·쓰기는 service_role만)
 alter table public.news enable row level security;
 alter table public.pick_results enable row level security;
+alter table public.alerts enable row level security;
 
 create policy "Public read news" on public.news
+  for select using (true);
+
+create policy "Public read alerts" on public.alerts
   for select using (true);
 
 create policy "Public read picks" on public.pick_results
