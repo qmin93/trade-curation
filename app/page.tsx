@@ -1,93 +1,78 @@
 import { KEYWORDS } from "@/lib/keywords";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
-import { THEMES } from "@/lib/themes";
-import { TOP_VOLUME, TOP_GAINERS } from "@/lib/market-snapshot";
 import { getDailyQuote } from "@/lib/quotes";
 import { IndexBoard } from "@/components/dashboard/IndexBoard";
-import { InvestorFlowCard } from "@/components/dashboard/InvestorFlow";
-import { SectorHeatmap } from "@/components/dashboard/SectorHeatmap";
-import { RankingList } from "@/components/dashboard/RankingList";
-import { HighLowCard } from "@/components/dashboard/HighLowCard";
-import { PremarketCard } from "@/components/dashboard/PremarketCard";
-import { CompactNewsList } from "@/components/dashboard/CompactNewsList";
 import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
 import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
-import { PerformanceStrip } from "@/components/dashboard/PerformanceStrip";
+import { NewsCard } from "@/components/NewsCard";
 import { KeywordChip } from "@/components/KeywordChip";
-import Link from "next/link";
 
 export const revalidate = 1800;
 
 export default async function Home() {
-  const recentNews = await getRecentNewsUnified(10);
+  const recentNews = await getRecentNewsUnified(20);
   const quote = getDailyQuote();
   return (
-    <div className="max-w-[1600px] mx-auto px-3 py-3 space-y-3">
-      {/* Headline strip */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-1">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-[var(--text)]">
-            근거 분명한 자리만.
-          </h1>
-          <p className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] mt-0.5">
-            "{quote.text}" — {quote.attribution}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
+    <div className="max-w-[1280px] mx-auto px-4 py-6">
+      {/* Slim headline */}
+      <div className="mb-6 pb-4 border-b border-[var(--border)]">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--text)] mb-1">
+          근거 분명한 자리만.
+        </h1>
+        <p className="text-xs text-[var(--text-caption)] italic">
+          "{quote.text}" — {quote.attribution}
+        </p>
+        <div className="mt-4 flex flex-wrap gap-1.5">
           {KEYWORDS.map((k) => (
             <KeywordChip key={k.slug} keyword={k} />
           ))}
         </div>
       </div>
 
-      {/* Performance strip */}
-      <PerformanceStrip />
+      {/* News-first 2 column */}
+      <div className="grid lg:grid-cols-[1fr_320px] gap-6">
+        {/* News feed — main */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="mono text-[10px] uppercase tracking-[0.3em] text-[var(--text-caption)] mb-1">
+                News Feed
+              </div>
+              <h2 className="text-xl font-bold text-[var(--text)]">
+                최신 뉴스
+              </h2>
+            </div>
+            <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
+              live
+            </span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {recentNews.map((n) => (
+              <NewsCard
+                key={n.id}
+                news={{
+                  id: n.id,
+                  date: n.date,
+                  headline: n.headline,
+                  summary: n.summary,
+                  source: n.source,
+                  sourceUrl: n.sourceUrl,
+                  keywords: n.keywords,
+                  stocks: n.stocks,
+                  personaComments: {},
+                }}
+              />
+            ))}
+          </div>
+        </section>
 
-      {/* Row 1 — Market overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        <IndexBoard />
-        <InvestorFlowCard />
-        <PremarketCard />
-        <HighLowCard />
-      </div>
-
-      {/* Row 2 — Rankings + Sectors */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <RankingList title="Top Gainers" items={TOP_GAINERS} />
-        <RankingList
-          title="Top Volume"
-          items={TOP_VOLUME.slice(0, 6)}
-          showVolume
-        />
-        <SectorHeatmap />
-      </div>
-
-      {/* Row 3 — Live streams */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <CompactAlerts limit={6} />
-        <CompactNewsList items={recentNews} />
-        <CompactCalendar />
-      </div>
-
-      {/* Themes strip */}
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
-        <div className="mono text-[9px] uppercase tracking-widest text-[var(--text-caption)] mb-2 flex items-center justify-between">
-          <span>Themes</span>
-          <Link href="/keyword/hynix" className="hover:text-[var(--accent)]">
-            Keywords ↗
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-1.5">
-          {THEMES.map((t) => (
-            <Link
-              key={t.slug}
-              href={`/theme/${t.slug}`}
-              className="rounded px-2 py-1.5 bg-[var(--bg-subtle)] border border-[var(--border)] hover:border-[var(--accent)]/50 text-[11px] font-semibold text-[var(--text)] text-center transition-colors truncate"
-            >
-              {t.label}
-            </Link>
-          ))}
-        </div>
+        {/* Sidebar */}
+        <aside className="space-y-3 lg:sticky lg:top-24 lg:self-start">
+          <IndexBoard />
+          <CompactAlerts limit={5} />
+          <CompactCalendar />
+        </aside>
       </div>
     </div>
   );
