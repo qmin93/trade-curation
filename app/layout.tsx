@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { TickerBar } from "@/components/TickerBar";
+import { ChatBot } from "@/components/ChatBot";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
@@ -67,6 +68,7 @@ export default function RootLayout({
         <TickerBar />
         <Header />
         <main className="flex-1">{children}</main>
+        <ChatBot />
         <footer className="border-t border-[var(--border)] bg-[var(--bg-elevated)]">
           <div className="max-w-[1400px] mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">

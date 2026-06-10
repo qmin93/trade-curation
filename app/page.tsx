@@ -11,6 +11,9 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { StockCard } from "@/components/StockCard";
 import { ResultCard } from "@/components/ResultCard";
 import { PerformanceStats } from "@/components/PerformanceStats";
+import { AlertFeed } from "@/components/AlertFeed";
+import { TradingCalendar } from "@/components/TradingCalendar";
+import { BacktestChart } from "@/components/BacktestChart";
 import Link from "next/link";
 
 export const revalidate = 1800;
@@ -24,6 +27,11 @@ export default async function Home() {
       <HeroSection />
 
       <div className="max-w-[1400px] mx-auto px-4 py-12 space-y-16">
+        <section className="grid lg:grid-cols-[1fr_360px] gap-6">
+          <AlertFeed limit={6} />
+          <TradingCalendar />
+        </section>
+
         <section>
           <SectionHeader
             label="01 · Performance"
@@ -43,7 +51,17 @@ export default async function Home() {
 
         <section>
           <SectionHeader
-            label="02 · Top Movers"
+            label="02 · Backtest"
+            title="과거 픽 검증"
+            href="/backtest"
+            hrefLabel="상세"
+          />
+          <BacktestChart />
+        </section>
+
+        <section>
+          <SectionHeader
+            label="03 · Top Movers"
             title="오늘의 시초 변동률 TOP"
             href="/keyword/kospi"
             hrefLabel="시장 전체"
@@ -57,7 +75,7 @@ export default async function Home() {
 
         <section>
           <SectionHeader
-            label="03 · Hot Keywords"
+            label="04 · Hot Keywords"
             title="오늘의 핫 키워드"
             href="/keyword/hynix"
             hrefLabel="전체"
@@ -67,7 +85,7 @@ export default async function Home() {
 
         <section className="grid lg:grid-cols-[1fr_360px] gap-8">
           <div>
-            <SectionHeader label="04 · News Feed" title="최신 뉴스" />
+            <SectionHeader label="05 · News Feed" title="최신 뉴스" />
             <div className="grid sm:grid-cols-2 gap-4">
               {recentNews.map((n) => (
                 <NewsCard
@@ -89,7 +107,7 @@ export default async function Home() {
           </div>
           <aside>
             <SectionHeader
-              label="05 · Calendar"
+              label="06 · Macro"
               title="6월 트래픽 이벤트"
             />
             <EventTimeline />
@@ -98,7 +116,7 @@ export default async function Home() {
 
         <section>
           <SectionHeader
-            label="06 · Themes"
+            label="07 · Themes"
             title="단타 테마 라인업"
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">

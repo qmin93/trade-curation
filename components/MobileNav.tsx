@@ -4,7 +4,18 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Keyword } from "@/lib/keywords";
 
-export function MobileNav({ keywords }: { keywords: Keyword[] }) {
+interface ExtraLink {
+  href: string;
+  label: string;
+}
+
+export function MobileNav({
+  keywords,
+  extras = [],
+}: {
+  keywords: Keyword[];
+  extras?: ExtraLink[];
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,10 +38,30 @@ export function MobileNav({ keywords }: { keywords: Keyword[] }) {
 
       {open && (
         <div
-          className="md:hidden fixed inset-0 top-[88px] bg-[var(--bg)]/95 backdrop-blur-sm z-40"
+          className="md:hidden fixed inset-0 top-[88px] bg-[var(--bg)]/95 backdrop-blur-sm z-40 overflow-y-auto"
           onClick={() => setOpen(false)}
         >
           <nav className="flex flex-col p-4 gap-2">
+            {extras.length > 0 && (
+              <>
+                <div className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] mt-2 mb-1">
+                  Pages
+                </div>
+                {extras.map((n) => (
+                  <Link
+                    key={n.href}
+                    href={n.href}
+                    className="px-4 py-3 rounded-md bg-[var(--bg-elevated)] border border-[var(--border)] text-base font-medium hover:border-[var(--accent)]/50 transition-colors"
+                    onClick={() => setOpen(false)}
+                  >
+                    {n.label}
+                  </Link>
+                ))}
+              </>
+            )}
+            <div className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] mt-4 mb-1">
+              Keywords
+            </div>
             {keywords.map((k) => (
               <Link
                 key={k.slug}

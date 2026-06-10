@@ -1,8 +1,15 @@
 import Link from "next/link";
 import { getHotKeywords } from "@/lib/keywords";
-import { SearchInput } from "./SearchInput";
+import { GlobalSearch } from "./GlobalSearch";
 import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "./ThemeToggle";
+
+const TOP_NAV = [
+  { href: "/alerts", label: "호재" },
+  { href: "/calendar", label: "캘린더" },
+  { href: "/backtest", label: "백테스트" },
+  { href: "/results", label: "결과" },
+];
 
 export function Header() {
   const hot = getHotKeywords();
@@ -23,26 +30,20 @@ export function Header() {
           </div>
         </Link>
 
-        <nav className="hidden md:flex gap-1 text-sm shrink-0">
-          {hot.map((k) => (
+        <nav className="hidden lg:flex gap-1 text-sm shrink-0">
+          {TOP_NAV.map((n) => (
             <Link
-              key={k.slug}
-              href={`/keyword/${k.slug}`}
+              key={n.href}
+              href={n.href}
               className="px-3 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-elevated)] transition-colors"
             >
-              {k.label}
+              {n.label}
             </Link>
           ))}
-          <Link
-            href="/results"
-            className="px-3 py-1.5 rounded-md text-[var(--accent)] hover:bg-[var(--bg-elevated)] transition-colors font-medium"
-          >
-            Results
-          </Link>
         </nav>
 
         <div className="hidden md:block flex-1 max-w-sm">
-          <SearchInput />
+          <GlobalSearch />
         </div>
 
         <div className="hidden md:flex items-center gap-3 shrink-0">
@@ -55,7 +56,7 @@ export function Header() {
 
         <div className="md:hidden flex items-center gap-2">
           <ThemeToggle />
-          <MobileNav keywords={hot} />
+          <MobileNav keywords={hot} extras={TOP_NAV} />
         </div>
       </div>
     </header>
