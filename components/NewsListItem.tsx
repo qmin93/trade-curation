@@ -25,29 +25,49 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
       href={news.sourceUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block py-4 border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--bg-elevated)] -mx-3 px-3 rounded-md transition-colors"
+      className="group block py-4 border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--bg-elevated)] -mx-3 px-3 rounded-md transition-all"
     >
-      <div className="flex items-center gap-2 mb-1.5 text-[10px] mono uppercase tracking-widest">
-        <span className={tintForSource(news.source)}>{news.source}</span>
-        <span className="text-[var(--text-caption)]">·</span>
-        <span className="text-[var(--text-caption)] tabular-nums">
-          {news.date.slice(5)}
-        </span>
-        {news.keywords[0] && (
-          <>
-            <span className="text-[var(--text-caption)]">·</span>
-            <span className="text-[var(--text-muted)]">#{news.keywords[0]}</span>
-          </>
+      <div className="flex gap-4 items-start">
+        {news.imageUrl ? (
+          <div className="w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-md overflow-hidden bg-[var(--bg-subtle)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={news.imageUrl}
+              alt=""
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          </div>
+        ) : (
+          <div className="w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-md bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-subtle)] border border-[var(--border)] flex items-center justify-center">
+            <span className={`mono text-[10px] uppercase tracking-widest ${tintForSource(news.source)}`}>
+              {news.source}
+            </span>
+          </div>
         )}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 mb-1.5 text-[10px] mono uppercase tracking-widest">
+            <span className={tintForSource(news.source)}>{news.source}</span>
+            <span className="text-[var(--text-caption)]">·</span>
+            <span className="text-[var(--text-caption)] tabular-nums">
+              {news.date.slice(5)}
+            </span>
+            {news.keywords[0] && (
+              <>
+                <span className="text-[var(--text-caption)]">·</span>
+                <span className="text-[var(--text-muted)]">#{news.keywords[0]}</span>
+              </>
+            )}
+          </div>
+          <h3 className="text-base md:text-lg font-semibold text-[var(--text)] leading-snug group-hover:text-[var(--accent)] transition-colors line-clamp-2">
+            {news.headline}
+          </h3>
+          {news.summary && (
+            <p className="text-sm text-[var(--text-muted)] mt-1.5 line-clamp-2 leading-relaxed">
+              {news.summary}
+            </p>
+          )}
+        </div>
       </div>
-      <h3 className="text-base md:text-lg font-semibold text-[var(--text)] leading-snug group-hover:text-[var(--accent)] transition-colors line-clamp-2">
-        {news.headline}
-      </h3>
-      {news.summary && (
-        <p className="text-sm text-[var(--text-muted)] mt-1.5 line-clamp-2 leading-relaxed">
-          {news.summary}
-        </p>
-      )}
     </a>
   );
 }

@@ -20,6 +20,43 @@ import {
   fetchRecentNews as fetchSupabaseRecent,
   type NewsRow,
 } from "./supabase";
+import { summarizeBatch } from "./claude-summarize";
+import { getOgImagesBatch } from "./og-image";
+
+async function enrichWithSummaryAndImages(
+  items: UnifiedNewsItem[],
+  enrichLimit = 12,
+): Promise<UnifiedNewsItem[]> {
+  if (items.length === 0) return items;
+
+  const toEnrich = items.slice(0, enrichLimit);
+
+  const claudeEligible = toEnrich.filter(
+    (n) => n.origin !== "mock" && n.summary.length > 0,
+  );
+  const summaryMap = await summarizeBatch(
+    claudeEligible.map((n) => ({
+      sourceUrl: n.sourceUrl,
+      headline: n.headline,
+      description: n.summary,
+    })),
+    3,
+  );
+
+  const imageMap = await getOgImagesBatch(
+    toEnrich.map((n) => n.sourceUrl),
+    5,
+  );
+
+  return items.map((n, i) => {
+    if (i >= enrichLimit) return n;
+    return {
+      ...n,
+      summary: summaryMap.get(n.sourceUrl) ?? n.summary,
+      imageUrl: imageMap.get(n.sourceUrl) ?? null,
+    };
+  });
+}
 
 export interface UnifiedNewsItem {
   id: string;
@@ -31,6 +68,7 @@ export interface UnifiedNewsItem {
   keywords: string[];
   stocks: string[];
   origin: "mock" | "naver" | "rss";
+  imageUrl?: string | null;
 }
 
 function newsMockToUnified(n: NewsItem): UnifiedNewsItem {
@@ -112,7 +150,8 @@ export async function getNewsByKeywordUnified(
     return true;
   });
 
-  return applyFilters(deduped);
+  const filtered = applyFilters(deduped);
+  return enrichWithSummaryAndImages(filtered, 12);
 }
 
 export async function getRecentNewsUnified(
@@ -165,5 +204,6 @@ export async function getRecentNewsUnified(
     return true;
   });
 
-  return applyFilters(deduped).slice(0, limit);
+  const filtered = applyFilters(deduped).slice(0, limit);
+  return enrichWithSummaryAndImages(filtered, limit);
 }

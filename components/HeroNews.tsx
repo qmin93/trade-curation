@@ -28,36 +28,52 @@ export function HeroNews({ news }: { news: UnifiedNewsItem }) {
       rel="noopener noreferrer"
       className="group block relative overflow-hidden rounded-2xl border border-[var(--border)] aspect-[16/9] md:aspect-[21/9]"
     >
-      <div className={`absolute inset-0 bg-gradient-to-br ${grad}`} />
+      {news.imageUrl ? (
+        <>
+          <div className="absolute inset-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={news.imageUrl}
+              alt=""
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/20" />
+        </>
+      ) : (
+        <>
+          <div className={`absolute inset-0 bg-gradient-to-br ${grad}`} />
+          <div
+            className="absolute inset-0 opacity-40 pointer-events-none"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 50%)",
+            }}
+          />
+        </>
+      )}
       <div className="absolute inset-0 noise-bg pointer-events-none" />
-      <div
-        className="absolute inset-0 opacity-40 pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 50%)",
-        }}
-      />
       <div className="relative h-full flex flex-col justify-end p-6 md:p-10">
         <div className="flex items-center gap-3 mb-4">
-          <span className="mono text-[10px] uppercase tracking-[0.3em] text-white/70">
+          <span className="mono text-[10px] uppercase tracking-[0.3em] text-white/80">
             Featured
           </span>
           <span className="text-white/30">·</span>
-          <span className="mono text-[10px] uppercase tracking-widest text-white/70">
+          <span className="mono text-[10px] uppercase tracking-widest text-white/80">
             {news.source}
           </span>
           <span className="text-white/30">·</span>
-          <span className="mono text-[10px] text-white/60 tabular-nums">
+          <span className="mono text-[10px] text-white/70 tabular-nums">
             {news.date}
           </span>
         </div>
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.1] mb-4 max-w-3xl line-clamp-3 group-hover:text-white transition-colors">
           {news.headline}
         </h2>
-        <p className="text-sm md:text-base text-white/80 leading-relaxed max-w-2xl line-clamp-2 mb-5">
+        <p className="text-sm md:text-base text-white/85 leading-relaxed max-w-2xl line-clamp-2 mb-5">
           {news.summary}
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="inline-flex items-center gap-2 mono text-[11px] uppercase tracking-widest text-white font-semibold">
             Read article
             <span className="transition-transform group-hover:translate-x-1">
@@ -67,7 +83,7 @@ export function HeroNews({ news }: { news: UnifiedNewsItem }) {
           {news.keywords.slice(0, 3).map((k) => (
             <span
               key={k}
-              className="ml-2 text-[10px] mono px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/20"
+              className="ml-2 text-[10px] mono px-2 py-0.5 rounded-full bg-white/15 text-white/90 border border-white/25 backdrop-blur-sm"
             >
               #{k}
             </span>
