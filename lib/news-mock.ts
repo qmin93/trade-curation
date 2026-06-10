@@ -13,7 +13,55 @@ export interface NewsItem {
 }
 
 export const NEWS_MOCK: NewsItem[] = [
-  // ── FastStockNews 발굴 → 원본 기사 출처 + 직접 요약 (2026-06-10) ──
+  // ── 발굴 채널(FastStockNews·여의도스토리·타자 등) → 원본 기사 출처 + 직접 요약 (2026-06-10) ──
+  {
+    id: "20260610-alchera-physicalai",
+    date: "2026-06-10",
+    headline: "알체라, 340억 '피지컬 AI' 국책과제 참여…LG전자 주관 컨소시엄",
+    summary:
+      "알체라가 총 340억원 규모의 '피지컬 AI 선도기술개발' 국책 컨소시엄에 참여한다고 밝혔습니다(2026.5~2027.12). LG전자가 주관하고 마음AI·로보티즈·KT·KAIST·서울대 등 10개 산학연이 함께하는데, 알체라는 피지컬 AI 데이터 수집·정제·품질검증 등 데이터 파이프라인 공급을 맡습니다. 휴머노이드·로봇 파운데이션 모델(RFM) 테마에서 데이터 쪽 수혜 라인으로 봅니다.",
+    source: "v.daum.net",
+    sourceUrl: "https://v.daum.net/v/20260610113443576",
+    keywords: ["알체라", "피지컬AI", "로봇", "LG전자"],
+    stocks: ["알체라", "LG전자"],
+    personaComments: {},
+  },
+  {
+    id: "20260610-samsung-foundry",
+    date: "2026-06-10",
+    headline: "TSMC 병목에 삼성 파운드리 반사수혜…구글, 인텔에 TPU 300만개 위탁",
+    summary:
+      "TSMC가 1분기 파운드리 점유율 73%로 압도적이지만 빅테크 AI칩 주문 폭증에 캐파가 한계에 달했습니다. 구글이 자체 TPU의 2027~2028년 예상 물량 600만개 중 300만개 이상을 인텔에 맡기기로 하면서, 2위 삼성전자(점유율 7%)에도 낙수 기대가 붙었습니다. 삼성은 엔비디아 자율주행·그록 칩 협력에 미국 테일러 2나노 양산을 앞두고 있어 파운드리 부문 3분기 흑자전환 가능성이 거론됩니다.",
+    source: "heraldcorp.com",
+    sourceUrl: "https://biz.heraldcorp.com/article/10768088",
+    keywords: ["삼성전자", "파운드리", "TSMC", "AI"],
+    stocks: ["삼성전자"],
+    personaComments: {},
+  },
+  {
+    id: "20260610-hwashin-robot",
+    date: "2026-06-10",
+    headline: "화신정공, 보스턴다이나믹스 휴머노이드 공급망 기대에 상한가",
+    summary:
+      "현대차그룹 계열 보스턴다이나믹스가 국내 협력사 휴머노이드 부품 공급망 점검에 나선 가운데, 엔지니어들이 지난 5일 현대차 협력사 화신정공(경북 영천)을 비공개 방문한 사실이 알려지며 8일 상한가(+29.95%·2,625원)를 찍었습니다. 아틀라스 로봇 부품 공급망 편입 기대가 주가에 반영된 것으로, 휴머노이드 테마 단타 라인입니다. 다만 아직 계약이 아닌 '방문·점검' 단계라 재료 확정 전 변동성에는 유의할 자리로 봅니다.",
+    source: "newspim.com",
+    sourceUrl: "https://www.newspim.com/news/view/20260608000306",
+    keywords: ["화신정공", "보스턴다이나믹스", "휴머노이드", "로봇"],
+    stocks: ["화신정공"],
+    personaComments: {},
+  },
+  {
+    id: "20260610-saltware-claude",
+    date: "2026-06-10",
+    headline: "앤트로픽, 국내 '클로드' 리셀러 6곳 선정…솔트웨어 등 수혜",
+    summary:
+      "앤트로픽이 지난해 말 국내 클로드 리셀러 파트너 6곳을 선정한 사실이 확인됐습니다. LG CNS·삼성SDS·엔디에스·솔트웨어 등이 포함됐는데, 국가별 쿼터 할당 + 글로벌 본사가 사업 파이프라인을 직접 검증하는 방식으로 뽑혔습니다. 클로드 국내 상륙 본격화 기대에 솔트웨어 등 관련주가 강세를 보인 흐름으로, 앤트로픽·클로드 테마 단타 라인입니다.",
+    source: "ddaily.co.kr",
+    sourceUrl: "https://www.ddaily.co.kr/page/view/2026060907463571946",
+    keywords: ["솔트웨어", "앤트로픽", "클로드", "AI"],
+    stocks: ["솔트웨어", "삼성SDS"],
+    personaComments: {},
+  },
   {
     id: "20260610-spire-spacex",
     date: "2026-06-10",
