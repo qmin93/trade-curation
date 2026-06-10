@@ -26,6 +26,26 @@ export const KOREAN_FINANCE_RSS: RssFeed[] = [
     url: "https://www.hankyung.com/feed/economy",
     category: "경제",
   },
+  {
+    source: "머니투데이",
+    url: "http://rss.mt.co.kr/mt_news.xml",
+    category: "단타·증권",
+  },
+  {
+    source: "이투데이",
+    url: "https://www.etoday.co.kr/rss/news.xml",
+    category: "단타·종목",
+  },
+  {
+    source: "디일렉",
+    url: "https://www.thelec.kr/rss/allArticle.xml",
+    category: "반도체·단타",
+  },
+  {
+    source: "인포스탁",
+    url: "https://news.infostock.co.kr/rss/allArticle.xml",
+    category: "단타 전문",
+  },
 ];
 
 export interface RssItem {

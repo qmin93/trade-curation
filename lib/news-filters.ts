@@ -71,6 +71,32 @@ function getSourcePriority(source: string): number {
   return SOURCE_PRIORITY[key] ?? SOURCE_PRIORITY.default;
 }
 
+// 단타 적합 키워드 (제목·요약 매칭 시 부스트)
+const BOOST_KEYWORDS = [
+  "상한가", "급등", "신고가", "단발", "시초가", "갭", "매수 사이드카",
+  "서킷브레이커", "다중 신호", "세력 매집", "거래량 폭증", "외인 매수",
+  "기관 매수", "+30%", "+29%", "+20%", "+15%", "수주", "단독 호재",
+];
+
+const BOOST_PATTERNS = [
+  /\+\d{2}(\.\d+)?%/, // +29.93% 등
+  /\d{1,2}\s*거래일\s*만/, // "5거래일 만에" 등
+  /시초가\s*\+/,
+  /상한가\s*달성/,
+];
+
+function calculateBoost(text: string): number {
+  const lower = text.toLowerCase();
+  let boost = 0;
+  for (const kw of BOOST_KEYWORDS) {
+    if (lower.includes(kw.toLowerCase())) boost += 10;
+  }
+  for (const re of BOOST_PATTERNS) {
+    if (re.test(text)) boost += 15;
+  }
+  return boost;
+}
+
 // B. 최근 N 시간 필터
 const MAX_AGE_HOURS = 48;
 
@@ -112,12 +138,22 @@ export function shouldKeep(item: UnifiedNewsItem): boolean {
 export function applyFilters(items: UnifiedNewsItem[]): UnifiedNewsItem[] {
   const filtered = items.filter(shouldKeep);
 
-  // C. 매체 우선순위 적용 — date 동일 시 우선순위 높은 매체 먼저
-  return filtered.sort((a, b) => {
-    const dateCompare = b.date.localeCompare(a.date);
-    if (dateCompare !== 0) return dateCompare;
-    return getSourcePriority(b.source) - getSourcePriority(a.source);
+  // 점수 계산 — 단타 적합 부스트 + 매체 우선순위
+  const scored = filtered.map((item) => {
+    const text = `${item.headline} ${item.summary}`;
+    const boost = item.origin === "mock" ? 200 : calculateBoost(text);
+    const sourcePriority = getSourcePriority(item.source);
+    return { item, score: boost + sourcePriority };
   });
+
+  // 정렬: 날짜 desc → 점수 desc (같은 날짜면 부스트 + 매체 점수 높은 것 먼저)
+  return scored
+    .sort((a, b) => {
+      const dateCompare = b.item.date.localeCompare(a.item.date);
+      if (dateCompare !== 0) return dateCompare;
+      return b.score - a.score;
+    })
+    .map((s) => s.item);
 }
 
 export const FILTER_INFO = {

@@ -104,3 +104,20 @@ export function getKeywordBySlug(slug: string): Keyword | undefined {
 export function getHotKeywords(): Keyword[] {
   return KEYWORDS.filter((k) => k.tier === 1);
 }
+
+/**
+ * 메인 페이지 fetch 전용 키워드 — 페이지 생성 X·검색 결과 흡수만.
+ * 단타·급등주·국내주식 위주 뉴스 강화용.
+ */
+export const FETCH_KEYWORDS_EXTRA: string[] = [
+  "급등주",
+  "상한가",
+  "신고가",
+  "단타",
+  "시초가",
+  "매수 사이드카",
+  "서킷브레이커",
+  "외국인 순매수",
+  "기관 매수",
+  "거래량 폭증",
+];

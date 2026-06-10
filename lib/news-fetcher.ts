@@ -117,15 +117,26 @@ export async function getNewsByKeywordUnified(
 
 export async function getRecentNewsUnified(
   limit = 10,
-  keywords: string[] = ["하이닉스", "삼성전자", "코스피", "HBM", "연금"],
+  keywords?: string[],
 ): Promise<UnifiedNewsItem[]> {
+  // 기본: 핵심 5 + 단타 강화 키워드 (총 15개)
+  const { FETCH_KEYWORDS_EXTRA } = await import("./keywords");
+  const actualKeywords =
+    keywords ?? [
+      "하이닉스",
+      "삼성전자",
+      "코스피",
+      "HBM",
+      "연금",
+      ...FETCH_KEYWORDS_EXTRA,
+    ];
   const mockUnified = NEWS_MOCK.map(newsMockToUnified);
 
   const supabaseRows = await fetchSupabaseRecent(30);
   const supabaseUnified = supabaseRows.map(supabaseToUnified);
 
   const naverResults = await Promise.all(
-    keywords.map((k) =>
+    actualKeywords.map((k) =>
       searchNaverNews(k, { display: 5, sort: "date" }).then((items) =>
         items.map((item) => {
           const normalized = normalizeNaverNews(item, [k], []);
@@ -139,7 +150,7 @@ export async function getRecentNewsUnified(
   const rssItems = await fetchAllRss();
   const rssUnified: UnifiedNewsItem[] = [];
   for (const item of rssItems) {
-    const matchedKw = keywords.find((k) =>
+    const matchedKw = actualKeywords.find((k) =>
       `${item.title} ${item.description}`.toLowerCase().includes(k.toLowerCase()),
     );
     if (matchedKw) rssUnified.push(rssToUnified(item, matchedKw));
