@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: "claude-3-5-haiku-latest",
         max_tokens: 512,
         system: SYSTEM_PROMPT,
         messages: messages.slice(-8),
