@@ -95,6 +95,32 @@ export const NEWS_MOCK: NewsItem[] = [
     stocks: ["한화세미텍", "SK하이닉스"],
     personaComments: {},
   },
+  {
+    id: "20260610-pharmicell-ccl",
+    date: "2026-06-10",
+    publishedAt: "2026-06-10T18:10:00+09:00",
+    headline: "파미셀, 엔비디아 AI 서버용 CCL 소재 두산에 독점 공급",
+    summary:
+      "파미셀이 엔비디아 AI 서버용 동박적층판(CCL)의 핵심 원재료인 저유전율 레진·경화제를 두산 전자BG를 통해 사실상 독점 공급하고 있습니다. 2026년 1분기 매출은 367억원으로 전년 대비 36% 늘었고, 이 가운데 저유전 전자소재가 260억원(71%)을 차지했습니다. 동일 조성이라도 생산설비가 바뀌면 재인증이 필요해 신규 진입이 어렵고, 울산 제3공장이 2027년 1분기 가동되면 생산능력이 2배로 확대될 예정입니다.",
+    source: "thelec.kr",
+    sourceUrl: "https://www.thelec.kr/news/articleView.html?idxno=57879",
+    keywords: ["파미셀", "엔비디아", "CCL", "AI 데이터센터", "반도체"],
+    stocks: ["파미셀", "두산"],
+    personaComments: {},
+  },
+  {
+    id: "20260610-hooseung-wf6",
+    date: "2026-06-10",
+    publishedAt: "2026-06-10T18:00:00+09:00",
+    headline: "육불화텅스텐 232% 급등…후성·SK스페셜티 계약가 70~90% 인상",
+    summary:
+      "반도체 공정 소재인 육불화텅스텐(WF6) 가격이 지난해 6월 대비 232.7% 급등하고 원재료인 텅스텐 파우더는 1년간 6~7배 올랐습니다. 중국의 전략광물 수출 라이선스제(2025년 2월 시행)와 일본의 추가 통제가 배경입니다. 후성과 SK스페셜티는 삼성전자·SK하이닉스 등 고객사에 올해 계약가를 70~90% 인상하겠다고 통보한 것으로 전해졌습니다. 일본 업체들이 하반기 감산을 예고하면서 국내 대체 공급망의 반사이익이 거론됩니다.",
+    source: "theguru.co.kr",
+    sourceUrl: "https://www.theguru.co.kr/news/article.html?no=102878",
+    keywords: ["후성", "육불화텅스텐", "반도체", "하이닉스", "SK하이닉스"],
+    stocks: ["후성", "SK스페셜티"],
+    personaComments: {},
+  },
   // ── 발굴 채널(FastStockNews·여의도스토리·타자 등) → 원본 기사 출처 + 직접 요약 (2026-06-10) ──
   {
     id: "20260610-alchera-physicalai",
