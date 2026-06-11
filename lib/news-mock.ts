@@ -17,6 +17,45 @@ export interface NewsItem {
 export const NEWS_MOCK: NewsItem[] = [
   // ── 2026-06-11 큐레이션 (원본 기사 직접 읽고 중립 요약) ──
   {
+    id: "20260611-close-market",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T15:40:00+09:00",
+    headline: "코스피 +0.43% 마감·코스닥 +4.76% 급등…반도체 수출이 견인",
+    summary:
+      "6월 11일 코스피는 7,763.95(+0.43%), 코스닥은 996.93(+4.76%)로 마감했습니다. 중동 우려로 약하게 출발했지만 6월 반도체 수출이 사상 최대를 기록하며 반등했습니다. 개인이 2.07조원을 순매수한 반면 외국인(-1.47조)·기관(-7432억)은 순매도했고, 원/달러 환율은 1,528.9원으로 약세였습니다. 주성엔지니어링·원익IPS 등 반도체 장비주가 코스닥 강세를 주도했습니다.",
+    source: "queen.co.kr",
+    sourceUrl: "https://www.queen.co.kr/news/articleView.html?idxno=458458",
+    keywords: ["코스피", "코스닥", "반도체", "환율"],
+    stocks: ["주성엔지니어링", "원익IPS"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-jusung-kosdaq",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T15:30:00+09:00",
+    headline: "주성엔지니어링 +23.6%…코스닥 급등장 반도체 장비 대장",
+    summary:
+      "주성엔지니어링이 6월 11일 +23.6%(24만6000원)로 급등 마감했습니다. 거래량이 585만주로 터지며 코스닥(+4.76%) 급등장의 선봉에 섰습니다. 6월 반도체 수출이 사상 최대를 기록하며 장비·소부장으로 매수가 몰린 흐름으로, 원익IPS(+20.82%) 등 장비주가 동반 강세였습니다.",
+    source: "jeonmae.co.kr",
+    sourceUrl: "https://www.jeonmae.co.kr/news/articleView.html?idxno=1264485",
+    keywords: ["주성엔지니어링", "반도체장비", "코스닥", "반도체"],
+    stocks: ["주성엔지니어링", "원익IPS"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-samsungfire-stake",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T15:30:00+09:00",
+    headline: "삼성화재 +7.6%…보유 삼성전자 지분 가치 부각",
+    summary:
+      "삼성화재가 6월 11일 +7.63%(66만3000원)로 급등해 시총 29.6조원으로 28위까지 올랐습니다. 보험 실적이 아니라 보유 중인 삼성전자 지분 1.4%가 부각된 결과로, 삼성전자의 특별배당 기대와 지분 매각 시 차익이 주주환원으로 이어질 수 있다는 기대가 반영됐습니다.",
+    source: "businesspost.co.kr",
+    sourceUrl: "https://www.businesspost.co.kr/BP?command=article_view&num=439829",
+    keywords: ["삼성화재", "삼성전자", "지분가치", "배당"],
+    stocks: ["삼성화재", "삼성전자"],
+    personaComments: {},
+  },
+  {
     id: "20260611-manicker-worldcup",
     date: "2026-06-11",
     publishedAt: "2026-06-11T11:24:00+09:00",
