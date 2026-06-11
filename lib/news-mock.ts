@@ -17,6 +17,19 @@ export interface NewsItem {
 export const NEWS_MOCK: NewsItem[] = [
   // ── 2026-06-11 큐레이션 (원본 기사 직접 읽고 중립 요약) ──
   {
+    id: "20260611-lsecoenergy-hyundairotem",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T09:00:00+09:00",
+    headline: "LS에코에너지, 현대로템에 철도용 통신케이블 첫 공급",
+    summary:
+      "LS에코에너지의 베트남 생산법인(LSCV)이 현대로템에 철도 차량용 통신 케이블을 공급했습니다. 열차 내 제어장치와 통신 시스템을 연결해 운행 데이터를 전달하는 부품으로, 대전·울산 도시철도 수소트램에 적용될 예정입니다. 회사는 현대로템 공급망에 처음 진입한 사례라는 점을 의미로 꼽았고, 철도용 특수 케이블 사업 확대와 추가 수주 가능성을 기대한다고 밝혔습니다.",
+    source: "daily.hankooki.com",
+    sourceUrl: "https://daily.hankooki.com/news/articleView.html?idxno=1375508",
+    keywords: ["LS에코에너지", "현대로템", "수소트램", "철도"],
+    stocks: ["LS에코에너지", "현대로템"],
+    personaComments: {},
+  },
+  {
     id: "20260611-samsungheavy-flng-fdc",
     date: "2026-06-11",
     publishedAt: "2026-06-11T08:00:00+09:00",
