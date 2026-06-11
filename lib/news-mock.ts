@@ -15,6 +15,46 @@ export interface NewsItem {
 }
 
 export const NEWS_MOCK: NewsItem[] = [
+  // ── 2026-06-11 큐레이션 (원본 기사 직접 읽고 중립 요약) ──
+  {
+    id: "20260611-samsungheavy-flng-fdc",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T08:00:00+09:00",
+    headline: "삼성중공업, 델핀 FLNG 29억 달러 본계약…부유식 데이터센터로 확장",
+    summary:
+      "삼성중공업이 델핀 FLNG 1호기 29억 달러(약 4조3000억원) 본계약을 체결했고, 2·3호기까지 합치면 누적 12조원대 규모가 거론됩니다. 올해 누적 수주는 96억 달러로 연간 목표(139억 달러)의 69%에 도달했습니다. 여기에 50MW급 부유식 데이터센터(FDC)로 미국·영국 선급의 개념설계인증을 받고 수퍼마이크로와 공동개발을 진행하면서, 검증된 FLNG 기술을 AI 데이터센터 사업으로 넓히는 흐름입니다.",
+    source: "ebn.co.kr",
+    sourceUrl: "https://www.ebn.co.kr/news/articleView.html?idxno=1711977",
+    keywords: ["삼성중공업", "FLNG", "부유식데이터센터", "조선"],
+    stocks: ["삼성중공업"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-doosan-gasturbine",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T07:52:00+09:00",
+    headline: "두산에너빌리티, 가스·스팀터빈 수주 확대…키움은 목표가 하향",
+    summary:
+      "두산에너빌리티가 스팀터빈을 3월 초도 2기에 이어 지난달 4기 추가 수주하고 가스터빈 수주 기회도 넓어지면서, 키움증권은 올해 신규 수주액을 전년보다 11% 늘어난 16조3000억원으로 추정하고 가스터빈 수주 가정을 11기에서 16기로 올렸습니다. 데이터센터 온사이트 발전과 한·미 원전 협력, SMR 전력구매계약 체결 시 대규모 기자재 발주 기대가 배경입니다. 다만 키움은 투자의견 매수는 유지하되 목표주가를 15만8000원에서 13만원으로 낮췄습니다.",
+    source: "hankyung.com",
+    sourceUrl: "https://www.hankyung.com/amp/2026061195946",
+    keywords: ["두산에너빌리티", "가스터빈", "SMR", "원전"],
+    stocks: ["두산에너빌리티"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-hanwhasolutions-rightsissue",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T09:00:00+09:00",
+    headline: "한화솔루션, 유상증자 금감원 승인…규모는 7000억 축소",
+    summary:
+      "한화솔루션 유상증자가 금융감독원의 3차 정정 요구를 거쳐 추가 정정 없이 승인됐습니다. 전체 규모는 당초 2조3976억원에서 1조7093억원으로 약 7000억원 줄었고, 특히 채무상환 몫이 1조4899억원에서 8016억원으로 크게 깎였습니다. 시설투자 9077억원은 유지됩니다. 청약은 7월 22~23일, 신주 상장은 8월 11일 예정으로, 불확실성 해소라는 평가와 주식 희석·물량 부담이라는 평가가 함께 나오는 사안입니다.",
+    source: "bizwork.co.kr",
+    sourceUrl: "https://www.bizwork.co.kr/news/articleView.html?idxno=416389",
+    keywords: ["한화솔루션", "유상증자", "태양광"],
+    stocks: ["한화솔루션"],
+    personaComments: {},
+  },
   // ── 발굴 채널(FastStockNews·여의도스토리·타자 등) → 원본 기사 출처 + 직접 요약 (2026-06-10) ──
   {
     id: "20260610-alchera-physicalai",
