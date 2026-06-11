@@ -17,6 +17,45 @@ export interface NewsItem {
 export const NEWS_MOCK: NewsItem[] = [
   // ── 2026-06-11 큐레이션 (원본 기사 직접 읽고 중립 요약) ──
   {
+    id: "20260611-manicker-worldcup",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T11:24:00+09:00",
+    headline: "마니커 상한가…북중미 월드컵 기대에 육계주 강세",
+    summary:
+      "마니커가 6월 11일 오전 가격제한폭(+29.97%·1,340원)까지 올랐습니다. 북중미 월드컵 개막을 앞두고 치킨 소비 증가 기대가 육계주 투자심리를 자극한 것으로, 대표 육계주 하림도 같은 시각 +5.41%(2,925원) 동반 강세였습니다. 마니커는 부화·사육·가공·유통을 수직계열화한 육계 기업입니다. 다만 이벤트성 테마라 개막 전후 변동성에는 유의할 자리로 봅니다.",
+    source: "businesspost.co.kr",
+    sourceUrl: "https://www.businesspost.co.kr/BP?command=article_view&num=439757",
+    keywords: ["마니커", "월드컵", "육계주", "하림"],
+    stocks: ["마니커", "하림"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-skt-aifactory",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T11:11:00+09:00",
+    headline: "SK텔레콤 7%대 급락…젠슨황 'AI 팩토리' 호재 선반영 차익실현",
+    summary:
+      "SK텔레콤이 6월 11일 오전 -7.47%(9만7700원)로 급락했습니다. 젠슨 황 엔비디아 CEO 방한에서 기가와트급 AI 팩토리 파트너십이 발표되고 KB증권이 GPUaaS 사업의 장기 매출 20조·영업익 4조 가능성을 제시했지만, 주가가 6월 5일 장중 13만9500원까지 올랐던 터라 호재 선반영 평가 속 차익실현이 나왔습니다. AI 데이터센터는 2027년 하반기 본격 가동 전망입니다.",
+    source: "choicenews.co.kr",
+    sourceUrl: "http://www.choicenews.co.kr/news/articleView.html?idxno=166445",
+    keywords: ["SK텔레콤", "AI 데이터센터", "엔비디아", "GPUaaS"],
+    stocks: ["SK텔레콤"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-skhynix-overseas",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T12:00:00+09:00",
+    headline: "최태원 '하이닉스, 한국서 안 되면 해외로'…규제 지연 직격",
+    summary:
+      "최태원 SK그룹 회장이 도쿄에서 용인 반도체 클러스터 다음 공장과 관련해 '우리나라에서 안 되면 해외라도 가야 하는 상황 아니냐'고 말했습니다. 용인 클러스터는 2019년 발표됐지만 인허가에만 5년, 수도권 공장 총량제 예외 승인에 2년 넘게 걸렸습니다. 같은 기간 일본은 TSMC에 약 11조원 지원과 부지·전력 풀패키지를, 미국은 환경영향평가 면제를 제공했습니다. 국내 증설 환경에 대한 경고로 읽힙니다.",
+    source: "polinews.co.kr",
+    sourceUrl: "https://www.polinews.co.kr/news/articleView.html?idxno=733778",
+    keywords: ["SK하이닉스", "하이닉스", "반도체", "용인클러스터"],
+    stocks: ["SK하이닉스"],
+    personaComments: {},
+  },
+  {
     id: "20260611-am-market-close",
     date: "2026-06-11",
     publishedAt: "2026-06-11T11:35:00+09:00",
