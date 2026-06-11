@@ -1,0 +1,38 @@
+name: Refresh news cache
+
+# dantatrade.vercel.app 의 /api/refresh 를 주기 호출해 Next.js 캐시를 무효화 →
+# 페이지가 재렌더되며 네이버 검색·RSS 라이브 소스에서 최신 뉴스를 다시 당겨온다.
+# Vercel Hobby 플랜은 cron 이 하루 1회만 허용되므로 10분 주기는 GitHub Actions 로 구동한다.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # 10분마다 (UTC 기준·GitHub 사정상 수 분 지연 가능)
+  workflow_dispatch: {} # 수동 실행 버튼
+
+concurrency:
+  group: refresh-news
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit /api/refresh
+        env:
+          # GitHub repo Settings → Secrets and variables → Actions 에
+          # CRON_SECRET (Vercel 프로덕션 env 와 동일 값) 등록 필요.
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: https://dantatrade.vercel.app
+        run: |
+          echo "Refreshing $SITE_URL/api/refresh ..."
+          code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
+            -X GET "$SITE_URL/api/refresh" \
+            -H "Authorization: Bearer $CRON_SECRET")
+          echo "HTTP $code"
+          cat /tmp/resp.json || true
+          echo
+          # 2xx 가 아니면 실패 처리
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "::error::refresh failed with HTTP $code"
+            exit 1
+          fi
