@@ -25,9 +25,11 @@ export async function GET(request: Request) {
   const originFilter = searchParams.get("origin"); // "live" | "mock" | null
 
   try {
+    // origin 필터가 있으면 더 큰 풀을 받아 필터 후 자른다(슬라이스가 라이브를 먼저 잘라내는 문제 방지).
+    const poolSize = originFilter ? Math.max(limit * 5, 50) : limit;
     const raw = keyword
       ? await getNewsByKeywordUnified(keyword)
-      : await getRecentNewsUnified(limit);
+      : await getRecentNewsUnified(poolSize);
 
     let items = raw;
     if (originFilter === "live") {
@@ -35,6 +37,7 @@ export async function GET(request: Request) {
     } else if (originFilter === "mock") {
       items = raw.filter((n) => n.origin === "mock");
     }
+    items = items.slice(0, limit);
 
     return NextResponse.json({
       count: items.length,
