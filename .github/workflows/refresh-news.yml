@@ -6,7 +6,7 @@ name: Refresh news cache
 
 on:
   schedule:
-    - cron: "*/10 * * * *" # 10분마다 (UTC 기준·GitHub 사정상 수 분 지연 가능)
+    - cron: "*/30 * * * *" # 30분마다 (UTC 기준·GitHub 사정상 수 분 지연 가능)
   workflow_dispatch: {} # 수동 실행 버튼
 
 concurrency:
