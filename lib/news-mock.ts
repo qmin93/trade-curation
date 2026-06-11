@@ -17,6 +17,19 @@ export interface NewsItem {
 export const NEWS_MOCK: NewsItem[] = [
   // ── 2026-06-11 큐레이션 (원본 기사 직접 읽고 중립 요약) ──
   {
+    id: "20260611-am-market-close",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T11:35:00+09:00",
+    headline: "오전장, 코스피 약세 vs 코스닥 강세 '차별화 장세'",
+    summary:
+      "6월 11일 오전 코스피는 개장 -2.86%(7,509)까지 밀렸다가 저가 매수세에 보합권으로 회복했고, 코스닥은 반도체 소재·부품·장비 강세로 상승 전환했습니다. 개인이 1조원 넘게 순매수하며 지수를 떠받친 반면 외국인·기관은 순매도했습니다. SK하이닉스(+3%대)가 반등을 주도한 가운데 삼성전자·현대차 등 일부 대형주는 약세였고, 부동산·바이오·엔터 중소형주로 순환매가 이어졌습니다. 美 PPI·오라클 실적·ECB 회의가 오후 변동성 변수로 꼽힙니다.",
+    source: "fnnews.com",
+    sourceUrl: "https://www.fnnews.com/news/202606111026256859",
+    keywords: ["코스피", "코스닥", "반도체", "하이닉스"],
+    stocks: ["SK하이닉스", "삼성전자"],
+    personaComments: {},
+  },
+  {
     id: "20260611-samsung-genai-altman",
     date: "2026-06-11",
     publishedAt: "2026-06-11T08:40:00+09:00",
