@@ -17,6 +17,19 @@ export interface NewsItem {
 export const NEWS_MOCK: NewsItem[] = [
   // ── 2026-06-11 큐레이션 (원본 기사 직접 읽고 중립 요약) ──
   {
+    id: "20260611-samsung-genai-altman",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T08:40:00+09:00",
+    headline: "삼성전자, 챗GPT·제미나이·클로드 사내 도입…올트먼 15일 강연",
+    summary:
+      "삼성전자 DX부문이 6월 12일부터 임직원 대상으로 외부 생성형 AI 3종(ChatGPT·Gemini Enterprise·Claude)을 공식 도입합니다. 노태문 사장은 '일하는 방식과 실행 속도를 근본적으로 바꾸는 출발점'이라고 밝혔습니다. 샘 올트먼 오픈AI CEO는 6월 15일 수원 디지털시티에서 'AI가 만들 미래 변화와 업무 혁신'을 주제로 강연할 예정이며, 삼성은 계열사 사장단 대상 AX 부트캠프도 추진 중입니다.",
+    source: "biz.heraldcorp.com",
+    sourceUrl: "https://biz.heraldcorp.com/article/10769105",
+    keywords: ["삼성전자", "생성형AI", "올트먼", "AX"],
+    stocks: ["삼성전자"],
+    personaComments: {},
+  },
+  {
     id: "20260611-lsecoenergy-hyundairotem",
     date: "2026-06-11",
     publishedAt: "2026-06-11T09:00:00+09:00",
