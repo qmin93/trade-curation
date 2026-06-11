@@ -13,7 +13,13 @@ export const revalidate = 600;
 
 export default async function Home() {
   const news = await getRecentNewsUnified(20);
-  const [hero, ...rest] = news;
+  // 최신순 정렬(게시시각 우선, 없으면 날짜) → 히어로/목록이 항상 최신 반영.
+  const sorted = [...news].sort((a, b) => {
+    const ta = new Date(a.publishedAt ?? `${a.date}T00:00:00+09:00`).getTime();
+    const tb = new Date(b.publishedAt ?? `${b.date}T00:00:00+09:00`).getTime();
+    return tb - ta;
+  });
+  const [hero, ...rest] = sorted;
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-6">
       {/* 오늘의 픽 스포트라이트 */}
