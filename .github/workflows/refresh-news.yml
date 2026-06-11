@@ -1,13 +1,14 @@
 name: Refresh news cache
 
-# dantatrade.vercel.app 의 /api/refresh 를 주기 호출해 Next.js 캐시를 무효화 →
+# dantatrade.vercel.app 의 /api/refresh 를 호출해 Next.js 캐시를 무효화 →
 # 페이지가 재렌더되며 네이버 검색·RSS 라이브 소스에서 최신 뉴스를 다시 당겨온다.
-# Vercel Hobby 플랜은 cron 이 하루 1회만 허용되므로 10분 주기는 GitHub Actions 로 구동한다.
+#
+# ⚠️ 수동(manual) 전용 — 자동 스케줄 제거. 운영자가 원할 때만 갱신.
+#   ① GitHub Actions 탭 → 이 워크플로 → "Run workflow" 버튼
+#   ② 또는 /news 큐레이션 머지 시 Vercel 재배포로 자동 반영
 
 on:
-  schedule:
-    - cron: "*/30 * * * *" # 30분마다 (UTC 기준·GitHub 사정상 수 분 지연 가능)
-  workflow_dispatch: {} # 수동 실행 버튼
+  workflow_dispatch: {} # 수동 실행 버튼만 (자동 스케줄 없음)
 
 concurrency:
   group: refresh-news
