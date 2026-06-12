@@ -3,6 +3,8 @@ export interface BacktestPoint {
   cumulativeReturn: number;
   hitCount: number;
   missCount: number;
+  /** 같은 기간 코스피 지수 등락률(%). 추세 비교 참고용 — 실제 지수값으로 갱신. */
+  kospiReturn: number;
 }
 
 export interface PatternStat {
@@ -14,15 +16,16 @@ export interface PatternStat {
   avgReturn: number;
 }
 
+// ⚠️ kospiReturn은 추세 비교용 placeholder. 실제 코스피 지수 등락률로 교체할 것.
 export const BACKTEST_HISTORY: BacktestPoint[] = [
-  { date: "2026-05-01", cumulativeReturn: 0, hitCount: 0, missCount: 0 },
-  { date: "2026-05-08", cumulativeReturn: 1.2, hitCount: 3, missCount: 1 },
-  { date: "2026-05-15", cumulativeReturn: 2.8, hitCount: 6, missCount: 2 },
-  { date: "2026-05-22", cumulativeReturn: 3.5, hitCount: 9, missCount: 3 },
-  { date: "2026-05-29", cumulativeReturn: 4.9, hitCount: 12, missCount: 4 },
-  { date: "2026-06-05", cumulativeReturn: 5.7, hitCount: 14, missCount: 5 },
-  { date: "2026-06-09", cumulativeReturn: 7.0, hitCount: 16, missCount: 6 },
-  { date: "2026-06-10", cumulativeReturn: 8.4, hitCount: 18, missCount: 6 },
+  { date: "2026-05-01", cumulativeReturn: 0, hitCount: 0, missCount: 0, kospiReturn: 0 },
+  { date: "2026-05-08", cumulativeReturn: 1.2, hitCount: 3, missCount: 1, kospiReturn: 0.4 },
+  { date: "2026-05-15", cumulativeReturn: 2.8, hitCount: 6, missCount: 2, kospiReturn: 0.9 },
+  { date: "2026-05-22", cumulativeReturn: 3.5, hitCount: 9, missCount: 3, kospiReturn: -0.6 },
+  { date: "2026-05-29", cumulativeReturn: 4.9, hitCount: 12, missCount: 4, kospiReturn: 0.2 },
+  { date: "2026-06-05", cumulativeReturn: 5.7, hitCount: 14, missCount: 5, kospiReturn: -1.3 },
+  { date: "2026-06-09", cumulativeReturn: 7.0, hitCount: 16, missCount: 6, kospiReturn: -2.1 },
+  { date: "2026-06-10", cumulativeReturn: 8.4, hitCount: 18, missCount: 6, kospiReturn: -1.0 },
 ];
 
 export const PATTERN_STATS: PatternStat[] = [
