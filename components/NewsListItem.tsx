@@ -62,11 +62,11 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
           setOpen(true);
         }
       }}
-      className="card-surface group block p-3.5 md:p-4 cursor-pointer hover:border-[var(--accent)]/40"
+      className="card-surface group block p-4 md:p-5 cursor-pointer hover:border-[var(--accent)]/40"
     >
-      <div className="flex gap-4 items-start">
+      <div className="flex gap-4 md:gap-5 items-start">
         {news.imageUrl ? (
-          <div className="w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-lg overflow-hidden bg-[var(--bg-subtle)] ring-1 ring-[var(--border)]">
+          <div className="w-28 h-24 md:w-48 md:h-32 shrink-0 rounded-xl overflow-hidden bg-[var(--bg-subtle)] ring-1 ring-[var(--border)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={news.imageUrl}
@@ -75,15 +75,15 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
             />
           </div>
         ) : (
-          <div className="w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-lg bg-gradient-to-br from-[var(--bg-subtle)] to-[var(--bg-hover)] ring-1 ring-[var(--border)] flex items-center justify-center">
-            <span className={`mono text-[10px] uppercase tracking-widest ${tintForSource(news.source)}`}>
+          <div className="w-28 h-24 md:w-48 md:h-32 shrink-0 rounded-xl bg-gradient-to-br from-[var(--accent)]/10 via-[var(--bg-subtle)] to-[var(--bg-hover)] ring-1 ring-[var(--border)] flex items-center justify-center">
+            <span className={`mono text-xs uppercase tracking-widest font-semibold ${tintForSource(news.source)}`}>
               {news.source}
             </span>
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 mb-1.5 text-[10px] mono uppercase tracking-widest">
-            <span className={tintForSource(news.source)}>{news.source}</span>
+          <div className="flex items-center gap-2 mb-2 text-[11px] mono uppercase tracking-widest">
+            <span className={`font-semibold ${tintForSource(news.source)}`}>{news.source}</span>
             {news.keywords[0] && (
               <>
                 <span className="text-[var(--text-caption)]">·</span>
@@ -94,30 +94,39 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
               {formatStamp(news)}
             </span>
           </div>
-          <h3 className="text-base md:text-lg font-semibold text-[var(--text)] leading-snug group-hover:text-[var(--accent)] transition-colors line-clamp-2">
+          <h3 className="text-lg md:text-xl font-bold text-[var(--text)] leading-snug group-hover:text-[var(--accent)] transition-colors line-clamp-2 tracking-tight">
             {news.headline}
           </h3>
           {news.summary && (
-            <p className="text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed line-clamp-2">
+            <p className="text-sm md:text-[15px] text-[var(--text-muted)] mt-2 leading-relaxed line-clamp-3">
               {news.summary}
             </p>
           )}
 
-          {/* Action row */}
-          <div className="flex items-center gap-3 mt-2.5">
-            <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] group-hover:text-[var(--accent)] transition-colors">
-              크게 보기 ⤢
+          {/* 종목 태그 + 액션 */}
+          <div className="flex items-center gap-2 mt-3 flex-wrap">
+            {news.stocks.slice(0, 3).map((s) => (
+              <span
+                key={s}
+                className="rounded-md bg-[var(--bg-subtle)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-muted)]"
+              >
+                {s}
+              </span>
+            ))}
+            <span className="ml-auto inline-flex items-center gap-3">
+              <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] group-hover:text-[var(--accent)] transition-colors">
+                크게 보기 ⤢
+              </span>
+              <a
+                href={news.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] px-3 py-1.5 text-[11px] mono uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors"
+              >
+                출처 ↗
+              </a>
             </span>
-            <a
-              href={news.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] px-3 py-1.5 text-[11px] mono uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors"
-            >
-              출처 가기
-              <span aria-hidden>↗</span>
-            </a>
           </div>
         </div>
       </div>
