@@ -43,6 +43,15 @@ export function pickCaption(name: string, tone: CaptionTone): string {
   return `${name} 자리 잡혔습니다.\n진입·목표·손절은 카드 그대로.\n본인 기준에 맞으면 관심 가져보세요.`;
 }
 
+/** 테마 카드용 — 멘토(reload.kospi)식: 짧은 본문 + 사이트 유도. */
+export function themeCaption(tone: CaptionTone): string {
+  if (tone === "감성")
+    return `오늘 어디로 돈이 몰렸을까요.\n테마 주도주, 제가 다 정리해 뒀습니다.\n전체는 사이트에서 → dantatrade.vercel.app/live`;
+  if (tone === "분석")
+    return `오늘 강한 테마와 그 안의 주도주만 추렸습니다.\n등락률 순으로 한눈에.\n실시간 전체 → dantatrade.vercel.app/live`;
+  return `오늘의 테마 주도주, 한 장에 모았습니다.\n뭐가 가장 셌는지 보이시죠?\n전체 종목은 → dantatrade.vercel.app/live`;
+}
+
 export function perfCaption(tone: CaptionTone): string {
   if (tone === "감성")
     return `수익만 자랑하는 방, 많죠.\n저흰 손절도 똑같이 남깁니다.\n그게 신뢰 아닐까요?`;

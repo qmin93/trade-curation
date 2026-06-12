@@ -6,6 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 
 const TOP_NAV = [
   { href: "/premarket", label: "장전" },
+  { href: "/live", label: "장중" },
   { href: "/alerts", label: "호재" },
   { href: "/calendar", label: "캘린더" },
   { href: "/results", label: "결과" },

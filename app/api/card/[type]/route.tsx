@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { loadKoreanFont } from "@/lib/card-font";
 import { ACTIVE_PICK } from "@/lib/picks";
 import { getBacktestSummary } from "@/lib/backtest";
+import { fetchThemeMovers } from "@/lib/theme-movers";
 
 /**
  * Threads 공유용 1080×1080 카드 이미지 생성기.
@@ -267,6 +268,53 @@ function PerfCard(brand: boolean) {
   );
 }
 
+async function ThemeCard(brand: boolean) {
+  const movers = (await fetchThemeMovers(3)).slice(0, 5);
+  return (
+    <Shell>
+      {eyebrow("🔥 오늘의 테마 주도주")}
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {movers.map((m) => (
+          <div
+            key={m.slug}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              padding: "20px 24px",
+              borderRadius: 18,
+              background: PANEL,
+              border: `1px solid ${BORDER}`,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <div style={{ display: "flex", fontSize: 38, fontWeight: 600, color: TEXT }}>
+                {m.emoji ? `${m.emoji} ` : ""}
+                {m.label}
+              </div>
+              <div style={{ display: "flex", fontSize: 34, fontWeight: 600, color: m.avgChange >= 0 ? UP : DOWN }}>
+                {m.avgChange >= 0 ? "+" : ""}
+                {m.avgChange.toFixed(1)}%
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {m.leaders.map((q) => (
+                <div key={q.ticker} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", fontSize: 30, color: MUTED }}>{q.name}</div>
+                  <div style={{ display: "flex", fontSize: 30, fontWeight: 600, color: q.changePercent >= 0 ? UP : DOWN }}>
+                    {q.changePercent >= 0 ? "+" : ""}
+                    {q.changePercent.toFixed(2)}%
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <Brand on={brand} />
+    </Shell>
+  );
+}
+
 export async function GET(
   req: Request,
   ctx: { params: Promise<{ type: string }> },
@@ -275,13 +323,19 @@ export async function GET(
   const url = new URL(req.url);
   const p = url.searchParams;
   const brand = p.get("brand") === "1";
-  const height = p.get("ratio") === "portrait" ? PORTRAIT : SQUARE;
+  const ratio = p.get("ratio");
+  // 테마 카드는 항목이 많아 기본 세로형(명시적 square만 정사각).
+  const height =
+    ratio === "portrait" || (type === "theme" && ratio !== "square")
+      ? PORTRAIT
+      : SQUARE;
 
   let node: React.ReactNode;
   if (type === "chart") node = ChartCard(p, brand);
   else if (type === "news") node = NewsCard(p, brand);
   else if (type === "pick") node = PickCard(p, brand);
   else if (type === "perf") node = PerfCard(brand);
+  else if (type === "theme") node = await ThemeCard(brand);
   else return new Response("unknown card type", { status: 404 });
 
   const font = await loadKoreanFont();
