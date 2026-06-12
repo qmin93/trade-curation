@@ -55,42 +55,28 @@ export async function MarketNowBand() {
   }
 
   return (
-    <div className="mb-8 rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden shadow-[var(--shadow-card)]">
-      <div className="flex flex-col md:flex-row md:items-stretch">
-        {/* 상태 */}
-        <div className="md:w-64 shrink-0 p-5 md:border-r border-[var(--border)] bg-gradient-to-br from-[var(--accent)]/[0.07] to-transparent">
-          <div className="text-sm font-bold text-[var(--text)] mb-1">{status.badge}</div>
-          <div className="text-xs text-[var(--text-muted)] leading-relaxed mb-4">{status.detail}</div>
-          <a
-            href={status.primary.href}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-white hover:opacity-90"
-          >
-            {status.primary.label} 전체 보기
-            <span aria-hidden>→</span>
-          </a>
-        </div>
-
-        {/* 데이터 */}
-        <div className="flex-1 p-5">
-          <div className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] mb-3">
-            {status.isLive ? "지금 강한 테마" : "장전 핵심 지표"}
-          </div>
-          {stats.length === 0 ? (
-            <p className="text-sm text-[var(--text-muted)]">데이터를 불러오는 중…</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <div className="text-[11px] text-[var(--text-caption)] truncate mb-0.5">{s.label}</div>
-                  <div className={`mono text-lg font-bold tabular-nums ${s.cls ?? "text-[var(--text)]"}`}>
-                    {s.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+    <a
+      href={status.primary.href}
+      className="group mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2.5 hover:border-[var(--accent)]/40 transition-colors"
+    >
+      <span className="text-sm font-bold text-[var(--text)] shrink-0">{status.badge}</span>
+      <span className="hidden sm:inline text-xs text-[var(--text-caption)] shrink-0">
+        {status.isLive ? "지금 강한 테마" : "장전 지표"}
+      </span>
+      <div className="flex items-center gap-x-4 gap-y-1 flex-wrap text-xs">
+        {stats.slice(0, 4).map((s) => (
+          <span key={s.label} className="inline-flex items-center gap-1.5">
+            <span className="text-[var(--text-muted)] truncate max-w-[7rem]">{s.label}</span>
+            <span className={`mono font-semibold tabular-nums ${s.cls ?? "text-[var(--text)]"}`}>
+              {s.value}
+            </span>
+          </span>
+        ))}
       </div>
-    </div>
+      <span className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)] shrink-0">
+        {status.primary.label}
+        <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+      </span>
+    </a>
   );
 }
