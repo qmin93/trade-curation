@@ -9,12 +9,14 @@ import {
   pickCaption,
   perfCaption,
   themeCaption,
+  screenerCaption,
 } from "@/lib/card-caption";
 
-type CardType = "chart" | "news" | "pick" | "perf" | "theme";
+type CardType = "chart" | "news" | "pick" | "perf" | "theme" | "screener";
 
 const TYPES: { key: CardType; label: string; hint: string }[] = [
   { key: "theme", label: "테마 주도주", hint: "장중 글" },
+  { key: "screener", label: "급등·신고가", hint: "장중 글" },
   { key: "chart", label: "종목 차트", hint: "급등주 글" },
   { key: "news", label: "뉴스", hint: "뉴스 글" },
   { key: "pick", label: "오늘의 픽", hint: "픽 글" },
@@ -76,6 +78,7 @@ export function StudioClient() {
     if (type === "news") return newsCaption(news.headline, news.source, tone);
     if (type === "pick") return pickCaption(pick.name, tone);
     if (type === "theme") return themeCaption(tone);
+    if (type === "screener") return screenerCaption(tone);
     return perfCaption(tone);
   }, [type, tone, chart, news, pick]);
 
@@ -144,6 +147,12 @@ export function StudioClient() {
             <p className="text-sm text-[var(--text-muted)] rounded-lg border border-dashed border-[var(--border)] p-4">
               테마 주도주 카드는 지금 강한 테마와 종목 등락률을 실시간으로 자동
               반영합니다. (세로형 권장)
+            </p>
+          )}
+          {type === "screener" && (
+            <p className="text-sm text-[var(--text-muted)] rounded-lg border border-dashed border-[var(--border)] p-4">
+              급등·신고가 카드는 오늘 등락률 상위와 52주 신고가 종목을 실시간으로
+              자동 반영합니다.
             </p>
           )}
         </div>
