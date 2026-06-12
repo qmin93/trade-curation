@@ -36,8 +36,9 @@ async function enrichWithSummaryAndImages(
 
   const toEnrich = items.slice(0, enrichLimit);
 
+  // DART 공시는 템플릿 요약이 완성형 + 뷰어가 og:image를 공유 → claude 요약·이미지 중복제거에서 제외.
   const claudeEligible = toEnrich.filter(
-    (n) => n.origin !== "mock" && n.summary.length > 0,
+    (n) => n.origin !== "mock" && n.origin !== "dart" && n.summary.length > 0,
   );
   const summaryMap = await summarizeBatch(
     claudeEligible.map((n) => ({
@@ -55,14 +56,19 @@ async function enrichWithSummaryAndImages(
   }
 
   const imageMap = await getOgImagesBatch(
-    toEnrich.map((n) => n.sourceUrl),
+    toEnrich.filter((n) => n.origin !== "dart").map((n) => n.sourceUrl),
     5,
   );
 
-  // 같은 og:image = 사실상 같은/비슷한 뉴스로 보고 뒤 항목을 아예 제외 (중복 느낌 제거)
+  // 같은 og:image = 사실상 같은/비슷한 뉴스로 보고 뒤 항목을 아예 제외 (중복 느낌 제거).
+  // DART 공시는 뷰어가 같은 og:image를 공유하므로 이미지 중복제거 대상에서 제외한다.
   const usedImages = new Set<string>();
   const out: UnifiedNewsItem[] = [];
   for (const n of items) {
+    if (n.origin === "dart") {
+      out.push(n); // 템플릿 요약·링크 그대로 유지
+      continue;
+    }
     if (dropUrls.has(n.sourceUrl)) continue;
     const img = imageMap.get(n.sourceUrl) ?? n.imageUrl ?? null;
     if (img && usedImages.has(img)) continue;

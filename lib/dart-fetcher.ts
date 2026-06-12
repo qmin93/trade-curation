@@ -88,7 +88,10 @@ async function fetchDartByType(
 }
 
 /** 최근 N일 단타 관심 상장사 공시. 키 없으면 []. */
-export async function fetchRecentDartDisclosures(days = 2): Promise<DartDisclosure[]> {
+export async function fetchRecentDartDisclosures(
+  days = 2,
+  maxItems = 20,
+): Promise<DartDisclosure[]> {
   const key = process.env.DART_API_KEY;
   if (!key) return [];
 
@@ -112,6 +115,9 @@ export async function fetchRecentDartDisclosures(days = 2): Promise<DartDisclosu
       seen.add(it.rcept_no);
       return true;
     })
+    // 접수번호(YYYYMMDD+seq) 내림차순 = 최신 공시 우선. 홈 도배 방지 위해 상한.
+    .sort((a, b) => b.rcept_no.localeCompare(a.rcept_no))
+    .slice(0, maxItems)
     .map((it) => ({
       corpName: it.corp_name.trim(),
       stockCode: it.stock_code.trim(),
