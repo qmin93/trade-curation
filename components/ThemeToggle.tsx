@@ -5,16 +5,14 @@ import { useEffect, useState } from "react";
 type Theme = "dark" | "light";
 
 function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
+  if (typeof window === "undefined") return "light";
   const stored = localStorage.getItem("theme") as Theme | null;
-  if (stored === "dark" || stored === "light") return stored;
-  if (window.matchMedia?.("(prefers-color-scheme: light)").matches)
-    return "light";
-  return "dark";
+  // 기본은 흰색(light). 사용자가 직접 다크로 바꿔 저장한 경우만 다크.
+  return stored === "dark" ? "dark" : "light";
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -40,7 +38,7 @@ export function ThemeToggle() {
       className="flex items-center justify-center w-8 h-8 rounded-md border border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--accent)]/50 hover:bg-[var(--bg-hover)] transition-all text-sm"
     >
       <span aria-hidden suppressHydrationWarning>
-        {mounted ? (theme === "dark" ? "☀" : "☾") : "☀"}
+        {mounted ? (theme === "dark" ? "☀" : "☾") : "☾"}
       </span>
     </button>
   );

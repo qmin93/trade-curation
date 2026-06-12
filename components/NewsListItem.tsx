@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
+import { NewsModal } from "./NewsModal";
 
 const sourceTint: Record<string, string> = {
   ddaily: "text-purple-400",
@@ -46,15 +47,19 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
   const [open, setOpen] = useState(false);
 
   return (
+    <>
+    {open && (
+      <NewsModal news={news} stamp={formatStamp(news)} onClose={() => setOpen(false)} />
+    )}
     <div
-      onClick={() => setOpen((v) => !v)}
+      onClick={() => setOpen(true)}
       role="button"
       tabIndex={0}
-      aria-expanded={open}
+      aria-haspopup="dialog"
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          setOpen((v) => !v);
+          setOpen(true);
         }
       }}
       className="card-surface group block p-3.5 md:p-4 cursor-pointer hover:border-[var(--accent)]/40"
@@ -93,22 +98,16 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
             {news.headline}
           </h3>
           {news.summary && (
-            <p
-              className={`text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed ${
-                open ? "" : "line-clamp-2"
-              }`}
-            >
+            <p className="text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed line-clamp-2">
               {news.summary}
             </p>
           )}
 
           {/* Action row */}
           <div className="flex items-center gap-3 mt-2.5">
-            {news.summary && (
-              <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] group-hover:text-[var(--text-muted)] transition-colors">
-                {open ? "접기 ▲" : "더보기 ▼"}
-              </span>
-            )}
+            <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)] group-hover:text-[var(--accent)] transition-colors">
+              크게 보기 ⤢
+            </span>
             <a
               href={news.sourceUrl}
               target="_blank"
@@ -123,5 +122,6 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
         </div>
       </div>
     </div>
+    </>
   );
 }

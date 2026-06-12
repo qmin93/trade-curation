@@ -1,0 +1,122 @@
+"use client";
+
+import { useEffect } from "react";
+import type { UnifiedNewsItem } from "@/lib/news-fetcher";
+
+/**
+ * 뉴스 캡처용 팝업 — 클릭한 뉴스를 깔끔한 카드로 띄운다.
+ * 카드 영역만 스크린샷하면 그대로 Threads에 올릴 수 있게 디자인.
+ */
+export function NewsModal({
+  news,
+  stamp,
+  onClose,
+}: {
+  news: UnifiedNewsItem;
+  stamp: string;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-[460px] max-h-[90vh] overflow-y-auto"
+      >
+        {/* 닫기 */}
+        <button
+          onClick={onClose}
+          aria-label="닫기"
+          className="absolute -top-3 -right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)] shadow-lg"
+        >
+          ✕
+        </button>
+
+        {/* 캡처 카드 */}
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden shadow-2xl">
+          {news.imageUrl && (
+            <div className="w-full aspect-[16/9] bg-[var(--bg-subtle)] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={news.imageUrl} alt="" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <div className="p-6">
+            <div className="flex items-center gap-2 mb-3 text-[11px] mono uppercase tracking-widest">
+              <span className="font-semibold text-[var(--accent)]">{news.source}</span>
+              {news.keywords[0] && (
+                <>
+                  <span className="text-[var(--text-caption)]">·</span>
+                  <span className="text-[var(--text-muted)]">#{news.keywords[0]}</span>
+                </>
+              )}
+              <span className="ml-auto tabular-nums text-[var(--text-caption)]">{stamp}</span>
+            </div>
+
+            <h2 className="text-xl md:text-2xl font-bold leading-snug text-[var(--text)] mb-3">
+              {news.headline}
+            </h2>
+
+            {news.summary && (
+              <p className="text-[15px] leading-relaxed text-[var(--text-muted)]">
+                {news.summary}
+              </p>
+            )}
+
+            {news.stocks.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-4">
+                {news.stocks.slice(0, 5).map((s) => (
+                  <span
+                    key={s}
+                    className="rounded-md bg-[var(--bg-subtle)] px-2 py-1 text-[11px] font-medium text-[var(--text-muted)]"
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* 브랜드 푸터 (캡처 시 출처) */}
+            <div className="flex items-center gap-2 mt-5 pt-4 border-t border-[var(--border)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+              <span className="text-xs font-semibold text-[var(--text)]">단타 트레이드</span>
+              <span className="ml-auto mono text-[10px] text-[var(--text-caption)]">
+                dantatrade.vercel.app
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 액션 (캡처 영역 밖) */}
+        <div className="flex items-center justify-between mt-3">
+          <span className="mono text-[10px] text-[var(--text-caption)] uppercase tracking-widest">
+            카드를 캡처해 올리세요
+          </span>
+          <a
+            href={news.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-white hover:opacity-90"
+          >
+            출처 기사 보기 ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}

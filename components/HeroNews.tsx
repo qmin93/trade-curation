@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
+import { NewsModal } from "./NewsModal";
 
 const sourceGradient: Record<string, string> = {
   ddaily: "from-purple-900 via-indigo-900 to-slate-900",
@@ -41,8 +45,24 @@ function formatStamp(news: UnifiedNewsItem): string {
 
 export function HeroNews({ news }: { news: UnifiedNewsItem }) {
   const grad = gradientForSource(news.source);
+  const [open, setOpen] = useState(false);
   return (
-    <div className="group block relative overflow-hidden rounded-2xl border border-[var(--border)] aspect-[16/9] md:aspect-[21/9]">
+    <>
+    {open && (
+      <NewsModal news={news} stamp={formatStamp(news)} onClose={() => setOpen(false)} />
+    )}
+    <div
+      onClick={() => setOpen(true)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setOpen(true);
+        }
+      }}
+      className="group block relative overflow-hidden rounded-2xl border border-[var(--border)] aspect-[16/9] md:aspect-[21/9] cursor-pointer"
+    >
       {news.imageUrl ? (
         <>
           <div className="absolute inset-0">
@@ -93,6 +113,7 @@ export function HeroNews({ news }: { news: UnifiedNewsItem }) {
             href={news.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
             className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-4 py-2 mono text-[11px] uppercase tracking-widest text-white font-semibold backdrop-blur-sm hover:bg-white/20 transition-colors"
           >
             출처 가기
@@ -111,5 +132,6 @@ export function HeroNews({ news }: { news: UnifiedNewsItem }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
