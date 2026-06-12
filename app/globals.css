@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
-/* 다크 (기본) — Bloomberg + Robinhood */
-:root,
+/* 다크 (옵션) — Bloomberg + Robinhood */
 :root[data-theme="dark"] {
   --bg: #0a0e1a;
   --bg-elevated: #131829;
@@ -40,6 +39,7 @@
 }
 
 /* 라이트 (기본) — Linear / Vercel 영감·인디고 액센트 */
+:root,
 :root[data-theme="light"] {
   --bg: #fbfbfd;
   --bg-elevated: #ffffff;
