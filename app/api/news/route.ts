@@ -33,7 +33,9 @@ export async function GET(request: Request) {
 
     let items = raw;
     if (originFilter === "live") {
-      items = raw.filter((n) => n.origin === "naver" || n.origin === "rss");
+      items = raw.filter(
+        (n) => n.origin === "naver" || n.origin === "rss" || n.origin === "dart",
+      );
     } else if (originFilter === "mock") {
       items = raw.filter((n) => n.origin === "mock");
     }
