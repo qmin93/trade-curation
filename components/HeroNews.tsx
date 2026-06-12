@@ -4,23 +4,11 @@ import { useState } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
 import { NewsModal } from "./NewsModal";
 
-const sourceGradient: Record<string, string> = {
-  ddaily: "from-purple-900 via-indigo-900 to-slate-900",
-  fnnews: "from-rose-900 via-red-900 to-slate-900",
-  newspim: "from-amber-900 via-orange-900 to-slate-900",
-  etoday: "from-blue-900 via-cyan-900 to-slate-900",
-  heraldcorp: "from-emerald-900 via-teal-900 to-slate-900",
-  worktoday: "from-pink-900 via-rose-900 to-slate-900",
-  yna: "from-violet-900 via-purple-900 to-slate-900",
-  etnews: "from-blue-900 via-indigo-900 to-slate-900",
-  mtn: "from-amber-900 via-yellow-900 to-slate-900",
-  hankyung: "from-sky-900 via-blue-900 to-slate-900",
-  default: "from-slate-800 via-slate-900 to-slate-950",
-};
+// 무이미지 히어로 폴백 — 흰 배경에 어울리는 일관된 딥 인디고(매체별 랜덤색 폐기).
+const HERO_GRADIENT = "from-indigo-950 via-slate-900 to-slate-950";
 
-function gradientForSource(source: string): string {
-  const key = source.toLowerCase().replace(/\..*$/, "");
-  return sourceGradient[key] ?? sourceGradient.default;
+function gradientForSource(_source: string): string {
+  return HERO_GRADIENT;
 }
 
 /** 게시 시각을 한국시간 "MM-DD HH:mm"로. 시각 정보 없으면 날짜만. */
