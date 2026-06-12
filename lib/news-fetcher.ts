@@ -14,6 +14,11 @@ import {
   filterByKeyword,
   type RssItem,
 } from "./rss-fetcher";
+import {
+  fetchRecentDartDisclosures,
+  dartViewerUrl,
+  type DartDisclosure,
+} from "./dart-fetcher";
 import { applyFilters } from "./news-filters";
 import {
   fetchNewsByKeyword as fetchSupabaseByKeyword,
@@ -121,7 +126,7 @@ export interface UnifiedNewsItem {
   sourceUrl: string;
   keywords: string[];
   stocks: string[];
-  origin: "mock" | "naver" | "rss";
+  origin: "mock" | "naver" | "rss" | "dart";
   imageUrl?: string | null;
   /** 기사 게시 시각 (ISO). naver/rss는 pubDate에서 채움. mock은 보통 날짜만. */
   publishedAt?: string | null;
@@ -170,6 +175,22 @@ function rssToUnified(r: RssItem, keyword: string): UnifiedNewsItem {
     stocks: [],
     origin: "rss",
     publishedAt: r.pubDate ? pubDate.toISOString() : null,
+  };
+}
+
+function dartToUnified(d: DartDisclosure): UnifiedNewsItem {
+  const dateStr = `${d.rceptDt.slice(0, 4)}-${d.rceptDt.slice(4, 6)}-${d.rceptDt.slice(6, 8)}`;
+  return {
+    id: `dart-${d.rceptNo}`,
+    date: dateStr,
+    headline: `${d.corpName} — ${d.reportNm}`,
+    summary: `${d.corpName}(${d.stockCode})이 '${d.reportNm}'을(를) 공시했습니다. 기사화 이전 원문 공시라 단타 관점에서 즉시 확인이 필요한 재료입니다.`,
+    source: "DART 공시",
+    sourceUrl: dartViewerUrl(d.rceptNo),
+    keywords: [d.corpName, "공시"],
+    stocks: [d.corpName],
+    origin: "dart",
+    publishedAt: `${dateStr}T09:00:00+09:00`,
   };
 }
 
@@ -255,7 +276,17 @@ export async function getRecentNewsUnified(
     if (matchedKw) rssUnified.push(rssToUnified(item, matchedKw));
   }
 
-  const all = [...supabaseUnified, ...mockUnified, ...naverUnified, ...rssUnified];
+  // DART 실시간 공시 — 기사화 전 가장 빠른 단타 재료 (DART_API_KEY 없으면 [])
+  const dartDisclosures = await fetchRecentDartDisclosures();
+  const dartUnified = dartDisclosures.map(dartToUnified);
+
+  const all = [
+    ...supabaseUnified,
+    ...mockUnified,
+    ...naverUnified,
+    ...rssUnified,
+    ...dartUnified,
+  ];
   const deduped = dedupeByUrlAndTitle(all);
 
   const filtered = applyFilters(deduped).slice(0, limit);
