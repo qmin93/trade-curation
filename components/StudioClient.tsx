@@ -8,11 +8,13 @@ import {
   newsCaption,
   pickCaption,
   perfCaption,
+  themeCaption,
 } from "@/lib/card-caption";
 
-type CardType = "chart" | "news" | "pick" | "perf";
+type CardType = "chart" | "news" | "pick" | "perf" | "theme";
 
 const TYPES: { key: CardType; label: string; hint: string }[] = [
+  { key: "theme", label: "테마 주도주", hint: "장중 글" },
   { key: "chart", label: "종목 차트", hint: "급등주 글" },
   { key: "news", label: "뉴스", hint: "뉴스 글" },
   { key: "pick", label: "오늘의 픽", hint: "픽 글" },
@@ -73,6 +75,7 @@ export function StudioClient() {
     if (type === "chart") return chartCaption(chart.name, Number(chart.change) || 0, tone);
     if (type === "news") return newsCaption(news.headline, news.source, tone);
     if (type === "pick") return pickCaption(pick.name, tone);
+    if (type === "theme") return themeCaption(tone);
     return perfCaption(tone);
   }, [type, tone, chart, news, pick]);
 
@@ -135,6 +138,12 @@ export function StudioClient() {
           {type === "perf" && (
             <p className="text-sm text-[var(--text-muted)] rounded-lg border border-dashed border-[var(--border)] p-4">
               성과 카드는 사이트 실데이터(누적·승률·적중·손절)를 자동 반영합니다.
+            </p>
+          )}
+          {type === "theme" && (
+            <p className="text-sm text-[var(--text-muted)] rounded-lg border border-dashed border-[var(--border)] p-4">
+              테마 주도주 카드는 지금 강한 테마와 종목 등락률을 실시간으로 자동
+              반영합니다. (세로형 권장)
             </p>
           )}
         </div>
