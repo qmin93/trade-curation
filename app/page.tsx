@@ -2,6 +2,7 @@ import { KEYWORDS } from "@/lib/keywords";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
 import { IndexBoard } from "@/components/dashboard/IndexBoard";
 import { TrendingStocks } from "@/components/dashboard/TrendingStocks";
+import { DartDisclosures } from "@/components/dashboard/DartDisclosures";
 import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
 import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
 import { HeroNews } from "@/components/HeroNews";
@@ -98,6 +99,7 @@ export default async function Home() {
           <TelegramCTA />
           <IndexBoard />
           <TrendingStocks limit={8} />
+          <DartDisclosures limit={8} />
           <CompactAlerts limit={5} />
           <CompactCalendar />
         </aside>
