@@ -9,9 +9,10 @@ import { NewsListItem } from "@/components/NewsListItem";
 import { KeywordChip } from "@/components/KeywordChip";
 import { TelegramCTA } from "@/components/TelegramCTA";
 import { PickSpotlight } from "@/components/PickSpotlight";
+import { MarketNowBand } from "@/components/MarketNowBand";
 import { MONTHLY_STATS } from "@/lib/results";
 
-export const revalidate = 600;
+export const revalidate = 120;
 
 export default async function Home() {
   const news = await getRecentNewsUnified(20);
@@ -24,6 +25,9 @@ export default async function Home() {
   const [hero, ...rest] = sorted;
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-6">
+      {/* 지금 장 상태 + 시간대 맞춤 데이터 (밤=장전, 장중=테마 주도주) */}
+      <MarketNowBand />
+
       {/* 오늘의 픽 스포트라이트 */}
       <PickSpotlight />
 

@@ -1,6 +1,7 @@
 import { fetchThemeMovers } from "@/lib/theme-movers";
 import { fetchTrendingStocks, naverStockUrl } from "@/lib/naver-trending";
 import { fetchRising, fetchNewHighs, type RankedStock } from "@/lib/screener";
+import { getMarketStatus } from "@/lib/market-status";
 
 /**
  * 장중 발굴 — 멘토(reload.kospi)의 /open 화면.
@@ -27,6 +28,7 @@ export default async function LivePage() {
     fetchRising(8),
     fetchNewHighs(8),
   ]);
+  const status = getMarketStatus(new Date());
   const kst = new Date().toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
     hour: "2-digit",
@@ -41,12 +43,29 @@ export default async function LivePage() {
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
         오늘 매매할 종목, 한 화면에
       </h1>
-      <p className="text-sm text-[var(--text-muted)] max-w-2xl leading-relaxed mb-2">
-        지금 자금이 몰리는 테마 주도주와 실시간 인기 검색종목을 모았습니다.
+      <p className="text-sm text-[var(--text-muted)] max-w-2xl leading-relaxed mb-3">
+        {status.isLive
+          ? "지금 자금이 몰리는 테마 주도주와 인기 검색종목을 실시간으로 모았습니다."
+          : "장이 열리면 실시간으로 갱신됩니다. 아래는 마감 기준 데이터입니다."}
       </p>
+
+      {/* 장 상태 배너 — 마감/장전이면 실시간인 척하지 않는다 */}
+      {!status.isLive && (
+        <div className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--bg-subtle)] px-4 py-3 text-sm">
+          <span className="font-semibold text-[var(--text)]">{status.badge}</span>
+          <span className="text-[var(--text-muted)]">{status.detail}</span>
+          <a
+            href="/premarket"
+            className="ml-auto inline-flex items-center gap-1 font-semibold text-[var(--accent)] hover:underline"
+          >
+            지금은 장전 체크 →
+          </a>
+        </div>
+      )}
+
       <div className="flex items-center gap-3 mb-8">
         <span className="mono text-[10px] text-[var(--text-caption)]">
-          업데이트 {kst} KST · 60초 갱신
+          {status.isLive ? `실시간 · 업데이트 ${kst} KST · 60초 갱신` : `마감 기준 · ${kst} KST`}
         </span>
         <a
           href="/api/card/theme?brand=1"
