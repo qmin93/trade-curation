@@ -141,7 +141,13 @@ export function applyFilters(items: UnifiedNewsItem[]): UnifiedNewsItem[] {
   // 점수 계산 — 단타 적합 부스트 + 매체 우선순위
   const scored = filtered.map((item) => {
     const text = `${item.headline} ${item.summary}`;
-    const boost = item.origin === "mock" ? 200 : calculateBoost(text);
+    // mock(운영자 큐레이션) 최상위. DART 공시는 기사보다 빠른 하드 재료라 라이브 위에 가점.
+    const boost =
+      item.origin === "mock"
+        ? 200
+        : item.origin === "dart"
+          ? 120
+          : calculateBoost(text);
     const sourcePriority = getSourcePriority(item.source);
     return { item, score: boost + sourcePriority };
   });

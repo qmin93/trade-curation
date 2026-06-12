@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
-import { fetchRecentDartDisclosures } from "@/lib/dart-fetcher";
 import { insertNewsItems, type NewsRow } from "@/lib/supabase";
 
 /**
@@ -22,19 +21,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // 진단: ?debug=dart → DART fetch만 직접 호출해 키/수집 상태 확인
-  const { searchParams } = new URL(request.url);
-  if (searchParams.get("debug") === "dart") {
-    const dart = await fetchRecentDartDisclosures();
-    return NextResponse.json({
-      keyPresent: Boolean(process.env.DART_API_KEY),
-      dartCount: dart.length,
-      sample: dart.slice(0, 5).map((d) => `${d.corpName} — ${d.reportNm}`),
-    });
-  }
-
   try {
-    const items = await getRecentNewsUnified(40);
+    // 큰 풀로 받아 라이브(naver·rss·dart)가 mock/아카이브에 slice로 밀리지 않게 한다.
+    const items = await getRecentNewsUnified(120);
     const live = items.filter(
       (n) => n.origin === "naver" || n.origin === "rss" || n.origin === "dart",
     );
