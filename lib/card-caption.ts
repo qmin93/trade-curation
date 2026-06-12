@@ -52,6 +52,15 @@ export function themeCaption(tone: CaptionTone): string {
   return `오늘의 테마 주도주, 한 장에 모았습니다.\n뭐가 가장 셌는지 보이시죠?\n전체 종목은 → dantatrade.vercel.app/live`;
 }
 
+/** 급등·신고가 카드용 — 멘토식 짧은 본문 + 사이트 유도. */
+export function screenerCaption(tone: CaptionTone): string {
+  if (tone === "감성")
+    return `오늘 누가 신고가를 뚫었을까요.\n급등주·신고가 한 장에 모았습니다.\n실시간 전체 → dantatrade.vercel.app/live`;
+  if (tone === "분석")
+    return `오늘 급등 종목과 52주 신고가만 추렸습니다.\n추세 따라가는 종목, 여기서.\n실시간 전체 → dantatrade.vercel.app/live`;
+  return `오늘 가장 강했던 종목들입니다.\n급등·신고가, 다 보여드립니다.\n실시간 전체 → dantatrade.vercel.app/live`;
+}
+
 export function perfCaption(tone: CaptionTone): string {
   if (tone === "감성")
     return `수익만 자랑하는 방, 많죠.\n저흰 손절도 똑같이 남깁니다.\n그게 신뢰 아닐까요?`;

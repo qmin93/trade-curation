@@ -3,6 +3,7 @@ import { loadKoreanFont } from "@/lib/card-font";
 import { ACTIVE_PICK } from "@/lib/picks";
 import { getBacktestSummary } from "@/lib/backtest";
 import { fetchThemeMovers } from "@/lib/theme-movers";
+import { fetchRising, fetchNewHighs, type RankedStock } from "@/lib/screener";
 
 /**
  * Threads 공유용 1080×1080 카드 이미지 생성기.
@@ -315,6 +316,41 @@ async function ThemeCard(brand: boolean) {
   );
 }
 
+function rankList(title: string, rows: RankedStock[]) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+      <div style={{ display: "flex", fontSize: 32, fontWeight: 600, color: TEXT, marginBottom: 14 }}>
+        {title}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {rows.map((s) => (
+          <div key={s.ticker} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", fontSize: 28, color: MUTED }}>{s.name}</div>
+            <div style={{ display: "flex", fontSize: 28, fontWeight: 600, color: s.changePercent >= 0 ? UP : DOWN }}>
+              {s.changePercent >= 0 ? "+" : ""}
+              {s.changePercent.toFixed(2)}%
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function ScreenerCard(brand: boolean) {
+  const [rising, highs] = await Promise.all([fetchRising(8), fetchNewHighs(8)]);
+  return (
+    <Shell>
+      {eyebrow("🚀 급등 · 신고가")}
+      <div style={{ display: "flex", gap: 28 }}>
+        {rankList("급등 종목", rising)}
+        {rankList("52주 신고가", highs)}
+      </div>
+      <Brand on={brand} />
+    </Shell>
+  );
+}
+
 export async function GET(
   req: Request,
   ctx: { params: Promise<{ type: string }> },
@@ -336,6 +372,7 @@ export async function GET(
   else if (type === "pick") node = PickCard(p, brand);
   else if (type === "perf") node = PerfCard(brand);
   else if (type === "theme") node = await ThemeCard(brand);
+  else if (type === "screener") node = await ScreenerCard(brand);
   else return new Response("unknown card type", { status: 404 });
 
   const font = await loadKoreanFont();

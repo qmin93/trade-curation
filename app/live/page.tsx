@@ -1,5 +1,6 @@
 import { fetchThemeMovers } from "@/lib/theme-movers";
 import { fetchTrendingStocks, naverStockUrl } from "@/lib/naver-trending";
+import { fetchRising, fetchNewHighs, type RankedStock } from "@/lib/screener";
 
 /**
  * 장중 발굴 — 멘토(reload.kospi)의 /open 화면.
@@ -20,9 +21,11 @@ function fmtPct(v: number) {
 }
 
 export default async function LivePage() {
-  const [movers, trending] = await Promise.all([
+  const [movers, trending, rising, newHighs] = await Promise.all([
     fetchThemeMovers(4),
     fetchTrendingStocks(10),
+    fetchRising(8),
+    fetchNewHighs(8),
   ]);
   const kst = new Date().toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -128,10 +131,57 @@ export default async function LivePage() {
         )}
       </section>
 
+      {/* 급등 · 신고가 스크리너 */}
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <RankSection title="🚀 급등 종목" desc="등락률 상위" rows={rising} />
+        <RankSection title="📈 52주 신고가" desc="신고가 돌파" rows={newHighs} />
+      </div>
+
       <p className="mono text-[10px] text-[var(--text-caption)] mt-8 leading-relaxed border-t border-[var(--border)] pt-5">
         데이터: 네이버 금융(실시간 지연 가능). 정보 공유 목적 · 종목 추천 아님 ·
         투자 판단과 책임은 본인에게 있습니다.
       </p>
     </div>
+  );
+}
+
+function RankSection({
+  title,
+  desc,
+  rows,
+}: {
+  title: string;
+  desc: string;
+  rows: RankedStock[];
+}) {
+  return (
+    <section>
+      <div className="flex items-baseline justify-between mb-3 pb-2 border-b border-[var(--border)]">
+        <h2 className="text-lg font-bold text-[var(--text)]">{title}</h2>
+        <span className="text-xs text-[var(--text-caption)]">{desc}</span>
+      </div>
+      {rows.length === 0 ? (
+        <p className="text-sm text-[var(--text-muted)]">데이터를 불러오지 못했습니다.</p>
+      ) : (
+        <ul className="space-y-1.5">
+          {rows.map((s) => (
+            <li key={s.ticker}>
+              <a
+                href={naverStockUrl(s.ticker)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-sm hover:bg-[var(--bg-subtle)] rounded px-2 py-1 -mx-2"
+              >
+                <span className="flex-1 truncate text-[var(--text)]">{s.name}</span>
+                <span className="mono tabular-nums text-[var(--text-muted)]">{s.price}</span>
+                <span className={`mono tabular-nums w-16 text-right font-semibold ${pctCls(s.changePercent)}`}>
+                  {fmtPct(s.changePercent)}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
