@@ -22,13 +22,12 @@ export interface SitePick {
 }
 
 export const ACTIVE_PICK: SitePick | null = {
-  date: "2026-06-10",
-  stockName: "후성",
-  ticker: "093370",
-  entry: "16,020",
-  targets: ["1차 +1.4%", "2차 +3.4%"],
+  date: "2026-06-12",
+  stockName: "샘씨엔에스",
+  ticker: "252990",
+  entry: "16,210",
+  targets: ["1차 +1.4%", "2차 +3.4%", "3차 +5.5%", "4차 +7.4%"],
   thesis:
-    "다중 기술지표 동시 돌파 + 세력 매집 자리. KOSPI -4.52% 약세 속에서도 단발 정통 흐름으로 1·2차 목표 모두 도달.",
-  status: "done",
-  resultPercent: 3.4,
+    "다중 기술지표가 동시 돌파되며 세력 매집 흔적이 뚜렷한 자리. 손절 15,560원(-4.0%) 이탈 시 흐름 종료.",
+  status: "live",
 };
