@@ -22,10 +22,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    // 큰 풀로 받아 라이브(naver·rss·dart)가 mock/아카이브에 slice로 밀리지 않게 한다.
+    // 큰 풀로 받아 라이브(naver·rss)가 mock/아카이브에 slice로 밀리지 않게 한다.
+    // DART 공시는 방문자 화면에 안 맞아 아카이브에 적재하지 않는다(발굴 경로에서만 라이브 사용).
     const items = await getRecentNewsUnified(120);
     const live = items.filter(
-      (n) => n.origin === "naver" || n.origin === "rss" || n.origin === "dart",
+      (n) => n.origin === "naver" || n.origin === "rss",
     );
     const rows: NewsRow[] = live.map((n) => ({
       id: n.id,
@@ -44,7 +45,6 @@ export async function GET(request: Request) {
       byOrigin: {
         naver: rows.filter((r) => r.origin === "naver").length,
         rss: rows.filter((r) => r.origin === "rss").length,
-        dart: rows.filter((r) => r.origin === "dart").length,
       },
       timestamp: new Date().toISOString(),
     });

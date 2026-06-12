@@ -245,7 +245,10 @@ export async function getNewsByKeywordUnified(
 export async function getRecentNewsUnified(
   limit = 10,
   keywords?: string[],
+  opts?: { includeDart?: boolean },
 ): Promise<UnifiedNewsItem[]> {
+  // DART 공시는 방문자 화면엔 안 맞아 기본 제외. /news 발굴(origin=live)만 켠다.
+  const includeDart = opts?.includeDart ?? false;
   // 기본: 핵심 5 + 단타 강화 키워드 (총 15개)
   const { FETCH_KEYWORDS_EXTRA } = await import("./keywords");
   const actualKeywords =
@@ -287,9 +290,10 @@ export async function getRecentNewsUnified(
     if (matchedKw) rssUnified.push(rssToUnified(item, matchedKw));
   }
 
-  // DART 실시간 공시 — 기사화 전 가장 빠른 단타 재료 (DART_API_KEY 없으면 [])
-  const dartDisclosures = await fetchRecentDartDisclosures();
-  const dartUnified = dartDisclosures.map(dartToUnified);
+  // DART 실시간 공시 — 발굴(/news)용. 방문자 화면엔 기본 미포함.
+  const dartUnified = includeDart
+    ? (await fetchRecentDartDisclosures()).map(dartToUnified)
+    : [];
 
   const all = [
     ...supabaseUnified,
@@ -298,7 +302,9 @@ export async function getRecentNewsUnified(
     ...rssUnified,
     ...dartUnified,
   ];
-  const deduped = dedupeByUrlAndTitle(all);
+  let deduped = dedupeByUrlAndTitle(all);
+  // 안전망: 아카이브에 과거 DART가 남아 있어도 방문자 화면엔 안 나오게.
+  if (!includeDart) deduped = deduped.filter((n) => n.origin !== "dart");
 
   const filtered = applyFilters(deduped).slice(0, limit);
   return enrichWithSummaryAndImages(filtered, limit);
