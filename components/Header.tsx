@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getHotKeywords } from "@/lib/keywords";
+import { getMarketStatus } from "@/lib/market-status";
 import { GlobalSearch } from "./GlobalSearch";
 import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "./ThemeToggle";
@@ -15,6 +16,7 @@ const TOP_NAV = [
 
 export function Header() {
   const hot = getHotKeywords();
+  const status = getMarketStatus(new Date());
   return (
     <header className="border-b border-[var(--border)] bg-[var(--bg)]/95 backdrop-blur sticky top-0 z-30">
       <div className="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between gap-4">
@@ -49,9 +51,11 @@ export function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-2 mono text-[10px] text-[var(--text-caption)] uppercase tracking-widest">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] pulse-dot" />
-            KRX OPEN
+          <div className="flex items-center gap-1.5 mono text-[10px] text-[var(--text-muted)] uppercase tracking-widest">
+            {status.isLive && (
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
+            )}
+            {status.badge}
           </div>
           <ThemeToggle />
         </div>
