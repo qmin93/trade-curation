@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
+import { fetchRecentDartDisclosures } from "@/lib/dart-fetcher";
 import { insertNewsItems, type NewsRow } from "@/lib/supabase";
 
 /**
@@ -19,6 +20,17 @@ export async function GET(request: Request) {
   const expected = `Bearer ${process.env.CRON_SECRET}`;
   if (process.env.CRON_SECRET && authHeader !== expected) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // 진단: ?debug=dart → DART fetch만 직접 호출해 키/수집 상태 확인
+  const { searchParams } = new URL(request.url);
+  if (searchParams.get("debug") === "dart") {
+    const dart = await fetchRecentDartDisclosures();
+    return NextResponse.json({
+      keyPresent: Boolean(process.env.DART_API_KEY),
+      dartCount: dart.length,
+      sample: dart.slice(0, 5).map((d) => `${d.corpName} — ${d.reportNm}`),
+    });
   }
 
   try {
