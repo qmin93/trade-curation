@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
+import { dantaAngle } from "@/lib/danta-angle";
 import { NewsModal } from "./NewsModal";
 
 const sourceTint: Record<string, string> = {
@@ -45,6 +46,7 @@ function formatStamp(news: UnifiedNewsItem): string {
 
 export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
   const [open, setOpen] = useState(false);
+  const angle = dantaAngle(news);
 
   return (
     <>
@@ -101,6 +103,14 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
             <p className="text-sm md:text-[15px] text-[var(--text-muted)] mt-2 leading-relaxed line-clamp-3">
               {news.summary}
             </p>
+          )}
+
+          {angle && (
+            <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-md bg-[var(--accent)]/[0.08] px-2.5 py-1 text-[12px] font-medium text-[var(--accent)]">
+              <span aria-hidden>💡</span>
+              <span className="text-[var(--text-muted)]">단타 관점</span>
+              <span className="text-[var(--text)]">{angle}</span>
+            </div>
           )}
 
           {/* 종목 태그 + 액션 */}

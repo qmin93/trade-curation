@@ -5,24 +5,29 @@ import { TrendingStocks } from "@/components/dashboard/TrendingStocks";
 import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
 import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
 import { HeroNews } from "@/components/HeroNews";
-import { NewsListItem } from "@/components/NewsListItem";
+import { NewsFeed } from "@/components/NewsFeed";
 import { KeywordChip } from "@/components/KeywordChip";
 import { TelegramCTA } from "@/components/TelegramCTA";
 import { PickSpotlight } from "@/components/PickSpotlight";
 import { MarketNowBand } from "@/components/MarketNowBand";
 import { MONTHLY_STATS } from "@/lib/results";
+import { getMarketStatus } from "@/lib/market-status";
+import { rankNewsByPhase } from "@/lib/news-rank";
 
 export const revalidate = 120;
 
 export default async function Home() {
-  const news = await getRecentNewsUnified(20);
-  // 최신순 정렬(게시시각 우선, 없으면 날짜) → 히어로/목록이 항상 최신 반영.
+  const news = await getRecentNewsUnified(40);
+  // 최신순 정렬(게시시각 우선, 없으면 날짜) → 히어로가 항상 최신 반영.
   const sorted = [...news].sort((a, b) => {
     const ta = new Date(a.publishedAt ?? `${a.date}T00:00:00+09:00`).getTime();
     const tb = new Date(b.publishedAt ?? `${b.date}T00:00:00+09:00`).getTime();
     return tb - ta;
   });
   const [hero, ...rest] = sorted;
+  // 시간대별 정렬: 장중=급등·수급 먼저, 장전·마감=미국·매크로 먼저.
+  const phase = getMarketStatus(new Date()).phase;
+  const ranked = rankNewsByPhase(rest, phase);
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-6">
       {/* 지금 장 상태 + 시간대 맞춤 데이터 (밤=장전, 장중=테마 주도주) */}
@@ -80,22 +85,8 @@ export default async function Home() {
 
       {/* 2-column body */}
       <div className="grid lg:grid-cols-[1fr_320px] gap-8 mt-10">
-        {/* News list */}
-        <section>
-          <div className="flex items-center justify-between mb-2 pb-3 border-b border-[var(--border)]">
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">
-              Latest
-            </h2>
-            <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)]">
-              {rest.length} stories
-            </span>
-          </div>
-          <div className="space-y-3 mt-4">
-            {rest.map((n) => (
-              <NewsListItem key={n.id} news={n} />
-            ))}
-          </div>
-        </section>
+        {/* 뉴스 피드 — 키워드 필터 + 무한스크롤 */}
+        <NewsFeed items={ranked} />
 
         {/* Sidebar */}
         <aside className="space-y-3 lg:sticky lg:top-24 lg:self-start">
