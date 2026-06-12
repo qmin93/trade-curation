@@ -2,6 +2,9 @@ import { getRecentResults, MONTHLY_STATS } from "@/lib/results";
 import { ResultCard } from "@/components/ResultCard";
 import { PerformanceStats } from "@/components/PerformanceStats";
 import { SectionHeader } from "@/components/SectionHeader";
+import { ComparisonTable } from "@/components/ComparisonTable";
+import { TelegramProcess } from "@/components/TelegramProcess";
+import { FAQ } from "@/components/FAQ";
 
 export const metadata = {
   title: "추천 결과 · 누적 성과",
@@ -61,6 +64,27 @@ export default function ResultsPage() {
               ))}
             </div>
           )}
+        </section>
+
+        <section>
+          <SectionHeader
+            label="03 · Why us"
+            title="일반 리딩방과 무엇이 다른가"
+          />
+          <ComparisonTable />
+        </section>
+
+        <section>
+          <SectionHeader
+            label="04 · How to start"
+            title="무료 체험, 3단계면 끝"
+          />
+          <TelegramProcess />
+        </section>
+
+        <section>
+          <SectionHeader label="05 · FAQ" title="자주 묻는 질문" />
+          <FAQ />
         </section>
       </div>
     </>
