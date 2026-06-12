@@ -154,6 +154,11 @@ function newsMockToUnified(n: NewsItem): UnifiedNewsItem {
 }
 
 function supabaseToUnified(r: NewsRow): UnifiedNewsItem {
+  // 아카이브는 원래 origin을 보존한다. 과거엔 전부 "mock"으로 묶어
+  // 아카이브가 커질수록 mock 가점(200)으로 라이브·DART를 홈/ingest에서 밀어내는 버그가 있었다.
+  const o = r.origin;
+  const origin: UnifiedNewsItem["origin"] =
+    o === "naver" || o === "rss" || o === "dart" ? o : "mock";
   return {
     id: r.id,
     date: r.date,
@@ -163,7 +168,7 @@ function supabaseToUnified(r: NewsRow): UnifiedNewsItem {
     sourceUrl: r.source_url,
     keywords: r.keywords,
     stocks: r.stocks,
-    origin: "mock",
+    origin,
   };
 }
 
