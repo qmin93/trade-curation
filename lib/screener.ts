@@ -22,7 +22,8 @@ interface RawStock {
 }
 
 // ETF/ETN/레버리지/지수상품 제외 (단타 개별주만)
-const NON_STOCK = /(ETF|ETN|레버리지|인버스|선물|TR|TOP\s?10|KODEX|TIGER|RISE|ACE|PLUS|SOL\b|KOSEF|ARIRANG|HANARO|KBSTAR|TIMEFOLIO|채권|리츠|스팩)/i;
+const NON_STOCK =
+  /(ETF|ETN|레버리지|인버스|선물|TR\b|TOP\s?\d|KODEX|TIGER|RISE|ACE|PLUS|SOL\b|KOSEF|ARIRANG|HANARO|KBSTAR|TIMEFOLIO|1Q|KIWOOM|UNICORN|마이다스|채권|리츠|스팩|액티브|커버드콜|공급망|강소기업|생성형|고배당|그룹주)/i;
 
 function dir(code?: string): "up" | "down" | "flat" {
   if (code === "1" || code === "2") return "up";
