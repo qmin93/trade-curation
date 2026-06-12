@@ -27,9 +27,11 @@ export async function GET(request: Request) {
   try {
     // origin 필터가 있으면 더 큰 풀을 받아 필터 후 자른다(슬라이스가 라이브를 먼저 잘라내는 문제 방지).
     const poolSize = originFilter ? Math.max(limit * 5, 50) : limit;
+    // 발굴(live)일 때만 DART 공시를 포함 → /news가 빠른 재료로 활용.
+    const includeDart = originFilter === "live";
     const raw = keyword
       ? await getNewsByKeywordUnified(keyword)
-      : await getRecentNewsUnified(poolSize);
+      : await getRecentNewsUnified(poolSize, undefined, { includeDart });
 
     let items = raw;
     if (originFilter === "live") {
