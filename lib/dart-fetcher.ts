@@ -44,55 +44,81 @@ function yyyymmdd(d: Date): string {
   return d.toISOString().slice(0, 10).replace(/-/g, "");
 }
 
-/** 최근 N일 단타 관심 상장사 공시. 키 없으면 []. */
-export async function fetchRecentDartDisclosures(days = 2): Promise<DartDisclosure[]> {
-  const key = process.env.DART_API_KEY;
-  if (!key) return [];
+/**
+ * 단타 재료가 실리는 공시유형(pblntf_ty)만 조회.
+ * - I: 거래소공시(수시) — 단일판매ㆍ공급계약·수주·자기주식·투자판단 등
+ * - B: 주요사항보고서 — 유상증자결정·전환사채 등
+ * 기본 전체 조회는 최근 100건이 정형 보고서(증권발행실적·감사보고서)로 꽉 차
+ * 단타 공시를 놓치므로 유형을 좁혀야 한다.
+ */
+const DART_PBLNTF_TYPES = ["I", "B"] as const;
 
-  const now = new Date();
+async function fetchDartByType(
+  key: string,
+  pblntfTy: string,
+  bgnDe: string,
+  endDe: string,
+): Promise<DartListItem[]> {
   const params = new URLSearchParams({
     crtfc_key: key,
-    bgn_de: yyyymmdd(new Date(now.getTime() - days * 86_400_000)),
-    end_de: yyyymmdd(now),
+    bgn_de: bgnDe,
+    end_de: endDe,
+    pblntf_ty: pblntfTy,
     page_count: "100",
     sort: "date",
     sort_mth: "desc",
   });
-
   try {
     const res = await fetch(`${DART_LIST_API}?${params.toString()}`, {
       next: { revalidate: 600 },
     });
     if (!res.ok) {
-      console.warn(`[dart] HTTP ${res.status}`);
+      console.warn(`[dart] HTTP ${res.status} (ty=${pblntfTy})`);
       return [];
     }
     const json: { status: string; message: string; list?: DartListItem[] } =
       await res.json();
     // status "000" = 정상. "013" = 데이터 없음.
     if (json.status !== "000" || !json.list) return [];
-
-    const seen = new Set<string>();
-    return json.list
-      .filter((it) => {
-        if (!it.stock_code || it.stock_code.trim() === "") return false; // 상장사만
-        if (!DANTA_REPORT_KEYWORDS.some((k) => it.report_nm.includes(k)))
-          return false;
-        if (seen.has(it.rcept_no)) return false;
-        seen.add(it.rcept_no);
-        return true;
-      })
-      .map((it) => ({
-        corpName: it.corp_name.trim(),
-        stockCode: it.stock_code.trim(),
-        reportNm: it.report_nm.trim(),
-        rceptNo: it.rcept_no.trim(),
-        rceptDt: it.rcept_dt.trim(),
-      }));
+    return json.list;
   } catch (err) {
-    console.warn("[dart] fetch failed", err);
+    console.warn(`[dart] fetch failed (ty=${pblntfTy})`, err);
     return [];
   }
+}
+
+/** 최근 N일 단타 관심 상장사 공시. 키 없으면 []. */
+export async function fetchRecentDartDisclosures(days = 2): Promise<DartDisclosure[]> {
+  const key = process.env.DART_API_KEY;
+  if (!key) return [];
+
+  const now = new Date();
+  const bgnDe = yyyymmdd(new Date(now.getTime() - days * 86_400_000));
+  const endDe = yyyymmdd(now);
+
+  const lists = await Promise.all(
+    DART_PBLNTF_TYPES.map((ty) => fetchDartByType(key, ty, bgnDe, endDe)),
+  );
+
+  const seen = new Set<string>();
+  return lists
+    .flat()
+    .filter((it) => {
+      if (!it.stock_code || it.stock_code.trim() === "") return false; // 상장사만
+      // DART report_nm은 NFC 한글 — includes 매칭 정상.
+      if (!DANTA_REPORT_KEYWORDS.some((k) => it.report_nm.includes(k)))
+        return false;
+      if (seen.has(it.rcept_no)) return false;
+      seen.add(it.rcept_no);
+      return true;
+    })
+    .map((it) => ({
+      corpName: it.corp_name.trim(),
+      stockCode: it.stock_code.trim(),
+      reportNm: it.report_nm.trim(),
+      rceptNo: it.rcept_no.trim(),
+      rceptDt: it.rcept_dt.trim(),
+    }));
 }
 
 /** 공시 뷰어 URL (사이트 카드 "출처 가기"용). */
