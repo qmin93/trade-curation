@@ -14,7 +14,9 @@ import { getBacktestSummary } from "@/lib/backtest";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const SIZE = 1080;
+const WIDTH = 1080;
+const SQUARE = 1080;
+const PORTRAIT = 1350;
 const NAVY = "#0a0e1a";
 const TEXT = "#f1f5f9";
 const MUTED = "#94a3b8";
@@ -80,7 +82,7 @@ function eyebrow(text: string) {
       style={{
         display: "flex",
         fontSize: 28,
-        letterSpacing: "0.28em",
+        letterSpacing: "0.1em",
         color: ACCENT,
         textTransform: "uppercase",
         marginBottom: 28,
@@ -273,6 +275,7 @@ export async function GET(
   const url = new URL(req.url);
   const p = url.searchParams;
   const brand = p.get("brand") === "1";
+  const height = p.get("ratio") === "portrait" ? PORTRAIT : SQUARE;
 
   let node: React.ReactNode;
   if (type === "chart") node = ChartCard(p, brand);
@@ -283,8 +286,8 @@ export async function GET(
 
   const font = await loadKoreanFont();
   return new ImageResponse(node, {
-    width: SIZE,
-    height: SIZE,
+    width: WIDTH,
+    height,
     fonts: [{ name: "Pretendard", data: font, weight: 600, style: "normal" }],
   });
 }
