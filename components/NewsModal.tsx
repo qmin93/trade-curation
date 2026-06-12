@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
+import { dantaAngle } from "@/lib/danta-angle";
 
 /**
  * 뉴스 캡처용 팝업 — 클릭한 뉴스를 깔끔한 카드로 띄운다.
@@ -77,6 +78,18 @@ export function NewsModal({
                 {news.summary}
               </p>
             )}
+
+            {(() => {
+              const angle = dantaAngle(news);
+              return angle ? (
+                <div className="mt-4 rounded-lg border border-[var(--accent)]/25 bg-[var(--accent)]/[0.06] px-4 py-3">
+                  <div className="mono text-[10px] uppercase tracking-widest text-[var(--accent)] mb-1">
+                    💡 단타 관점
+                  </div>
+                  <div className="text-sm font-medium text-[var(--text)]">{angle}</div>
+                </div>
+              ) : null;
+            })()}
 
             {news.stocks.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-4">
