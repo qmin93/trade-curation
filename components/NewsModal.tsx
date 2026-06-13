@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
 import { dantaAngle } from "@/lib/danta-angle";
-import { threadsCaption } from "@/lib/threads-caption";
+import { PERSONAS, threadsCaptionByPersona, type Persona } from "@/lib/threads-caption";
 
 /**
  * 뉴스 캡처용 팝업 — 클릭한 뉴스를 깔끔한 카드로 띄운다.
@@ -18,7 +18,8 @@ export function NewsModal({
   stamp: string;
   onClose: () => void;
 }) {
-  const caption = threadsCaption(news);
+  const [persona, setPersona] = useState<Persona>(PERSONAS[0]);
+  const caption = threadsCaptionByPersona(news, persona);
   const [copied, setCopied] = useState(false);
   const copyCaption = async () => {
     await navigator.clipboard.writeText(caption);
@@ -128,7 +129,7 @@ export function NewsModal({
         <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="mono text-[10px] uppercase tracking-widest text-[var(--accent)]">
-              ✍️ Threads 본문 (자동)
+              ✍️ Threads 본문 · {persona}
             </span>
             <button
               onClick={copyCaption}
@@ -137,6 +138,24 @@ export function NewsModal({
               {copied ? "복사됨 ✓" : "본문 복사"}
             </button>
           </div>
+
+          {/* 페르소나 선택 */}
+          <div className="flex flex-wrap gap-1.5 mb-2.5">
+            {PERSONAS.map((p) => (
+              <button
+                key={p}
+                onClick={() => setPersona(p)}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                  persona === p
+                    ? "bg-[var(--accent)] text-white"
+                    : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text)]"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+
           <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[var(--text)]">
             {caption}
           </pre>
