@@ -25,7 +25,7 @@ export function PickSpotlight() {
             {live ? (
               <span className="inline-flex items-center gap-1 mono text-[10px] uppercase tracking-widest text-[var(--red)]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
-                Live
+                진행 중
               </span>
             ) : (
               <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)]">
