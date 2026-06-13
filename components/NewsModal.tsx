@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
 import { dantaAngle } from "@/lib/danta-angle";
 import { PERSONAS, threadsCaptionByPersona, type Persona } from "@/lib/threads-caption";
+import { useOperator } from "@/lib/use-operator";
 
 /**
  * 뉴스 캡처용 팝업 — 클릭한 뉴스를 깔끔한 카드로 띄운다.
@@ -18,6 +19,7 @@ export function NewsModal({
   stamp: string;
   onClose: () => void;
 }) {
+  const isOperator = useOperator();
   const [persona, setPersona] = useState<Persona>(PERSONAS[0]);
   const caption = threadsCaptionByPersona(news, persona);
   const [copied, setCopied] = useState(false);
@@ -125,8 +127,9 @@ export function NewsModal({
           </div>
         </div>
 
-        {/* Threads 본문 — 이 기사에 맞춰 자동 생성 (캡처 영역 밖) */}
-        <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-4">
+        {/* Threads 본문 — 운영자 전용 (방문자에겐 숨김) */}
+        {isOperator && (
+        <div className="mt-3 rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/[0.04] p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="mono text-[10px] uppercase tracking-widest text-[var(--accent)]">
               ✍️ Threads 본문 · {persona}
@@ -160,20 +163,23 @@ export function NewsModal({
             {caption}
           </pre>
           <p className="mono text-[10px] text-[var(--text-caption)] mt-2">
-            카드 이미지 캡처 + 이 본문 복사 → Threads에 그대로. 초안이니 톤은 살짝 다듬어도 좋아요.
+            운영자 전용 · 카드 캡처 + 이 본문 복사 → Threads. 방문자에겐 안 보입니다.
           </p>
         </div>
+        )}
 
         {/* 액션 (캡처 영역 밖) */}
-        <div className="flex items-center justify-between mt-3">
-          <span className="mono text-[10px] text-[var(--text-caption)] uppercase tracking-widest">
-            카드를 캡처해 올리세요
-          </span>
+        <div className="flex items-center mt-3">
+          {isOperator && (
+            <span className="mono text-[10px] text-[var(--text-caption)] uppercase tracking-widest">
+              카드를 캡처해 올리세요
+            </span>
+          )}
           <a
             href={news.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] px-4 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] px-4 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
           >
             출처 기사 ↗
           </a>
