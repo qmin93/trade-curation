@@ -91,8 +91,21 @@ async function enrichWithSummaryAndImages(
  * 매체 꼬리를 보수적으로 정리. 사실은 그대로 두고 장식만 덜어낸다.
  * (큐레이션 mock 제목은 이미 사람이 쓴 톤이라 건드리지 않는다.)
  */
+/** &#039; &amp; &quot; 등 HTML 엔티티 디코딩 (네이버·RSS 제목/요약에 섞여 들어옴). */
+export function decodeEntities(s: string): string {
+  return s
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&");
+}
+
 export function cleanHeadline(h: string): string {
-  return h
+  return decodeEntities(h)
     .replace(/^\s*\[[^\]]*\]\s*/u, "")
     .replace(/\s*[…]+\s*$/u, "")
     .replace(/\.{2,}\s*$/u, "")
@@ -179,7 +192,7 @@ function rssToUnified(r: RssItem, keyword: string): UnifiedNewsItem {
     id: `rss-${r.source}-${pubDate.getTime()}`,
     date: dateStr,
     headline: cleanHeadline(r.title),
-    summary: r.description.slice(0, 200),
+    summary: decodeEntities(r.description).slice(0, 200),
     source: r.source,
     sourceUrl: r.link,
     keywords: [keyword],
