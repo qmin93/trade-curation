@@ -51,10 +51,10 @@ function Row({
       ? "text-[var(--red)]"
       : "text-[var(--green)]";
   return (
-    <div className="flex items-center justify-between text-[11px] mono tabular-nums">
-      <span className="text-[var(--text-muted)] truncate">{label}</span>
-      <span className="text-[var(--text)] font-semibold">{value}</span>
-      <span className={`font-semibold w-12 text-right ${color}`}>
+    <div className="flex items-center gap-1 text-[11px] mono tabular-nums">
+      <span className="text-[var(--text-muted)] truncate min-w-0">{label}</span>
+      <span className="ml-auto text-[var(--text)] font-semibold shrink-0">{value}</span>
+      <span className={`font-semibold w-11 text-right shrink-0 ${color}`}>
         {up ? "+" : ""}
         {pct.toFixed(2)}%
       </span>
