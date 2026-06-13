@@ -86,12 +86,12 @@ export default async function Home() {
       {hero && <HeroNews news={hero} />}
 
       {/* 2-column body */}
-      <div className="grid lg:grid-cols-[1fr_320px] gap-8 mt-10">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8 mt-10">
         {/* 뉴스 피드 — 키워드 필터 + 무한스크롤 */}
         <NewsFeed items={ranked} />
 
         {/* Sidebar */}
-        <aside className="space-y-3 lg:sticky lg:top-24 lg:self-start">
+        <aside className="space-y-3 min-w-0 lg:sticky lg:top-24 lg:self-start">
           <TelegramCTA />
           <IndexBoard />
           <TrendingStocks limit={8} />

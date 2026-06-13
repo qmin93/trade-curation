@@ -121,6 +121,10 @@
     border-color: var(--border);
   }
 
+  html {
+    overflow-x: clip;
+  }
+
   body {
     background: var(--bg);
     color: var(--text);
