@@ -126,32 +126,35 @@ export function threadsCaptionByPersona(
   news: UnifiedNewsItem,
   persona: Persona,
 ): string {
-  const subj = pickStocks(news) || "관련주";
+  const subj = pickStocks(news) || "관련 종목";
   const lead = leadLine(news);
-  const angle = dantaAngle(news) ?? "단기 변동성이 큰 자리입니다";
+  const angle = dantaAngle(news) ?? "단기 변동성이 큰 구간입니다";
   const mmdd = news.date.slice(5).replace("-", "/");
   const tags = hashtags(news);
 
+  // ⚠️ Meta 정책 준수 — 매수·매도 지시/수익 보장/세력·신호 어투 금지. 관찰·해설 + 면책.
   let body: string;
   switch (persona) {
     case "단타시그널":
-      body = `${lead}\n- ${angle}.\n- 추격보다 눌림 한 번 기다리는 게 편해 보입니다.`;
+      body = `${lead}\n- 관찰 포인트: ${angle}.\n- 거래대금·수급 흐름을 참고용으로 봅니다.`;
       break;
     case "단타이스트":
-      body = `${lead}\n\n${angle}.\n이런 자리, 기준 없이 들어가도 괜찮을까요?`;
+      body = `${lead}\n\n${angle}.\n남들이 한쪽만 볼 때 다른 흐름도 같이 봅니다. 어떻게 보세요?`;
       break;
     case "단타데일리":
-      body = `[${mmdd}] 오늘 짚어볼 포인트\n${lead}\n1. ${angle}.\n2. 갭이 큰 날일수록 추격보다 기준 확인이 먼저입니다.\n결정은 본인의 몫.`;
+      body = `[${mmdd}] 오늘 시장 관찰\n${lead}\n1. ${angle}.\n2. 거래대금·테마 집중도를 함께 보는 구간입니다.\n판단은 본인 기준으로.`;
       break;
     case "단타Lab":
-      body = `"${lead}"\n단순한 뉴스로 넘기면 손해입니다.\n${angle}.\n표면 말고 그 뒤, 보고 계신가요?`;
+      body = `"${lead}"\n표면 뉴스보다 수급·테마 흐름을 봐야 할 때입니다.\n${angle}.\n그 뒤의 흐름, 같이 보고 계신가요?`;
       break;
     case "단타Pick":
-      body = `${subj} 소식 봤습니다.\n${lead}\n${angle}.\n오늘 자리, 어디까지 갈까요?`;
+      body = `${subj} 흐름 살펴봤습니다.\n${lead}\n${angle}.\n참고용으로, 어떻게 보세요?`;
       break;
     case "스캘퍼":
-      body = `[${mmdd}] 단발 이슈\n🔻 ${lead}\n📍 ${angle}. 추격보다 시초가 확인.\n시초가 어디냐?`;
+      body = `[${mmdd}] 장중 관찰 포인트\n📊 ${lead}\n📍 ${angle}. 거래대금 유지·고점 돌파 여부 관찰.\n지속성은 어떻게 보세요?`;
       break;
   }
-  return tags ? `${body}\n\n${tags}` : body;
+
+  const disclaimer = "※ 매수·매도 추천 아님 · 시장 관찰용 정보 · 투자 판단과 책임은 본인에게";
+  return `${body}\n\n${disclaimer}${tags ? `\n${tags}` : ""}`;
 }
