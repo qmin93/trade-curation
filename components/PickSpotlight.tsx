@@ -1,11 +1,36 @@
 import { ACTIVE_PICK } from "@/lib/picks";
 import { TELEGRAM_INVITE_URL } from "@/lib/site";
+import { getMarketStatus } from "@/lib/market-status";
 
 /** 메인 최상단 "오늘의 픽" 스포트라이트 — 터미널에서 받은 픽을 이미지 카드처럼 강조 노출. */
 export function PickSpotlight() {
   const pick = ACTIVE_PICK;
-  if (!pick) return null;
-  const live = pick.status === "live";
+  const status = getMarketStatus(new Date());
+
+  // 휴장(주말)엔 진행 중 픽이 없다 — 다음 거래일 안내로 대체.
+  if (!pick || status.phase === "weekend") {
+    return (
+      <a
+        href={TELEGRAM_INVITE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group mb-8 block rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-5 md:p-6 hover:border-[var(--accent)]/40 transition-colors"
+      >
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="text-sm font-bold text-[var(--text)]">💤 오늘은 픽이 없습니다</span>
+          <span className="text-sm text-[var(--text-muted)]">
+            휴장일 · 다음 거래일에 새 픽이 올라옵니다.
+          </span>
+          <span className="ml-auto inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">
+            실시간 픽은 텔레그램
+            <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+          </span>
+        </div>
+      </a>
+    );
+  }
+
+  const live = pick.status === "live" && status.isLive;
 
   return (
     <a
@@ -29,7 +54,7 @@ export function PickSpotlight() {
               </span>
             ) : (
               <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)]">
-                마감
+                {pick.status === "done" ? "마감" : status.short}
               </span>
             )}
           </div>
