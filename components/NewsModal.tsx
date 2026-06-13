@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
 import { dantaAngle } from "@/lib/danta-angle";
+import { threadsCaption } from "@/lib/threads-caption";
 
 /**
  * 뉴스 캡처용 팝업 — 클릭한 뉴스를 깔끔한 카드로 띄운다.
@@ -17,6 +18,14 @@ export function NewsModal({
   stamp: string;
   onClose: () => void;
 }) {
+  const caption = threadsCaption(news);
+  const [copied, setCopied] = useState(false);
+  const copyCaption = async () => {
+    await navigator.clipboard.writeText(caption);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -115,6 +124,27 @@ export function NewsModal({
           </div>
         </div>
 
+        {/* Threads 본문 — 이 기사에 맞춰 자동 생성 (캡처 영역 밖) */}
+        <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="mono text-[10px] uppercase tracking-widest text-[var(--accent)]">
+              ✍️ Threads 본문 (자동)
+            </span>
+            <button
+              onClick={copyCaption}
+              className="rounded-md bg-[var(--accent)] px-3 py-1 text-xs font-semibold text-white hover:opacity-90"
+            >
+              {copied ? "복사됨 ✓" : "본문 복사"}
+            </button>
+          </div>
+          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[var(--text)]">
+            {caption}
+          </pre>
+          <p className="mono text-[10px] text-[var(--text-caption)] mt-2">
+            카드 이미지 캡처 + 이 본문 복사 → Threads에 그대로. 초안이니 톤은 살짝 다듬어도 좋아요.
+          </p>
+        </div>
+
         {/* 액션 (캡처 영역 밖) */}
         <div className="flex items-center justify-between mt-3">
           <span className="mono text-[10px] text-[var(--text-caption)] uppercase tracking-widest">
@@ -124,9 +154,9 @@ export function NewsModal({
             href={news.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-white hover:opacity-90"
+            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] px-4 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
           >
-            출처 기사 보기 ↗
+            출처 기사 ↗
           </a>
         </div>
       </div>
