@@ -130,6 +130,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.2s ease, color 0.2s ease;
+    /* 모바일 가로 오버플로우(삐져나옴) 차단 — clip은 sticky를 깨지 않음 */
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4 {
