@@ -84,15 +84,16 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 mb-2 text-[11px] mono uppercase tracking-widest">
-            <span className={`font-semibold ${tintForSource(news.source)}`}>{news.source}</span>
+          <div className="flex items-center gap-2 mb-2 text-[11px] mono uppercase">
+            <span className={`font-semibold tracking-wider shrink-0 ${tintForSource(news.source)}`}>
+              {news.source}
+            </span>
             {news.keywords[0] && (
-              <>
-                <span className="text-[var(--text-caption)]">·</span>
-                <span className="text-[var(--text-muted)]">#{news.keywords[0]}</span>
-              </>
+              <span className="text-[var(--text-muted)] truncate min-w-0">
+                #{news.keywords[0]}
+              </span>
             )}
-            <span className="ml-auto tabular-nums text-[var(--text-caption)]">
+            <span className="ml-auto shrink-0 tabular-nums text-[var(--text-caption)]">
               {formatStamp(news)}
             </span>
           </div>

@@ -36,13 +36,13 @@ export async function TrendingStocks({ limit = 8 }: { limit?: number }) {
                 <span className="mono w-4 text-[var(--text-caption)] tabular-nums">
                   {s.rank}
                 </span>
-                <span className="flex-1 truncate text-[var(--text)] font-medium">
+                <span className="flex-1 min-w-0 truncate text-[var(--text)] font-medium">
                   {s.name}
                 </span>
-                <span className="mono tabular-nums text-[var(--text-muted)]">
+                <span className="mono tabular-nums text-[var(--text-muted)] shrink-0">
                   {s.price}
                 </span>
-                <span className={`mono tabular-nums w-14 text-right font-semibold ${color}`}>
+                <span className={`mono tabular-nums w-14 text-right font-semibold shrink-0 ${color}`}>
                   {up ? "+" : ""}
                   {s.changePercent.toFixed(2)}%
                 </span>
