@@ -104,12 +104,12 @@ export type Persona =
   | "단타Pick"
   | "스캘퍼";
 
+// 활성 페르소나만 노출. 단타Pick은 2026-06-13 정지 → 제외.
 export const PERSONAS: Persona[] = [
   "단타시그널",
   "단타이스트",
   "단타데일리",
   "단타Lab",
-  "단타Pick",
   "스캘퍼",
 ];
 
