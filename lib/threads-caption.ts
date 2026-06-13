@@ -3,6 +3,7 @@
  * 규칙 기반(AI 비용 0). 카드 요약을 반복하지 않고 '단타 훅'을 더한다.
  */
 import type { UnifiedNewsItem } from "./news-fetcher";
+import { dantaAngle } from "./danta-angle";
 
 // 종목이 아닌 일반 키워드(지수·테마·수급어)는 '주어'로 쓰지 않는다.
 const NOT_STOCK = new Set([
@@ -90,5 +91,67 @@ export function threadsCaption(news: UnifiedNewsItem): string {
   const text = `${news.headline} ${news.summary} ${news.keywords.join(" ")}`;
   const body = (TEMPLATES.find((t) => t.test.test(text))?.build ?? defaultBuild)(stocks);
   const tags = hashtags(news);
+  return tags ? `${body}\n\n${tags}` : body;
+}
+
+/* ───────── 페르소나별 본문 (6계정 포맷에 맞춰) ───────── */
+
+export type Persona =
+  | "단타시그널"
+  | "단타이스트"
+  | "단타데일리"
+  | "단타Lab"
+  | "단타Pick"
+  | "스캘퍼";
+
+export const PERSONAS: Persona[] = [
+  "단타시그널",
+  "단타이스트",
+  "단타데일리",
+  "단타Lab",
+  "단타Pick",
+  "스캘퍼",
+];
+
+/** 본문 첫 줄용 — 요약 첫 문장(없으면 헤드라인), 길면 자른다. */
+function leadLine(news: UnifiedNewsItem): string {
+  const src = (news.summary || news.headline).trim();
+  const m = src.match(/^[^.。!?\n]+[.。!?]?/u);
+  let lead = (m ? m[0] : src).trim();
+  if (lead.length > 80) lead = lead.slice(0, 78).trim() + "…";
+  return lead;
+}
+
+export function threadsCaptionByPersona(
+  news: UnifiedNewsItem,
+  persona: Persona,
+): string {
+  const subj = pickStocks(news) || "관련주";
+  const lead = leadLine(news);
+  const angle = dantaAngle(news) ?? "단기 변동성이 큰 자리입니다";
+  const mmdd = news.date.slice(5).replace("-", "/");
+  const tags = hashtags(news);
+
+  let body: string;
+  switch (persona) {
+    case "단타시그널":
+      body = `${lead}\n- ${angle}.\n- 추격보다 눌림 한 번 기다리는 게 편해 보입니다.`;
+      break;
+    case "단타이스트":
+      body = `${lead}\n\n${angle}.\n이런 자리, 기준 없이 들어가도 괜찮을까요?`;
+      break;
+    case "단타데일리":
+      body = `[${mmdd}] 오늘 짚어볼 포인트\n${lead}\n1. ${angle}.\n2. 갭이 큰 날일수록 추격보다 기준 확인이 먼저입니다.\n결정은 본인의 몫.`;
+      break;
+    case "단타Lab":
+      body = `"${lead}"\n단순한 뉴스로 넘기면 손해입니다.\n${angle}.\n표면 말고 그 뒤, 보고 계신가요?`;
+      break;
+    case "단타Pick":
+      body = `${subj} 소식 봤습니다.\n${lead}\n${angle}.\n오늘 자리, 어디까지 갈까요?`;
+      break;
+    case "스캘퍼":
+      body = `[${mmdd}] 단발 이슈\n🔻 ${lead}\n📍 ${angle}. 추격보다 시초가 확인.\n시초가 어디냐?`;
+      break;
+  }
   return tags ? `${body}\n\n${tags}` : body;
 }
