@@ -9,7 +9,7 @@ import { dantaAngle } from "./danta-angle";
 const NOT_STOCK = new Set([
   "기관 매수", "매수 사이드카", "코스피", "코스닥", "상한가", "급등주", "시초가",
   "서킷브레이커", "공시", "연금", "FOMC", "외인", "수급", "환율", "금리", "HBM",
-  "반도체", "하이닉스",
+  "반도체", "급등", "테마",
 ]);
 
 function pickStocks(news: UnifiedNewsItem): string {
