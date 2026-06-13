@@ -1,6 +1,8 @@
 /**
- * 상단 ticker bar — 실시간 코스피·코스닥·환율 (현재는 mock·추후 KRX OpenAPI).
+ * 상단 ticker bar — 코스피·코스닥·환율 (현재는 mock·추후 KRX OpenAPI).
+ * 좌측 라벨은 장 상태(장중/장 마감/휴장)를 반영.
  */
+import { getMarketStatus } from "@/lib/market-status";
 
 interface TickerItem {
   label: string;
@@ -34,13 +36,16 @@ function dirArrow(d: TickerItem["direction"]) {
 
 export function TickerBar() {
   const items = [...MOCK_TICKERS, ...MOCK_TICKERS];
+  const status = getMarketStatus(new Date());
   return (
     <div className="border-b border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 py-2 flex items-center gap-3">
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
-          <span className="text-[10px] mono uppercase tracking-widest text-[var(--text-caption)]">
-            Live
+        <div className="flex items-center gap-1.5 shrink-0">
+          {status.isLive && (
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
+          )}
+          <span className="text-[10px] mono uppercase tracking-widest text-[var(--text-muted)]">
+            {status.badge}
           </span>
         </div>
         <div className="relative flex-1 overflow-hidden">

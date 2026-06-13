@@ -26,8 +26,8 @@ export default async function Home() {
   });
   const [hero, ...rest] = sorted;
   // 시간대별 정렬: 장중=급등·수급 먼저, 장전·마감=미국·매크로 먼저.
-  const phase = getMarketStatus(new Date()).phase;
-  const ranked = rankNewsByPhase(rest, phase);
+  const status = getMarketStatus(new Date());
+  const ranked = rankNewsByPhase(rest, status.phase);
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-6">
       {/* 지금 장 상태 + 시간대 맞춤 데이터 (밤=장전, 장중=테마 주도주) */}
@@ -67,10 +67,12 @@ export default async function Home() {
 
       {/* Headline strip */}
       <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
+        <div className="flex items-center gap-2">
+          {status.isLive && (
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
+          )}
           <span className="mono text-[10px] uppercase tracking-[0.3em] text-[var(--text-caption)]">
-            Live · {new Date().toISOString().slice(0, 10)}
+            {status.badge} · {new Date().toISOString().slice(0, 10)}
           </span>
         </div>
         <div className="flex flex-wrap gap-1.5">
