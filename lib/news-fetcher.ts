@@ -270,7 +270,7 @@ export async function getRecentNewsUnified(
       "삼성전자",
       "코스피",
       "HBM",
-      "연금",
+      "연기금 매수",
       ...FETCH_KEYWORDS_EXTRA,
     ];
   const mockUnified = NEWS_MOCK.map(newsMockToUnified);
