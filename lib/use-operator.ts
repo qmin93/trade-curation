@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 
 /**
- * 운영자 모드 — 운영 전용 UI(예: Threads 본문 생성기)를 방문자에게 숨긴다.
- * **주소창에 `?op=<SECRET>` 가 있을 때만** 노출. 저장 안 함 → plain URL은 항상 깨끗.
- * 운영자는 `dantatrade.vercel.app/?op=qmin-ops-2026` 를 북마크해서 쓴다.
+ * 운영자 모드 — 운영 전용 UI(Threads 본문 생성기)를 방문자에게 숨긴다.
+ * **해시 `#op=<SECRET>`** 권장: 해시는 서버·CDN에 안 보내져서 plain과 같은 캐시 = 같은 뉴스.
+ *   → `dantatrade.vercel.app/#op=qmin-ops-2026` 북마크.
+ * (구버전 `?op=`도 인식하지만 쿼리는 Vercel이 따로 캐싱해 뉴스가 다를 수 있음 → 해시 권장.)
+ * 저장 안 함 → 해시/쿼리 없는 plain URL은 항상 깨끗.
  *
- * ⚠️ 클라이언트 게이트라 강력한 보안은 아님(코드 뜯으면 SECRET 노출). 일반 방문자에게
- *    운영 도구를 가리는 용도로는 충분하다. 완벽 보안 필요 시 서버 로그인 필요.
+ * ⚠️ 클라이언트 게이트라 강력한 보안은 아님. 일반 방문자 차단 용도로는 충분.
  */
 const SECRET = "qmin-ops-2026";
 const KEY = "op";
@@ -18,10 +19,11 @@ export function useOperator(): boolean {
 
   useEffect(() => {
     try {
-      // 과거 저장 플래그가 남아 있으면 정리(이제 저장 방식 안 씀).
-      localStorage.removeItem(KEY);
-      const param = new URL(window.location.href).searchParams.get("op");
-      setOp(param === SECRET);
+      localStorage.removeItem(KEY); // 과거 저장 플래그 정리
+      const url = new URL(window.location.href);
+      const fromQuery = url.searchParams.get("op");
+      const fromHash = new URLSearchParams(url.hash.replace(/^#/, "")).get("op");
+      setOp(fromQuery === SECRET || fromHash === SECRET);
     } catch {
       /* noop */
     }
