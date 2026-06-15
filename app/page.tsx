@@ -1,7 +1,7 @@
 import { KEYWORDS } from "@/lib/keywords";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
 import { IndexBoard } from "@/components/dashboard/IndexBoard";
-import { TrendingStocks } from "@/components/dashboard/TrendingStocks";
+import { LiveTrendingBand } from "@/components/LiveTrendingBand";
 import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
 import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
 import { HeroNews } from "@/components/HeroNews";
@@ -36,6 +36,9 @@ export default async function Home() {
       {/* 후크-스토리-제안 히어로 — 차가운 방문자를 텔레그램으로 (마케팅 설계자 Secret 1·2·19) */}
       <HeroFunnel />
 
+      {/* 실시간 급등·인기검색 밴드 (공개) */}
+      <LiveTrendingBand />
+
       {/* 지금 장 상태 + 시간대 맞춤 데이터 (밤=장전, 장중=테마 주도주) */}
       <MarketNowBand />
 
@@ -68,7 +71,6 @@ export default async function Home() {
         <aside className="space-y-3 min-w-0 lg:sticky lg:top-24 lg:self-start">
           <TelegramCTA />
           <IndexBoard />
-          <TrendingStocks limit={8} />
           <CompactAlerts limit={5} />
           <CompactCalendar />
         </aside>
