@@ -11,6 +11,7 @@ import { TelegramCTA } from "@/components/TelegramCTA";
 import { PickPopup } from "@/components/PickPopup";
 import { ConsolePopup } from "@/components/ConsolePopup";
 import { HeroFunnel } from "@/components/HeroFunnel";
+import { LatestResultCard } from "@/components/LatestResultCard";
 import { MarketNowBand } from "@/components/MarketNowBand";
 import { getMarketStatus } from "@/lib/market-status";
 import { rankNewsByPhase } from "@/lib/news-rank";
@@ -39,6 +40,9 @@ export default async function Home() {
 
       {/* 실시간 급등·인기검색 밴드 (공개) */}
       <LiveTrendingBand />
+
+      {/* 오늘 마감 리포트 — 검증(끝난 결과) 프루프, 홈에서 바로 */}
+      <LatestResultCard />
 
       {/* 지금 장 상태 + 시간대 맞춤 데이터 (밤=장전, 장중=테마 주도주) */}
       <MarketNowBand />
