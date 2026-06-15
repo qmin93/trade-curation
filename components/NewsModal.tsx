@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { UnifiedNewsItem } from "@/lib/news-fetcher";
 import { dantaAngle } from "@/lib/danta-angle";
-import { PERSONAS, threadsCaptionByPersona, type Persona } from "@/lib/threads-caption";
 import { useOperator } from "@/lib/use-operator";
+import { NewsStudio } from "@/components/NewsStudio";
 
 /**
  * 뉴스 캡처용 팝업 — 클릭한 뉴스를 깔끔한 카드로 띄운다.
@@ -20,14 +20,7 @@ export function NewsModal({
   onClose: () => void;
 }) {
   const isOperator = useOperator();
-  const [persona, setPersona] = useState<Persona>(PERSONAS[0]);
-  const caption = threadsCaptionByPersona(news, persona);
-  const [copied, setCopied] = useState(false);
-  const copyCaption = async () => {
-    await navigator.clipboard.writeText(caption);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
+  const subj = news.stocks[0] || news.keywords[0] || news.headline;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -127,46 +120,8 @@ export function NewsModal({
           </div>
         </div>
 
-        {/* Threads 본문 — 운영자 전용 (방문자에겐 숨김) */}
-        {isOperator && (
-        <div className="mt-3 rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/[0.04] p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="mono text-[10px] uppercase tracking-widest text-[var(--accent)]">
-              ✍️ Threads 본문 · {persona}
-            </span>
-            <button
-              onClick={copyCaption}
-              className="rounded-md bg-[var(--accent)] px-3 py-1 text-xs font-semibold text-white hover:opacity-90"
-            >
-              {copied ? "복사됨 ✓" : "본문 복사"}
-            </button>
-          </div>
-
-          {/* 페르소나 선택 */}
-          <div className="flex flex-wrap gap-1.5 mb-2.5">
-            {PERSONAS.map((p) => (
-              <button
-                key={p}
-                onClick={() => setPersona(p)}
-                className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
-                  persona === p
-                    ? "bg-[var(--accent)] text-white"
-                    : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text)]"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-
-          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[var(--text)]">
-            {caption}
-          </pre>
-          <p className="mono text-[10px] text-[var(--text-caption)] mt-2">
-            운영자 전용 · 카드 캡처 + 이 본문 복사 → Threads. 방문자에겐 안 보입니다.
-          </p>
-        </div>
-        )}
+        {/* Threads 본문 콘솔 — 운영자 전용 (방문자에겐 숨김) */}
+        {isOperator && <NewsStudio subj={subj} headline={news.headline} />}
 
         {/* 액션 (캡처 영역 밖) */}
         <div className="flex items-center mt-3">
