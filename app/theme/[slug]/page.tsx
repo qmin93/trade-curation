@@ -6,6 +6,8 @@ import { getNewsByKeywordUnified } from "@/lib/news-fetcher";
 import { NewsCard } from "@/components/NewsCard";
 import { StockCard } from "@/components/StockCard";
 import { SectionHeader } from "@/components/SectionHeader";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 
 export const revalidate = 600;
 
@@ -55,6 +57,12 @@ export default async function ThemePage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "홈", path: "/" },
+          { name: `${theme.label} 테마`, path: `/theme/${theme.slug}` },
+        ])}
+      />
       <section
         className={`relative overflow-hidden border-b border-[var(--border)] bg-gradient-to-br ${tierGradient[theme.tier]}`}
       >

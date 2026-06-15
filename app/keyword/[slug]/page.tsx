@@ -5,6 +5,8 @@ import { getNewsByKeywordUnified } from "@/lib/news-fetcher";
 import { NewsCard } from "@/components/NewsCard";
 import { KeywordGrid } from "@/components/KeywordGrid";
 import { SectionHeader } from "@/components/SectionHeader";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 
 export const revalidate = 600;
 
@@ -58,6 +60,12 @@ export default async function KeywordPage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "홈", path: "/" },
+          { name: `${keyword.label} 뉴스`, path: `/keyword/${keyword.slug}` },
+        ])}
+      />
       <section
         className={`relative overflow-hidden border-b border-[var(--border)] bg-gradient-to-br ${tierAccent[keyword.tier]}`}
       >

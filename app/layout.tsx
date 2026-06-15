@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { TickerBar } from "@/components/TickerBar";
+import { JsonLd } from "@/components/JsonLd";
+import { organizationLd, websiteLd } from "@/lib/seo";
 import { TELEGRAM_INVITE_URL } from "@/lib/site";
 
 const SITE_URL =
@@ -63,6 +65,7 @@ export default function RootLayout({
     <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <JsonLd data={[organizationLd(), websiteLd()]} />
       </head>
       <body className="min-h-full flex flex-col">
         <TickerBar />

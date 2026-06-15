@@ -7,6 +7,8 @@ import {
 } from "@/lib/results";
 import { PerformanceStats } from "@/components/PerformanceStats";
 import { SectionHeader } from "@/components/SectionHeader";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd, resultItemListLd } from "@/lib/seo";
 
 export const revalidate = 1800;
 
@@ -40,6 +42,16 @@ export default async function ResultDetailPage({
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbLd([
+            { name: "홈", path: "/" },
+            { name: "결과", path: "/results" },
+            { name: result.date, path: `/results/${result.date}` },
+          ]),
+          resultItemListLd(result.date, result.picks),
+        ]}
+      />
       <section
         className={`border-b border-[var(--border)] bg-gradient-to-br ${
           positive
