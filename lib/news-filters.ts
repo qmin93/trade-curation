@@ -128,17 +128,65 @@ function containsBlockedKeyword(text: string): boolean {
   return BLOCKED_KEYWORDS.some((kw) => lower.includes(kw.toLowerCase()));
 }
 
+/**
+ * ★ 화이트리스트(allow-list) — 시장/주식 신호가 "있어야만" 통과.
+ * 블록리스트는 보조일 뿐, 진짜 게이트는 이것. 모호한 단독어("신고가") 대신 명확한 시장어만.
+ */
+const ALLOW_KEYWORDS = [
+  // 지수·시황
+  "코스피", "코스닥", "코스피200", "증시", "주식시장", "주가", "시황", "지수",
+  // 가격 행동
+  "상한가", "하한가", "급등", "급락", "강세", "약세", "점상", "갭상승", "갭하락",
+  "52주 신고가", "신고가 경신", "신고가 돌파", "신고가 갱신", "시초가",
+  // 수급
+  "거래량", "거래대금", "외국인", "외인", "기관", "연기금", "순매수", "순매도",
+  "수급", "공매도", "사이드카", "서킷브레이커", "쌍끌이",
+  // 밸류·실적
+  "시가총액", "시총", "목표주가", "컨센서스", "실적", "영업이익", "순이익", "매출",
+  "어닝", "잠정실적", "흑자전환", "적자",
+  // 이벤트
+  "수주", "공급계약", "단일판매", "납품", "계약 체결", "유상증자", "무상증자",
+  "전환사채", "자사주", "배당", "인수", "합병", "인수합병", "지분", "IPO",
+  "상장", "공모", "청약", "임상", "신약", "기술수출", "품목허가",
+  // 테마·섹터
+  "반도체", "HBM", "D램", "낸드", "파운드리", "데이터센터", "2차전지", "배터리",
+  "양극재", "바이오", "원전", "SMR", "방산", "조선", "로봇", "휴머노이드", "우주항공",
+  "전력", "전기차", "엔터", "게임주", "플랫폼", "핀테크",
+  // 매크로
+  "환율", "원/달러", "원달러", "금리", "기준금리", "FOMC", "연준", "파월", "CPI",
+  "나스닥", "S&P", "다우", "필라델피아", "반도체지수", "선물", "옵션 만기", "쿼드러플",
+  // 코인
+  "비트코인", "이더리움", "가상자산", "암호화폐", "김치프리미엄", "업비트", "빗썸",
+  // 일반 주식
+  "종목", "주식", "증권", "상장사", "테마주", "대장주", "주도주", "관련주", "수혜주",
+  "급등주", "특징주", "우량주", "코스닥시장", "유가증권시장", "ETF", "ETN",
+];
+
+const TICKER_RE = /\b\d{6}\b/;
+
+/** 시장 관련성 — 종목이 잡혔거나, 6자리 코드, 또는 명확한 시장어가 있으면 통과 */
+function isMarketRelevant(item: UnifiedNewsItem): boolean {
+  if (item.stocks && item.stocks.length > 0) return true;
+  const text = `${item.headline} ${item.summary}`;
+  if (TICKER_RE.test(text)) return true;
+  const lower = text.toLowerCase();
+  return ALLOW_KEYWORDS.some((kw) => lower.includes(kw.toLowerCase()));
+}
+
 function matchesAdPattern(text: string): boolean {
   return AD_PATTERNS.some((re) => re.test(text));
 }
 
 export function shouldKeep(item: UnifiedNewsItem): boolean {
-  // mock 데이터는 항상 통과 (운영자 큐레이션)
-  if (item.origin === "mock") return true;
+  // mock(운영자 큐레이션)·dart(공시)는 항상 통과
+  if (item.origin === "mock" || item.origin === "dart") return true;
 
   const text = `${item.headline} ${item.summary}`;
 
-  // A. 단타 부적합 차단
+  // ★ 화이트리스트 — 시장/주식 신호가 없으면 무조건 제외 (진짜 게이트)
+  if (!isMarketRelevant(item)) return false;
+
+  // A. 단타 부적합 차단 (보조 안전망)
   if (containsBlockedKeyword(text)) return false;
 
   // D. 광고성 헤드라인 차단
