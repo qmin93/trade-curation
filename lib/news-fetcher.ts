@@ -192,6 +192,34 @@ function dedupeByUrlAndTitle(items: UnifiedNewsItem[]): UnifiedNewsItem[] {
   });
 }
 
+/** 주제 쏠림 방지: 핵심 토큰 2+개를 공유하면 같은 테마로 보고 테마당 maxPer건까지만 통과. */
+function diversifyByTheme(items: UnifiedNewsItem[], maxPer = 3): UnifiedNewsItem[] {
+  const clusters: { toks: Set<string>; count: number }[] = [];
+  const out: UnifiedNewsItem[] = [];
+  for (const item of items) {
+    if (item.origin === "mock" || item.origin === "dart") {
+      out.push(item);
+      continue;
+    }
+    const toks = sigTokens(item.headline);
+    let cl: { toks: Set<string>; count: number } | null = null;
+    for (const c of clusters) {
+      let inter = 0;
+      for (const t of toks) if (c.toks.has(t)) inter++;
+      if (inter >= 2) { cl = c; break; }
+    }
+    if (!cl) {
+      clusters.push({ toks: new Set(toks), count: 1 });
+      out.push(item);
+    } else if (cl.count < maxPer) {
+      cl.count++;
+      for (const t of toks) cl.toks.add(t);
+      out.push(item);
+    }
+  }
+  return out;
+}
+
 /** 깨진/불일치 카드 차단: ① 제목 끝 단어 잘림(댕글링 1글자) ② 헤드라인 종목이 요약에 하나도 없음. */
 function isCoherent(item: UnifiedNewsItem): boolean {
   if (item.origin === "mock" || item.origin === "dart") return true;
@@ -389,6 +417,7 @@ export async function getRecentNewsUnified(
   // 안전망: 아카이브에 과거 DART가 남아 있어도 방문자 화면엔 안 나오게.
   if (!includeDart) deduped = deduped.filter((n) => n.origin !== "dart");
 
-  const filtered = applyFilters(deduped).slice(0, limit);
+  // 한 주제(예: 미-이란 종전합의) 쏠림 방지 → 테마당 최대 3건, 나머지는 다른 토픽에 양보.
+  const filtered = diversifyByTheme(applyFilters(deduped)).slice(0, limit);
   return enrichWithSummaryAndImages(filtered, limit);
 }
