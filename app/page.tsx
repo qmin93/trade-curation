@@ -9,6 +9,7 @@ import { NewsFeed } from "@/components/NewsFeed";
 import { KeywordChip } from "@/components/KeywordChip";
 import { TelegramCTA } from "@/components/TelegramCTA";
 import { PickPopup } from "@/components/PickPopup";
+import { ConsolePopup } from "@/components/ConsolePopup";
 import { HeroFunnel } from "@/components/HeroFunnel";
 import { MarketNowBand } from "@/components/MarketNowBand";
 import { getMarketStatus } from "@/lib/market-status";
@@ -32,6 +33,9 @@ export default async function Home() {
     <div className="max-w-[1280px] mx-auto px-4 py-6">
       {/* 진입 광고 팝업 — 검증 성과 + 오늘 픽 + 텔레그램 (인라인 픽/성과 섹션 대체) */}
       <PickPopup />
+
+      {/* 운영자 전용 — 콘솔 팝업(픽+포맷). 방문자에겐 버튼 안 보임 */}
+      <ConsolePopup />
 
       {/* 실시간 급등·인기검색 밴드 (공개) */}
       <LiveTrendingBand />
