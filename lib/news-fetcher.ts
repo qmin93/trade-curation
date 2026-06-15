@@ -82,7 +82,8 @@ async function enrichWithSummaryAndImages(
       imageUrl: img,
     });
   }
-  return out;
+  // 깨진 제목·헤드라인↔요약 불일치 카드 최종 제거 (요약 확정 후라 여기서 검사)
+  return out.filter(isCoherent);
 }
 
 /**
@@ -146,18 +147,63 @@ function titleKey(headline: string): string {
     .slice(0, 14);
 }
 
-/** URL 완전일치 + 헤드라인 정규화 키, 두 기준으로 중복 제거. */
+/** 흔한 조사 제거(끝) → 매체별 표현 차이 흡수 */
+function stripJosa(t: string): string {
+  return t.replace(/(은|는|이|가|을|를|에서|에게|에|의|와|과|도|로서|으로|로|까지|부터|만|라며|라고|이라)$/u, "");
+}
+const TOKEN_STOP = new Set([
+  "코스피", "코스닥", "증시", "주가", "오늘", "관련", "종목", "기업", "시장",
+  "뉴스", "속보", "단독", "그리고", "대한", "위한", "대해", "전망", "분석",
+]);
+/** 헤드라인/요약의 의미 토큰(2자+, 조사 제거, 불용어 제외) */
+function sigTokens(s: string): Set<string> {
+  const out = new Set<string>();
+  for (const raw of decodeEntities(s).replace(/\[[^\]]*\]/gu, "").split(/[^\p{L}\p{N}]+/u)) {
+    const t = stripJosa(raw.trim());
+    if (t.length >= 2 && !TOKEN_STOP.has(t)) out.add(t);
+  }
+  return out;
+}
+function jaccard(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 || b.size === 0) return 0;
+  let inter = 0;
+  for (const t of a) if (b.has(t)) inter++;
+  return inter / (a.size + b.size - inter);
+}
+
+/** URL 일치 + 제목키 + 토큰 유사도(매체 다른 같은 스토리)로 중복 제거. */
 function dedupeByUrlAndTitle(items: UnifiedNewsItem[]): UnifiedNewsItem[] {
   const seenUrl = new Set<string>();
   const seenTitle = new Set<string>();
+  const keptToks: Set<string>[] = [];
   return items.filter((item) => {
-    const tk = titleKey(item.headline);
     if (seenUrl.has(item.sourceUrl)) return false;
+    const tk = titleKey(item.headline);
     if (tk.length >= 6 && seenTitle.has(tk)) return false;
+    const toks = sigTokens(item.headline);
+    for (const kt of keptToks) {
+      const inter = [...toks].filter((t) => kt.has(t)).length;
+      if (inter >= 2 && jaccard(toks, kt) >= 0.5) return false;
+    }
     seenUrl.add(item.sourceUrl);
     if (tk.length >= 6) seenTitle.add(tk);
+    keptToks.push(toks);
     return true;
   });
+}
+
+/** 깨진/불일치 카드 차단: ① 제목 끝 단어 잘림(댕글링 1글자) ② 헤드라인 종목이 요약에 하나도 없음. */
+function isCoherent(item: UnifiedNewsItem): boolean {
+  if (item.origin === "mock" || item.origin === "dart") return true;
+  const head = item.headline.trim();
+  const toks = head.split(/\s+/);
+  const last = toks[toks.length - 1] ?? "";
+  if (toks.length >= 3 && last.length === 1 && !/[.!?…”"』」)\]]$/u.test(head)) return false;
+  const headStocks = item.stocks.filter((s) => s.length >= 2 && head.includes(s));
+  if (headStocks.length > 0 && item.summary) {
+    if (!headStocks.some((s) => item.summary.includes(s))) return false;
+  }
+  return true;
 }
 
 export interface UnifiedNewsItem {
