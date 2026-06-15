@@ -75,7 +75,7 @@ async function enrichWithSummaryAndImages(
     if (img) usedImages.add(img);
     out.push({
       ...n,
-      summary: summaryMap.get(n.sourceUrl) ?? n.summary,
+      summary: cleanSummary(summaryMap.get(n.sourceUrl) ?? n.summary),
       imageUrl: img,
     });
   }
@@ -102,6 +102,27 @@ export function decodeEntities(s: string): string {
     .replace(/&apos;/g, "'")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&");
+}
+
+/**
+ * 요약 정리 — 네이버 스니펫이 "…"로 잘려 들어오면 마지막 완결 문장까지만 남긴다.
+ * (claude 완전요약이 붙으면 이미 완결이라 변화 없음.)
+ */
+export function cleanSummary(s: string): string {
+  let t = decodeEntities(s).replace(/\s+/gu, " ").trim();
+  // 끝 말줄임 제거
+  t = t.replace(/[\s.]*[…]+\s*$/u, "").replace(/\.{2,}\s*$/u, "").trim();
+  // 문장 종결로 안 끝나면 마지막 완결 문장까지 컷
+  if (!/[.!?。]$/u.test(t)) {
+    const idx = Math.max(
+      t.lastIndexOf("."),
+      t.lastIndexOf("!"),
+      t.lastIndexOf("?"),
+      t.lastIndexOf("。"),
+    );
+    if (idx >= 25) t = t.slice(0, idx + 1).trim();
+  }
+  return t;
 }
 
 export function cleanHeadline(h: string): string {
