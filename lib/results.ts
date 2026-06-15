@@ -26,6 +26,34 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-06-15",
+    totalReturn: 8.40,
+    summary:
+      "한온시스템 종일용 1~4차 목표가 전부 달성(최고 +12.62%)·예스티 세력감지 1차 도달. 강한 하루.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "한온시스템",
+        ticker: "018880",
+        entryPrice: 5230,
+        targetReached: 4,
+        resultPercent: 12.62,
+        status: "hit",
+        note: "1차(+1.0%)·2차(+2.5%)·3차(+4.5%)·4차(+7.0%) 전부 달성, 최고 +12.62%",
+      },
+      {
+        rank: 2,
+        stockName: "예스티",
+        ticker: "122640",
+        entryPrice: 32100,
+        targetReached: 1,
+        resultPercent: 1.4,
+        status: "hit",
+        note: "1차 목표가 (+1.4%) 달성",
+      },
+    ],
+  },
+  {
     date: "2026-06-10",
     totalReturn: 3.40,
     summary:
@@ -63,10 +91,10 @@ export const DAILY_RESULTS: DailyResult[] = [
 
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
-  hitCount: 3,
-  missCount: 1,
+  hitCount: 6,
+  missCount: 2,
   winRate: 75.0,
-  cumulativeReturn: 5.67,
+  cumulativeReturn: 13.52,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
