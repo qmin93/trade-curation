@@ -12,7 +12,7 @@ import {
 /**
  * 운영자 전용 픽 작성기 — `#op=` 해시로만 열린다.
  * 종목·포착가·목표가·근거를 입력하면 5계정 페르소나 본문을 즉시 생성, 계정별 복붙.
- * 방문자에겐 안내만 노출(폼·본문 숨김).
+ * 🔄 변주(규칙 기반 회전) + ✨ AI 다듬기(Claude) 지원.
  */
 
 const EMPTY: PickInput = {
@@ -25,7 +25,6 @@ const EMPTY: PickInput = {
   note: "",
 };
 
-// 처음 열었을 때 감 잡기용 예시(오늘의 픽).
 const EXAMPLE: PickInput = {
   stockName: "한온시스템",
   ticker: "018880",
@@ -44,27 +43,66 @@ function todayMMDD(): string {
 export default function OpsPickPage() {
   const isOperator = useOperator();
   const [pick, setPick] = useState<PickInput>(EXAMPLE);
+  const [variants, setVariants] = useState<Record<string, number>>({});
+  const [refined, setRefined] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<Persona | null>(null);
+  const [errMsg, setErrMsg] = useState<string>("");
   const [copied, setCopied] = useState<Persona | null>(null);
   const mmdd = useMemo(() => todayMMDD(), []);
 
-  const captions = useMemo(
-    () =>
-      PERSONAS.map((p) => ({
-        persona: p,
-        text: pickCaptionByPersona(pick, p, mmdd),
-      })),
-    [pick, mmdd],
-  );
-
+  // 입력이 바뀌면 AI 다듬기 결과는 무효화(가격이 어긋나지 않게).
+  const updatePick = (next: PickInput) => {
+    setPick(next);
+    setRefined({});
+  };
   const set = <K extends keyof PickInput>(key: K, value: PickInput[K]) =>
-    setPick((prev) => ({ ...prev, [key]: value }));
+    updatePick({ ...pick, [key]: value });
+  const setTarget = (i: number, value: string) => {
+    const targets = [...pick.targets];
+    targets[i] = value;
+    updatePick({ ...pick, targets });
+  };
 
-  const setTarget = (i: number, value: string) =>
-    setPick((prev) => {
-      const targets = [...prev.targets];
-      targets[i] = value;
-      return { ...prev, targets };
+  const baseText = (p: Persona) =>
+    pickCaptionByPersona(pick, p, mmdd, variants[p] ?? 0);
+  const displayText = (p: Persona) => refined[p] ?? baseText(p);
+
+  const bump = (p: Persona) => {
+    setVariants((v) => ({ ...v, [p]: (v[p] ?? 0) + 1 }));
+    setRefined((r) => {
+      const next = { ...r };
+      delete next[p];
+      return next;
     });
+  };
+
+  const bumpAll = () => {
+    setVariants((v) => {
+      const next = { ...v };
+      for (const p of PERSONAS) next[p] = (next[p] ?? 0) + 1;
+      return next;
+    });
+    setRefined({});
+  };
+
+  const refine = async (p: Persona) => {
+    setBusy(p);
+    setErrMsg("");
+    try {
+      const res = await fetch("/api/refine-pick", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ persona: p, draft: baseText(p) }),
+      });
+      const data = await res.json();
+      if (data.refined) setRefined((r) => ({ ...r, [p]: data.refined }));
+      if (!data.ok) setErrMsg(data.error ? `AI 다듬기 미적용: ${data.error}` : "AI 다듬기 미적용");
+    } catch (e) {
+      setErrMsg(`요청 실패: ${String(e).slice(0, 80)}`);
+    } finally {
+      setBusy(null);
+    }
+  };
 
   const copy = async (persona: Persona, text: string) => {
     await navigator.clipboard.writeText(text);
@@ -103,7 +141,9 @@ export default function OpsPickPage() {
             오늘의 픽 → Threads 본문
           </h1>
           <p className="text-sm text-[var(--text-muted)] mt-2">
-            종목·가격·근거를 넣으면 5계정 페르소나 본문이 바로 만들어집니다. 계정별로 복붙하세요.
+            종목·가격·근거를 넣으면 5계정 페르소나 본문이 바로 만들어집니다.{" "}
+            <span className="text-[var(--text)]">🔄 변주</span>는 말투를 다르게 뽑고,{" "}
+            <span className="text-[var(--text)]">✨ AI 다듬기</span>는 더 자연스럽게 손봅니다.
           </p>
         </header>
 
@@ -113,52 +153,27 @@ export default function OpsPickPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>종목명</label>
-                <input
-                  className={inputCls}
-                  value={pick.stockName}
-                  onChange={(e) => set("stockName", e.target.value)}
-                  placeholder="한온시스템"
-                />
+                <input className={inputCls} value={pick.stockName} onChange={(e) => set("stockName", e.target.value)} placeholder="한온시스템" />
               </div>
               <div>
                 <label className={labelCls}>티커</label>
-                <input
-                  className={inputCls}
-                  value={pick.ticker}
-                  onChange={(e) => set("ticker", e.target.value)}
-                  placeholder="018880"
-                />
+                <input className={inputCls} value={pick.ticker} onChange={(e) => set("ticker", e.target.value)} placeholder="018880" />
               </div>
             </div>
 
             <div>
               <label className={labelCls}>전략 · 포착</label>
-              <input
-                className={inputCls}
-                value={pick.strategy}
-                onChange={(e) => set("strategy", e.target.value)}
-                placeholder="종일용 · 09:08 포착"
-              />
+              <input className={inputCls} value={pick.strategy} onChange={(e) => set("strategy", e.target.value)} placeholder="종일용 · 09:08 포착" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>포착가</label>
-                <input
-                  className={inputCls}
-                  value={pick.entry}
-                  onChange={(e) => set("entry", e.target.value)}
-                  placeholder="5,230"
-                />
+                <input className={inputCls} value={pick.entry} onChange={(e) => set("entry", e.target.value)} placeholder="5,230" />
               </div>
               <div>
-                <label className={labelCls}>손절 (괄호 % 포함 가능)</label>
-                <input
-                  className={inputCls}
-                  value={pick.stop}
-                  onChange={(e) => set("stop", e.target.value)}
-                  placeholder="5,070 (-3.1%)"
-                />
+                <label className={labelCls}>손절 (% 포함 가능)</label>
+                <input className={inputCls} value={pick.stop} onChange={(e) => set("stop", e.target.value)} placeholder="5,070 (-3.1%)" />
               </div>
             </div>
 
@@ -188,45 +203,53 @@ export default function OpsPickPage() {
               />
             </div>
 
-            <div className="flex gap-2 pt-1">
-              <button
-                onClick={() => setPick(EMPTY)}
-                className="rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)]"
-              >
+            <div className="flex flex-wrap gap-2 pt-1">
+              <button onClick={() => updatePick(EMPTY)} className="rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)]">
                 비우기
               </button>
-              <button
-                onClick={() => setPick(EXAMPLE)}
-                className="rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)]"
-              >
+              <button onClick={() => updatePick(EXAMPLE)} className="rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)]">
                 예시 채우기
+              </button>
+              <button onClick={bumpAll} className="rounded-md border border-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[var(--accent)] hover:bg-[var(--accent)]/[0.06]">
+                🔄 전체 변주
               </button>
             </div>
           </section>
 
           {/* ───── 생성된 본문 ───── */}
           <section className="space-y-4">
-            {captions.map(({ persona, text }) => (
-              <div
-                key={persona}
-                className="rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-4"
-              >
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="mono text-[10px] uppercase tracking-widest text-[var(--accent)]">
-                    {persona}
-                  </span>
-                  <button
-                    onClick={() => copy(persona, text)}
-                    className="rounded-md bg-[var(--accent)] px-3 py-1 text-xs font-semibold text-white hover:opacity-90"
-                  >
-                    {copied === persona ? "복사됨 ✓" : "복사"}
-                  </button>
-                </div>
-                <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[var(--text)]">
-                  {text}
-                </pre>
+            {errMsg && (
+              <div className="rounded-lg border border-amber-500/40 bg-amber-500/[0.08] px-3 py-2 text-xs text-amber-600">
+                {errMsg}
               </div>
-            ))}
+            )}
+            {PERSONAS.map((persona) => {
+              const text = displayText(persona);
+              return (
+                <div key={persona} className="rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-4">
+                  <div className="flex items-center justify-between mb-2.5 gap-2">
+                    <span className="mono text-[10px] uppercase tracking-widest text-[var(--accent)] flex items-center gap-1.5">
+                      {persona}
+                      {refined[persona] && <span className="text-[var(--text-caption)]">· ✨다듬음</span>}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => bump(persona)} className="rounded-md border border-[var(--border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-muted)] hover:text-[var(--text)]" title="말투 다르게 뽑기">
+                        🔄 변주
+                      </button>
+                      <button onClick={() => refine(persona)} disabled={busy === persona} className="rounded-md border border-[var(--border)] px-2 py-1 text-[11px] font-semibold text-[var(--text-muted)] hover:text-[var(--text)] disabled:opacity-50" title="Claude로 자연스럽게 다듬기">
+                        {busy === persona ? "다듬는 중…" : "✨ AI 다듬기"}
+                      </button>
+                      <button onClick={() => copy(persona, text)} className="rounded-md bg-[var(--accent)] px-3 py-1 text-[11px] font-semibold text-white hover:opacity-90">
+                        {copied === persona ? "복사됨 ✓" : "복사"}
+                      </button>
+                    </div>
+                  </div>
+                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[var(--text)]">
+                    {text}
+                  </pre>
+                </div>
+              );
+            })}
             <p className="mono text-[10px] text-[var(--text-caption)]">
               계정마다 15~30분 간격으로, 차트 이미지(분봉/일봉)와 함께 게시 권장.
             </p>
