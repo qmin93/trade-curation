@@ -185,7 +185,7 @@ export function getHotKeywords(): Keyword[] {
 export const FETCH_KEYWORDS_EXTRA: string[] = [
   "급등주",
   "상한가",
-  "신고가",
+  "52주 신고가", // "신고가" 단독은 "신고가 접수"(범죄 신고) 류를 끌어와 오염 → 주식 맥락으로 한정
   "단타",
   "시초가",
   "매수 사이드카",
