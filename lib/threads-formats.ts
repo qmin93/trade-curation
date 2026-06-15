@@ -101,6 +101,14 @@ const PRINCIPLES = [
 function at<T>(a: T[], v: number): T {
   return a[((v % a.length) + a.length) % a.length];
 }
+/** variant 정수를 (첫줄·마무리·길이모드) 독립 선택으로 분해 → 매번 다른 조합 */
+function dec(v: number, no: number, nc: number) {
+  const x = Math.abs(v);
+  return { o: x % no, c: Math.floor(x / no) % nc, lm: Math.floor(x / (no * nc)) % 2 };
+}
+function joinLines(lines: string[]): string {
+  return lines.filter((l, i, a) => l !== "" || (i > 0 && a[i - 1] !== "")).join("\n");
+}
 function points(raw: string): string[] {
   return raw.split(/[,\n·]/).map((s) => s.trim()).filter(Boolean);
 }
@@ -124,32 +132,48 @@ export function generateFormatPost(
   let body = "";
 
   if (id === "question") {
-    const ctx = a ? `${a}.` : "";
+    // 질문형 = 첫 줄부터 질문(답글 유도). 사실은 보조.
+    const ctx = a;
     switch (persona) {
-      case "단타시그널":
-        body = at([
-          `${subj}, 지금 자리 어떻게들 보세요?\n${ctx ? `- ${ctx}\n` : ""}- 받쳐주면 가고, 깨지면 패스.\n댓글로 방향 한 번 찍어봅시다.`,
-          `${subj} 보는 중.\n${ctx ? `- ${ctx}\n` : ""}- 여기서 더 갈지, 눌릴지.\n다들 어느 쪽 보세요?`,
-        ], variant);
+      case "단타시그널": {
+        const O = [`${subj}, 지금 들어간 사람 있어요?`, `${subj}, 이 자리 어떻게 보세요?`, `${subj}, 자리일까요 꼭지일까요?`, `${subj} 보는 중 — 갈까요 빠질까요?`, `${subj}, 지금 담아도 될 자리일까요?`];
+        const C = [`댓글로 방향 한 번 찍어봅시다.`, `다들 어느 쪽 보세요?`, `솔직한 의견 궁금합니다.`, `각자 기준 댓글로 ㄱ.`];
+        const { o, c, lm } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], lm && ctx ? `- ${ctx}.` : "", C[c]]);
         break;
-      case "단타이스트":
-        body = at([
-          `${subj}, 오늘 같은 자리 다들 어떻게 대응하세요?\n${ctx} 쫓을지 기다릴지, 결국 그 차이가 수익을 가른다고 봅니다.\n여러분은 어느 쪽이세요?`,
-          `${subj} 두고 고민이 됩니다.\n${ctx} 무리하게 들어가는 게 맞는 자리인지.\n다들 어떻게 보세요?`,
-        ], variant);
+      }
+      case "단타이스트": {
+        const O = [`${subj}, 이런 자리 다들 어떻게 대응하세요?`, `${subj}, 지금 들어가는 건 용기일까요 욕심일까요?`, `${subj} 보면서 드는 생각인데요.`, `${subj}, 쫓는 게 맞을까요 기다리는 게 맞을까요?`];
+        const M = [`${ctx ? ctx + " " : ""}쫓을지 기다릴지, 결국 그 차이가 수익을 가르더라고요.`, `${ctx ? ctx + " " : ""}자리를 기다리는 게 더 어려운 일이죠.`, `${ctx ? ctx + " " : ""}조급함이 결국 손실로 돌아오더라고요.`];
+        const C = [`여러분은 어느 쪽이세요?`, `결국 그 한 끗 차이 아닐까요?`, `오늘은 어떻게 보고 계세요?`, `이럴 때 다들 어떻게 버티세요?`];
+        const { o, c, lm } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], lm ? at(M, variant) : (ctx ? `${ctx}.` : ""), "", C[c]]);
         break;
-      case "단타데일리":
-        body = `[${mmdd}] 오늘의 질문\n${subj}, 갭상 vs 갭하 — 어느 쪽 보세요?\n${ctx ? `${ctx} ` : ""}근거도 댓글로 같이 적어주시면 좋고요.`;
+      }
+      case "단타데일리": {
+        const H = [`[${mmdd}] 오늘의 질문`, `[${mmdd}] 같이 생각해볼 거리`, `[${mmdd}] 댓글로 의견 모아요`];
+        const Q = [`${subj}, 갭상 vs 갭하 — 어느 쪽 보세요?`, `${subj}, 오늘 더 갈까요 쉬어갈까요?`, `${subj}, 주도주로 남을까요 하루짜리일까요?`];
+        const C = [`근거도 댓글로 같이 적어주시면 좋고요.`, `여러분 생각이 궁금합니다.`, `판단은 각자, 의견은 댓글로.`];
+        const { o, c } = dec(variant, H.length, C.length);
+        body = joinLines([H[o], at(Q, variant), ctx ? `${ctx}.` : "", C[c]]);
         break;
-      case "단타Lab":
-        body = at([
-          `${subj}, 다들 좋게만 보는데 — 진짜 그럴까요?\n${ctx} 표면 말고 수급으로 보면 다른 그림이 나옵니다.\n여러분은 어디를 보고 계세요?`,
-          `${subj}, 왜 지금 움직일까요?\n${ctx} 재료가 아니라 수급이 먼저라고 봅니다.\n어떻게들 보세요?`,
-        ], variant);
+      }
+      case "단타Lab": {
+        const O = [`${subj}, 다들 좋게만 보는데 — 진짜 그럴까요?`, `${subj}, 왜 하필 지금 움직일까요?`, `${subj}, 재료 때문일까요 수급 때문일까요?`, `${subj}, 표면만 보고 판단해도 될까요?`];
+        const M = [`${ctx ? ctx + " " : ""}표면 말고 수급으로 보면 다른 그림이 보입니다.`, `${ctx ? ctx + " " : ""}진짜 이유는 차트 뒤에 있고요.`, `${ctx ? ctx + " " : ""}남들 다 아는 재료는 이미 늦은 경우가 많죠.`];
+        const C = [`여러분은 어디를 보고 계세요?`, `차트 뒤 흐름, 같이 보실래요?`, `진짜 자리는 어디일까요?`];
+        const { o, c, lm } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], lm ? at(M, variant) : "", "", C[c]]);
         break;
-      case "스캘퍼":
-        body = `[${mmdd}] 시초 질문\n${subj} 시초가 어디서 잡힐까?\n${ctx ? `${ctx} ` : ""}댓글로 한 번 찍어봅시다.`;
+      }
+      case "스캘퍼": {
+        const O = [`[${mmdd}] 시초 질문`, `[${mmdd}] 단발 체크`, `[${mmdd}] 시초가 베팅`];
+        const Q = [`${subj} 시초가 어디서 잡힐까?`, `${subj}, 시초 받쳐줄까?`, `${subj} 갭 띄울까 눌릴까?`];
+        const C = [`댓글로 한 번 찍어봅시다.`, `시초가 어디냐?`, `각자 시초 예상 ㄱ.`];
+        const { o, c } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], at(Q, variant), ctx ? `${ctx}.` : "", C[c]]);
         break;
+      }
       default:
         body = `${subj}, 어떻게 보세요?`;
     }
@@ -241,26 +265,54 @@ export function generateFormatPost(
     }
     body += `\n\n※ 손실도 함께 공개 · 수익 보장 아님 · 종목 추천 아님`;
   } else if (id === "news") {
+    // 뉴스 본문 = 사실(재료)부터. 관찰·체크포인트 중심, 마무리는 가벼운 한 줄.
     const fact = a || "오늘 나온 재료";
     switch (persona) {
-      case "단타시그널":
-        body = at([
-          `${subj}, 이 재료 보고 어떻게들 보세요?\n- ${fact}.\n- 시초가·거래대금부터 확인할 자리.`,
-          `${subj} — ${fact}.\n- 모멘텀 이어질지가 관건.\n다들 어느 쪽 보세요?`,
-        ], variant);
+      case "단타시그널": {
+        const O = [`${subj}, ${fact}.`, `${subj} — ${fact}.`, `${subj}, ${fact} 나왔습니다.`];
+        const B = [`- 시초가·거래대금부터 확인할 자리.`, `- 모멘텀 이어질지가 관건.`, `- 추격보다 눌림 한 번 보고.`, `- 갭 띄우면 일단 거래대금 체크.`];
+        const C = [`다음 거래일 이어질까요?`, `흐름 어떻게 보세요?`, `자리 지킬지가 관건이고요.`];
+        const { o, c, lm } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], at(B, variant), lm ? at(B, variant + 1) : "", C[c]]);
         break;
-      case "단타이스트":
-        body = `${subj}, ${fact}.\n재료는 재료고, 결국 수급이 받쳐주는지가 먼저라고 봅니다.\n여러분은 어떻게 보세요?`;
+      }
+      case "단타이스트": {
+        const M = [`재료는 재료고, 결국 수급이 받쳐주는지가 먼저라고 봅니다.`, `호재 하나에 들뜨기보다 자리부터 보는 게 순서고요.`, `좋은 뉴스일수록 이미 반영됐는지 의심해봐야죠.`];
+        const C = [`이 흐름 이어질까요?`, `여러분은 어떻게 보세요?`, `결국 수급이 답 아닐까요?`];
+        const { c, lm } = dec(variant, M.length, C.length);
+        body = joinLines([`${subj}, ${fact}.`, at(M, variant), lm ? `한 박자 늦더라도 자리 확인하고 가려 합니다.` : "", "", C[c]]);
         break;
-      case "단타데일리":
-        body = `[${mmdd}] 짚어볼 뉴스\n${subj} — ${fact}.\n1. 시초가 갭·거래대금 확인.\n2. 테마 확산 여부.\n추격보다 기준 확인. 결정은 본인의 몫.`;
+      }
+      case "단타데일리": {
+        const H = [`[${mmdd}] 짚어볼 뉴스`, `[${mmdd}] 오늘의 재료`, `[${mmdd}] 체크할 뉴스`];
+        const P2 = [`2. 테마 확산 여부.`, `2. 관련주 동반 강세 여부.`, `2. 외인·기관 수급 방향.`];
+        const { o, lm } = dec(variant, H.length, 1);
+        body = joinLines([
+          H[o],
+          `${subj} — ${fact}.`,
+          `1. 시초가 갭·거래대금 확인.`,
+          at(P2, variant),
+          lm ? `3. 단타 관점: 추격보다 기준 유지 여부.` : "",
+          `결정은 본인의 몫.`,
+        ]);
         break;
-      case "단타Lab":
-        body = `${subj}, ${fact} — 호재로만 보면 놓칩니다.\n표면 재료 뒤 수급이 진짜인지가 핵심이고요.\n차트 뒤 흐름, 보고 계신가요?`;
+      }
+      case "단타Lab": {
+        const O = [`${subj}, ${fact} — 호재로만 보면 놓칩니다.`, `${subj}, ${fact}. 표면만 보면 함정일 수 있고요.`, `${subj}, ${fact} 떴는데 — 진짜 이유는 따로입니다.`];
+        const M = [`표면 재료 뒤 수급이 진짜인지가 핵심이고요.`, `이미 아는 재료는 늦은 자리인 경우가 많죠.`, `돈은 뉴스가 아니라 수급을 따라 움직입니다.`];
+        const C = [`차트 뒤 흐름, 보고 계신가요?`, `진짜 자리는 어디일까요?`, `이 재료, 진짜일까요?`];
+        const { o, c } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], at(M, variant), C[c]]);
         break;
-      case "스캘퍼":
-        body = `[${mmdd}] 시초 이슈\n🔻 ${subj} — ${fact}.\n📍 시초가 갭·거래대금만 보고 단발 대응.\n시초가 어디냐?`;
+      }
+      case "스캘퍼": {
+        const H = [`[${mmdd}] 시초 이슈`, `[${mmdd}] 단발 재료`, `[${mmdd}] 시초 체크`];
+        const P = [`📍 시초가 갭·거래대금만 보고 단발 대응.`, `📍 갭 크면 추격 X, 눌림 단발.`, `📍 거래대금 실리는지만 보고.`];
+        const C = [`시초가 어디냐?`, `시초 받쳐줄까?`, `갭 띄울까?`];
+        const { o, c } = dec(variant, H.length, C.length);
+        body = joinLines([H[o], `🔻 ${subj} — ${fact}.`, at(P, variant), C[c]]);
         break;
+      }
       default:
         body = `${subj}: ${fact}`;
     }
