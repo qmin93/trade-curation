@@ -2,6 +2,7 @@ import { fetchThemeMovers } from "@/lib/theme-movers";
 import { fetchTrendingStocks, naverStockUrl } from "@/lib/naver-trending";
 import { fetchRising, fetchNewHighs, type RankedStock } from "@/lib/screener";
 import { getMarketStatus } from "@/lib/market-status";
+import { TelegramCTA } from "@/components/TelegramCTA";
 
 /**
  * 장중 발굴 — 멘토(reload.kospi)의 /open 화면.
@@ -67,13 +68,6 @@ export default async function LivePage() {
         <span className="mono text-[10px] text-[var(--text-caption)]">
           {status.isLive ? `실시간 · 업데이트 ${kst} KST · 60초 갱신` : `마감 기준 · ${kst} KST`}
         </span>
-        <a
-          href="/api/card/theme?brand=1"
-          download="theme.png"
-          className="inline-flex items-center gap-1.5 rounded-md bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-white hover:opacity-90"
-        >
-          📷 테마 카드 이미지 저장
-        </a>
       </div>
 
       {/* 테마별 주도주 */}
@@ -155,6 +149,9 @@ export default async function LivePage() {
         <RankSection title="🚀 급등 종목" desc="등락률 상위" rows={rising} />
         <RankSection title="📈 52주 신고가" desc="신고가 돌파" rows={newHighs} />
       </div>
+
+      {/* 단일 전환 CTA */}
+      <TelegramCTA variant="banner" />
 
       <p className="mono text-[10px] text-[var(--text-caption)] mt-8 leading-relaxed border-t border-[var(--border)] pt-5">
         데이터: 네이버 금융(실시간 지연 가능). 정보 공유 목적 · 종목 추천 아님 ·
