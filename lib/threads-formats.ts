@@ -44,7 +44,7 @@ export const FORMATS: FormatMeta[] = [
     fields: [
       { key: "noteA", label: "원칙·격언(비우면 자동)", placeholder: "예) 손절은 다음 매매의 입장료" },
     ],
-    personas: ["단타이스트", "단타Lab", "단타데일리"],
+    personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
   },
   {
     id: "thread",
@@ -54,7 +54,7 @@ export const FORMATS: FormatMeta[] = [
       { key: "subj", label: "테마·종목", placeholder: "예) 데이터센터 전력" },
       { key: "noteA", label: "연쇄 포인트(쉼표/줄바꿈으로 구분)", placeholder: "전력 수급 위기, ESS 수혜, 두산에너빌·효성중공업", area: true },
     ],
-    personas: ["단타Lab", "단타데일리"],
+    personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
   },
   {
     id: "journal",
@@ -63,7 +63,7 @@ export const FORMATS: FormatMeta[] = [
     fields: [
       { key: "noteA", label: "오늘 있었던 일·감정", placeholder: "예) 오전에 익절하고 오후엔 관망. 손이 근질거렸다", area: true },
     ],
-    personas: ["단타이스트", "단타데일리", "단타시그널"],
+    personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
   },
   {
     id: "proof",
@@ -74,7 +74,7 @@ export const FORMATS: FormatMeta[] = [
       { key: "noteA", label: "어제 짚은 자리", placeholder: "예) 종일용 5·20일선 위 포착" },
       { key: "noteB", label: "결과", placeholder: "예) 1차 +1.4% 도달 / 또는 손절 이탈" },
     ],
-    personas: ["단타시그널", "단타이스트", "단타데일리"],
+    personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
   },
   {
     id: "news",
@@ -165,6 +165,12 @@ export function generateFormatPost(
       case "단타데일리":
         body = `[${mmdd}] 오늘 새길 원칙\n"${p}"\n급할수록 기준으로 돌아가는 게 답이라고 봅니다.`;
         break;
+      case "단타시그널":
+        body = `"${p}"\n- 장중엔 이거 하나 지키는 게 전부.\n다들 지키고 계세요?`;
+        break;
+      case "스캘퍼":
+        body = `[${mmdd}] 한 줄 원칙\n"${p}"\n시초부터 이거 안 지키면 다 무너집니다.`;
+        break;
       default:
         body = `"${p}"`;
     }
@@ -178,6 +184,12 @@ export function generateFormatPost(
         `${subj}, 단순 테마일까요? 구조를 보면 다릅니다.\n${numbered}\n결국 돈은 구조를 따라 흐릅니다.\n진짜 자리는 어디일까요?`,
         `${subj}, 왜 여기서 터질까요? 안을 풀어보면 —\n${numbered}\n표면 재료보다 이 연쇄가 핵심이고요.\n차트 뒤 진짜 판은 어디일까요?`,
       ], variant);
+    } else if (persona === "단타이스트") {
+      body = `${subj}, 단순 테마로 보이세요? 한 겹 더 들어가 보면 —\n${numbered}\n결국 돈은 구조를 따라갑니다. 어떻게 보세요?`;
+    } else if (persona === "단타시그널") {
+      body = `${subj}, 왜 강한지 짧게.\n${numbered}\n- 결국 이 흐름 유지되는지가 전부.`;
+    } else if (persona === "스캘퍼") {
+      body = `[${mmdd}] ${subj} 단발 구조\n${numbered}\n시초가 어디서 받쳐주나?`;
     } else {
       body = `[${mmdd}] ${subj} 구조 정리\n${numbered}\n추격보다 이 흐름이 유지되는지 확인. 결정은 본인의 몫.`;
     }
@@ -196,6 +208,12 @@ export function generateFormatPost(
       case "단타시그널":
         body = `${note}\n- 무리한 날은 쉬는 것도 매매.\n다들 오늘 어땠어요?`;
         break;
+      case "단타Lab":
+        body = `${note}\n\n복기해보면 결국 수급 보는 눈이 매매를 가르더라고요.\n다들 오늘 복기 하셨어요?`;
+        break;
+      case "스캘퍼":
+        body = `[${mmdd}] 장중 기록\n🔻 ${note}\n📍 무리한 단발은 줄이고. 내일 시초 다시.`;
+        break;
       default:
         body = note;
     }
@@ -211,6 +229,12 @@ export function generateFormatPost(
         break;
       case "단타데일리":
         body = `[${mmdd}] 결과 기록\n${subj} — 어제 ${a || "자리"} → 오늘 ${res}.\n적중도 손절도 전부 남깁니다. 숨길 이유가 없으니까요.`;
+        break;
+      case "단타Lab":
+        body = `${subj}, 어제 단순 반등 아니라고 했었죠(${a || "자리"}). 오늘 ${res}.\n${isLoss ? "틀렸으면 틀렸다고 인정합니다." : "표면 재료가 아니라 수급이 받친 자리였고요."}\n적중도 손절도 다 남깁니다.`;
+        break;
+      case "스캘퍼":
+        body = `[${mmdd}] 결과\n🔻 ${subj} — 어제 ${a || "자리"}.\n📍 오늘 ${res}.\n적중도 손절도 다 남깁니다.`;
         break;
       default:
         body = `${subj}: ${res}`;
