@@ -31,6 +31,108 @@ export interface PickInput {
 const DISCLAIMER =
   "※ 매수·매도 추천 아님 · 시장 관찰용 정보 · 투자 판단과 책임은 본인에게";
 
+/* ───────── 픽 노트 붙여넣기 → 자동 파싱 ───────── */
+
+/**
+ * 🐋 세력 포착 노트 형식을 통째로 붙여넣으면 PickInput으로 파싱.
+ * 못 읽은 칸은 빈 값으로 두고, 사용자가 폼에서 수정할 수 있다.
+ */
+export function parsePickNote(raw: string): PickInput {
+  const lines = raw
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
+  const out: PickInput = {
+    stockName: "",
+    ticker: "",
+    strategy: "",
+    entry: "",
+    stop: "",
+    targets: [],
+    note: "",
+  };
+  if (lines.length === 0) return out;
+
+  // 종목명 + 티커: 6자리 코드가 들어있고 가격(원·%)이 아닌 첫 줄
+  const nameIdx = lines.findIndex(
+    (l) => /\b\d{6}\b/.test(l) && !/원|포착가|손절|목표/.test(l),
+  );
+  if (nameIdx >= 0) {
+    const line = lines[nameIdx];
+    const code = line.match(/\b(\d{6})\b/);
+    out.ticker = code ? code[1] : "";
+    out.stockName = line
+      .replace(/\b\d{6}\b/, "")
+      .replace(/[^가-힣A-Za-z0-9·\s]/g, "")
+      .trim();
+
+    // 전략: 바로 다음 비어있지 않은 줄(차트/가격 섹션 시작 전). 끝의 "포착" 제거.
+    for (let i = nameIdx + 1; i < lines.length; i++) {
+      const l = lines[i];
+      if (/^[📌💰🎯⚠️📊•·\-]/.test(l) || /차트|포착가|목표가|손절/.test(l)) break;
+      out.strategy = l.replace(/\s*포착\.?$/, "").trim();
+      break;
+    }
+  }
+
+  // 포착가
+  const entryLine = lines.find((l) => /포착가/.test(l));
+  if (entryLine) {
+    const m = entryLine.match(/포착가\D*([\d,]+)/);
+    if (m) out.entry = m[1];
+  }
+
+  // 손절 (가격 + 괄호 % 보존)
+  const stopLine = lines.find((l) => /손절/.test(l));
+  if (stopLine) {
+    const price = stopLine.match(/손절\D*([\d,]+)/);
+    const paren = stopLine.match(/\(([^)]*%)\)/);
+    if (price) out.stop = paren ? `${price[1]} (${paren[1]})` : price[1];
+  }
+
+  // 목표가: "N차 PRICE원 +X.X%" 줄들 (단 "이상"·"자율" 줄 제외)
+  for (const l of lines) {
+    if (/이상|자율/.test(l)) continue;
+    const m = l.match(/(\d+)\s*차\s*([\d,]+)\s*원?\s*([+-]\d+(?:\.\d+)?%)?/);
+    if (m && /원|\d,\d/.test(l)) {
+      const [, n, price, pct] = m;
+      out.targets.push(`${n}차 ${price}${pct ? ` (${pct})` : ""}`);
+    }
+  }
+  if (out.targets.length === 0) out.targets = ["", "", "", ""];
+
+  // 근거 메모: 일봉·분봉·핵심 요점 압축
+  const noteParts: string[] = [];
+  const ilbong = lines.find((l) => /일봉/.test(l));
+  if (ilbong) {
+    const pct = ilbong.match(/[+-]\d+(?:\.\d+)?%/);
+    const ma =
+      /5일선/.test(ilbong) && /20일선/.test(ilbong)
+        ? "5·20일선 위"
+        : /20일선/.test(ilbong)
+          ? "20일선 위"
+          : /5일선/.test(ilbong)
+            ? "5일선 위"
+            : "";
+    const seg = `일봉 ${pct ? pct[0] + "로 " : ""}${ma}`.trim();
+    if (seg !== "일봉") noteParts.push(seg);
+  }
+  const bunbong = lines.find((l) => /분봉/.test(l));
+  if (bunbong) {
+    const v = bunbong.match(/VWAP\s*위?\s*\(?\s*([\d,]+)\s*원?\)?/);
+    noteParts.push(v ? `분봉 VWAP(${v[1]}원) 위` : "분봉 VWAP 위");
+  }
+  const haeksim = lines.find((l) => /핵심/.test(l));
+  if (haeksim) {
+    const after = haeksim.replace(/.*핵심\s*[:：]?\s*/, "").trim();
+    if (after) noteParts.push(after.replace(/,\s*/g, "·"));
+  }
+  out.note = noteParts.join(", ");
+
+  return out;
+}
+
 /** variant 인덱스로 풀에서 하나 뽑기(순환·음수 안전) */
 function at<T>(arr: T[], v: number): T {
   return arr[((v % arr.length) + arr.length) % arr.length];
