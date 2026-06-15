@@ -1,0 +1,121 @@
+/**
+ * 뉴스 기사 → 페르소나별 Threads 본문 (claude가 기사 읽고 작성).
+ * NewsStudio의 ✨AI 버튼이 호출. 헤드라인 복붙이 아니라 "읽고 요약해 페르소나 톤으로 새로 쓴다".
+ * ANTHROPIC_API_KEY 필요. 실패 시 ok:false + (호출 측은 규칙 기반 초안 유지).
+ */
+import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+
+const DISC = "※ 시장 관찰용 정보 · 매수·매도 추천 아님 · 판단과 책임은 본인에게";
+
+/** 페르소나별 톤·포맷(벤치 검증 기준) */
+const TONE: Record<string, string> = {
+  단타시그널:
+    "헤드라인 한 줄 + 대시(-) 불릿 2~3개. 짧고 건조. 마무리는 가벼운 의문 또는 '본인 기준에 맞다면 관심'. 외침·ㅋㅋ 금지.",
+  단타이스트:
+    "사실 1~2줄 → 차분한 관찰/격언 한 줄 → 의문형 마무리. 가끔 '이런 자리는 도망치면 답이 없습니다' 톤. 진중하고 정직.",
+  단타데일리:
+    "'[MM/DD]' 헤더 + 1./2./3. 번호 정리 + 마지막 '결정은 본인의 몫.' 격식체.",
+  단타Lab:
+    "통념 반박('호재로만 보면 놓칩니다' / '진짜 이유는 따로 있습니다') + 표면 재료 vs 수급 통찰 + '차트 뒤 진짜 판은 어디?' 류 의문형.",
+  스캘퍼:
+    "'[MM/DD]' + '🔻 이슈' / '📍 자리' 단발 포맷 + '시초가 어디냐?' 짧게.",
+};
+
+const ANGLES = ["실시간 발견", "혼잣말 관찰", "차트 보다가", "한 박자 늦게", "회고조", "담담한 정리"];
+
+function systemPrompt(persona: string, fmt: string, withCTA: boolean): string {
+  const tone = TONE[persona] ?? "단타 트레이더의 자연스러운 톤.";
+  const formatLine =
+    fmt === "question"
+      ? "포맷: 질문형 — 첫 줄부터 답글을 부르는 질문으로 시작(사실은 보조). 댓글 유도."
+      : "포맷: 뉴스 본문 — 기사 사실(재료)부터, 단타 관찰·체크포인트 중심.";
+  return `너는 한국 단타 주식 Threads 계정 '${persona}' 운영자다. 주어진 기사를 읽고 이 계정 톤으로 본문을 쓴다.
+
+페르소나 톤: ${tone}
+${formatLine}
+
+절대 규칙:
+- 기사를 읽고 핵심만 추려 '새로 쓴다'. 헤드라인·요약 문장 복붙 금지.
+- 사람이 직접 손으로 쓴 것처럼 자연스럽게, 매번 다른 첫 줄·마무리. 기계적 반복·AI 양산체 금지("주목할 만", "기대감이 높아지고" 등 금지).
+- 관찰·해설 톤. 매수·매도 '지시'·수익 '보장'·세력/리딩 어투 금지.
+- 종목명·수치(%·원·억)는 기사에 있는 것만 정확히. 새 숫자 지어내기 금지.
+- 길이 3~6줄. 해시태그·따옴표 감싸기·설명 추가 금지.
+- 마지막 줄에 면책 "${DISC}" 을 반드시 그대로 넣는다.${
+    withCTA ? "\n- 면책 바로 위 줄에 '실시간 자리는 텔레그램에 먼저 올립니다 👇' 같은 한 줄 CTA를 자연스럽게 넣는다." : ""
+  }
+- 출력은 본문만. 다른 말 붙이지 마라.`;
+}
+
+export async function POST(req: Request) {
+  let b: {
+    persona?: string; fmt?: string; headline?: string; summary?: string;
+    stocks?: string[]; mmdd?: string; withCTA?: boolean; variant?: number;
+  };
+  try {
+    b = await req.json();
+  } catch {
+    return NextResponse.json({ ok: false, error: "bad json" }, { status: 400 });
+  }
+  const persona = (b.persona ?? "").trim();
+  const headline = (b.headline ?? "").trim();
+  const summary = (b.summary ?? "").trim();
+  if (!persona || (!headline && !summary)) {
+    return NextResponse.json({ ok: false, error: "persona·기사 필요" }, { status: 400 });
+  }
+
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ ok: false, error: "ANTHROPIC_API_KEY 미설정" });
+  }
+
+  const angle = ANGLES[Math.abs(b.variant ?? 0) % ANGLES.length];
+  const stocks = (b.stocks ?? []).filter(Boolean).join(", ");
+  const userMsg = [
+    `[기사]`,
+    `헤드라인: ${headline}`,
+    summary ? `요약: ${summary}` : "",
+    stocks ? `관련 종목: ${stocks}` : "",
+    b.mmdd ? `오늘 날짜(MM/DD): ${b.mmdd}` : "",
+    "",
+    `이 기사를 '${persona}' 톤으로, '${angle}' 각도로 한 번 써줘. 헤드라인 복붙 말고 읽고 새로.`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 420,
+        system: systemPrompt(persona, b.fmt ?? "news", b.withCTA ?? true),
+        messages: [{ role: "user", content: userMsg }],
+      }),
+    });
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      return NextResponse.json({
+        ok: false,
+        error: `Claude HTTP ${res.status}`,
+        detail: detail.slice(0, 160),
+      });
+    }
+    const data = await res.json();
+    const text = data?.content?.[0]?.text;
+    if (typeof text !== "string" || text.trim().length < 10) {
+      return NextResponse.json({ ok: false, error: "빈 응답" });
+    }
+    let body = text.trim();
+    if (!body.includes("매수·매도 추천 아님")) body += `\n\n${DISC}`;
+    return NextResponse.json({ ok: true, body });
+  } catch (err) {
+    return NextResponse.json({ ok: false, error: String(err).slice(0, 160) });
+  }
+}
