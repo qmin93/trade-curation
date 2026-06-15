@@ -9,6 +9,7 @@ import {
   type PickInput,
   type Persona,
 } from "@/lib/pick-caption";
+import { FormatStudio } from "@/components/FormatStudio";
 
 /**
  * 운영자 전용 픽/글 작성 콘솔 — `#op=` 해시로만 열린다.
@@ -52,6 +53,7 @@ export default function OpsConsole() {
   const isOperator = useOperator();
   const mmdd = useMemo(() => todayMMDD(), []);
 
+  const [mode, setMode] = useState<"pick" | "format">("pick");
   const [pick, setPick] = useState<PickInput>(EXAMPLE);
   const [edited, setEdited] = useState<Record<string, string>>({});
   const [variants, setVariants] = useState<Record<string, number>>({});
@@ -241,9 +243,9 @@ export default function OpsConsole() {
       <div className="mx-auto max-w-5xl">
         <header className="mb-6">
           <div className="mono text-[10px] uppercase tracking-widest text-[var(--accent)] mb-1">운영자 콘솔 · 작성·저장</div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[var(--text)]">픽 → Threads 본문 작성</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--text)]">Threads 복붙 스튜디오</h1>
           <p className="text-sm text-[var(--text-muted)] mt-2">
-            붙여넣기 → 자동 채움 → 본문 직접 편집. <span className="text-[var(--text)]">자동 저장</span>(이 기기) + <span className="text-[var(--text)]">클라우드 저장</span>으로 글이 사라지지 않습니다.
+            <span className="text-[var(--text)]">오늘의 픽</span> + <span className="text-[var(--text)]">콘텐츠 포맷</span>(질문형·격언·타래·일상·결과인증·뉴스)을 페르소나 톤으로 뽑아 복붙. 변주·자동저장·클라우드 저장.
           </p>
         </header>
 
@@ -285,6 +287,26 @@ export default function OpsConsole() {
           )}
         </section>
 
+        {/* ── 탭: 오늘의 픽 ↔ 콘텐츠 포맷 ── */}
+        <div className="mb-6 flex gap-1.5">
+          {([["pick", "오늘의 픽"], ["format", "콘텐츠 포맷"]] as const).map(([m, lbl]) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
+                mode === m
+                  ? "bg-[var(--accent)] text-white"
+                  : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text)]"
+              }`}
+            >
+              {lbl}
+            </button>
+          ))}
+        </div>
+
+        {mode === "format" && <FormatStudio mmdd={mmdd} />}
+
+        {mode === "pick" && (
         <div className="grid gap-8 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
           {/* ── 입력 폼 ── */}
           <section className="space-y-4">
@@ -384,6 +406,7 @@ export default function OpsConsole() {
             <p className="mono text-[10px] text-[var(--text-caption)]">붙여넣을 때마다 길이·말투가 새로 뽑힙니다. 🔄로 짧게/길게 다시 돌리고, 직접 고치면 그대로 저장됩니다.</p>
           </section>
         </div>
+        )}
       </div>
 
       {toast && (
