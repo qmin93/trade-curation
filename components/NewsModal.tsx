@@ -121,7 +121,14 @@ export function NewsModal({
         </div>
 
         {/* Threads 본문 콘솔 — 운영자 전용 (방문자에겐 숨김) */}
-        {isOperator && <NewsStudio subj={subj} headline={news.headline} />}
+        {isOperator && (
+          <NewsStudio
+            subj={subj}
+            headline={news.headline}
+            summary={news.summary}
+            stocks={news.stocks}
+          />
+        )}
 
         {/* 액션 (캡처 영역 밖) */}
         <div className="flex items-center mt-3">
