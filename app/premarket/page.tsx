@@ -1,4 +1,5 @@
 import { fetchPremarket, type Quote } from "@/lib/premarket";
+import { TelegramCTA } from "@/components/TelegramCTA";
 
 /**
  * 장전(場前) 대시보드 — 장 시작 전 흩어진 글로벌 신호를 한 화면에.
@@ -122,6 +123,11 @@ export default async function PremarketPage() {
           </div>
         )}
       </Section>
+
+      {/* 단일 전환 CTA */}
+      <div className="mt-10">
+        <TelegramCTA variant="banner" />
+      </div>
 
       <p className="mono text-[10px] text-[var(--text-caption)] mt-10 leading-relaxed border-t border-[var(--border)] pt-5">
         데이터: Yahoo Finance(지수·선물·환율) · Upbit/Binance(김프). 지연·오차

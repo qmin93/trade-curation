@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getHotKeywords } from "@/lib/keywords";
 import { getMarketStatus } from "@/lib/market-status";
+import { TELEGRAM_INVITE_URL } from "@/lib/site";
 import { GlobalSearch } from "./GlobalSearch";
 import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "./ThemeToggle";
@@ -58,9 +59,27 @@ export function Header() {
             {status.badge}
           </div>
           <ThemeToggle />
+          {/* 단일 전환 CTA — 모든 페이지 상시 노출 */}
+          <a
+            href={TELEGRAM_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--accent)] px-3.5 py-1.5 text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+          >
+            텔레그램 무료
+            <span aria-hidden>→</span>
+          </a>
         </div>
 
         <div className="md:hidden flex items-center gap-2">
+          <a
+            href={TELEGRAM_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-md bg-[var(--accent)] px-2.5 py-1.5 text-[11px] font-semibold text-white"
+          >
+            텔레그램
+          </a>
           <ThemeToggle />
           <MobileNav keywords={hot} extras={TOP_NAV} />
         </div>
