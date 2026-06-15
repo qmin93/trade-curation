@@ -5,6 +5,7 @@ import { useOperator } from "@/lib/use-operator";
 import {
   PERSONAS,
   pickCaptionByPersona,
+  parsePickNote,
   type PickInput,
   type Persona,
 } from "@/lib/pick-caption";
@@ -43,6 +44,8 @@ function todayMMDD(): string {
 export default function OpsPickPage() {
   const isOperator = useOperator();
   const [pick, setPick] = useState<PickInput>(EXAMPLE);
+  const [raw, setRaw] = useState("");
+  const [parsed, setParsed] = useState(false);
   const [variants, setVariants] = useState<Record<string, number>>({});
   const [refined, setRefined] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<Persona | null>(null);
@@ -61,6 +64,14 @@ export default function OpsPickPage() {
     const targets = [...pick.targets];
     targets[i] = value;
     updatePick({ ...pick, targets });
+  };
+
+  const applyRaw = () => {
+    if (!raw.trim()) return;
+    updatePick(parsePickNote(raw));
+    setVariants({});
+    setParsed(true);
+    setTimeout(() => setParsed(false), 2000);
   };
 
   const baseText = (p: Persona) =>
@@ -150,6 +161,29 @@ export default function OpsPickPage() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
           {/* ───── 입력 폼 ───── */}
           <section className="space-y-4">
+            {/* 픽 노트 붙여넣기 → 자동 채우기 */}
+            <div className="rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/[0.04] p-3">
+              <label className={labelCls}>📋 픽 노트 붙여넣기</label>
+              <textarea
+                className={`${inputCls} resize-none font-mono text-[12px] leading-relaxed`}
+                rows={6}
+                value={raw}
+                onChange={(e) => setRaw(e.target.value)}
+                placeholder={"🐋 세력 포착 노트를 통째로 붙여넣고 아래 버튼을 누르세요.\n예) 예스티 122640 / 세력감지 12:00 / 💰 포착가 32,100원 / 🎯 목표가 1차 … / ⚠️ 손절 …"}
+              />
+              <div className="flex items-center gap-2 mt-2">
+                <button
+                  onClick={applyRaw}
+                  className="rounded-md bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90"
+                >
+                  {parsed ? "채워짐 ✓" : "↓ 자동 채우기"}
+                </button>
+                <span className="mono text-[10px] text-[var(--text-caption)]">
+                  붙여넣으면 아래 칸이 자동으로 채워집니다. 어색한 칸은 직접 수정하세요.
+                </span>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>종목명</label>
