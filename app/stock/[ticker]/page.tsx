@@ -6,6 +6,8 @@ import { NewsCard } from "@/components/NewsCard";
 import { SparklineChart } from "@/components/SparklineChart";
 import { StockCard } from "@/components/StockCard";
 import { SectionHeader } from "@/components/SectionHeader";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 
 export const revalidate = 600;
 
@@ -46,6 +48,12 @@ export default async function StockPage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "홈", path: "/" },
+          { name: `${stock.name}(${stock.ticker})`, path: `/stock/${stock.ticker}` },
+        ])}
+      />
       <section className="border-b border-[var(--border)] bg-gradient-to-br from-[var(--bg-elevated)] via-[var(--bg)] to-[var(--bg)]">
         <div className="max-w-[1400px] mx-auto px-4 py-12 md:py-16">
           <Link
