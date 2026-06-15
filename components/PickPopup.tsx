@@ -123,9 +123,15 @@ export function PickPopup() {
             )}
             {pickLine}
           </div>
-          {ACTIVE_PICK && (
+          {/* 진행 중 픽: 정확한 진입·목표·손절가는 공개 X → 유료 텔레그램에서만. */}
+          {ACTIVE_PICK && ACTIVE_PICK.status === "done" && (
             <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-caption)] line-clamp-2">
               {ACTIVE_PICK.thesis}
+            </p>
+          )}
+          {ACTIVE_PICK && ACTIVE_PICK.status === "live" && (
+            <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-caption)]">
+              정확한 진입·목표·손절가는 텔레그램에서 실시간 공개합니다.
             </p>
           )}
         </div>

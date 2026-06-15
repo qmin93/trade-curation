@@ -33,9 +33,6 @@ export default async function Home() {
       {/* 진입 광고 팝업 — 검증 성과 + 오늘 픽 + 텔레그램 (인라인 픽/성과 섹션 대체) */}
       <PickPopup />
 
-      {/* 후크-스토리-제안 히어로 — 차가운 방문자를 텔레그램으로 (마케팅 설계자 Secret 1·2·19) */}
-      <HeroFunnel />
-
       {/* 실시간 급등·인기검색 밴드 (공개) */}
       <LiveTrendingBand />
 
@@ -69,7 +66,7 @@ export default async function Home() {
 
         {/* Sidebar */}
         <aside className="space-y-3 min-w-0 lg:sticky lg:top-24 lg:self-start">
-          <TelegramCTA />
+          <HeroFunnel variant="side" />
           <IndexBoard />
           <CompactAlerts limit={5} />
           <CompactCalendar />
