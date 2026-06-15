@@ -1,9 +1,10 @@
 /**
  * 픽 → Threads 본문(페르소나별) 자동 생성.
  * 운영자가 /ops 화면에서 종목·포착가·목표가·근거를 입력하면 5계정 톤으로 복붙 본문을 만든다.
- * 규칙 기반(AI 비용 0). 뉴스 캡션(threads-caption.ts)과 달리 "오늘의 픽"용 — 가격(포착/목표/손절) 포함.
+ * 규칙 기반(AI 비용 0).
  *
- * 🔄 회전: variant 값을 바꾸면 페르소나별 첫 줄·마무리가 변형 풀에서 다르게 뽑힌다(봇 티 방지).
+ * 🔄 회전: variant 값이 바뀌면 페르소나별 (1) 첫 줄, (2) 마무리, (3) 길이(짧게/보통/길게),
+ *    (4) 개인 코멘트가 모두 다르게 조합된다 → 매번 손으로 쓴 듯 달라진다(봇 티 방지).
  */
 import type { Persona } from "./threads-caption";
 import { PERSONAS } from "./threads-caption";
@@ -12,19 +13,12 @@ export { PERSONAS };
 export type { Persona };
 
 export interface PickInput {
-  /** 종목명 (예: 한온시스템) */
   stockName: string;
-  /** 6자리 코드 (예: 018880) */
   ticker: string;
-  /** 전략·포착 메모 (예: "종일용 · 09:08 포착") */
   strategy: string;
-  /** 포착가 (예: "5,230") */
   entry: string;
-  /** 손절 (예: "5,070 (-3.1%)") */
   stop: string;
-  /** 목표 줄들 (예: ["1차 5,280 (+1.0%)", "2차 5,360 (+2.5%)"]) */
   targets: string[];
-  /** 근거 한두 줄 (예: "일봉 +11.7%로 5·20일선 위, 분봉 VWAP(5,217) 위 유지") */
   note: string;
 }
 
@@ -33,28 +27,13 @@ const DISCLAIMER =
 
 /* ───────── 픽 노트 붙여넣기 → 자동 파싱 ───────── */
 
-/**
- * 🐋 세력 포착 노트 형식을 통째로 붙여넣으면 PickInput으로 파싱.
- * 못 읽은 칸은 빈 값으로 두고, 사용자가 폼에서 수정할 수 있다.
- */
 export function parsePickNote(raw: string): PickInput {
-  const lines = raw
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
-
+  const lines = raw.split("\n").map((l) => l.trim()).filter((l) => l.length > 0);
   const out: PickInput = {
-    stockName: "",
-    ticker: "",
-    strategy: "",
-    entry: "",
-    stop: "",
-    targets: [],
-    note: "",
+    stockName: "", ticker: "", strategy: "", entry: "", stop: "", targets: [], note: "",
   };
   if (lines.length === 0) return out;
 
-  // 종목명 + 티커: 6자리 코드가 들어있고 가격(원·%)이 아닌 첫 줄
   const nameIdx = lines.findIndex(
     (l) => /\b\d{6}\b/.test(l) && !/원|포착가|손절|목표/.test(l),
   );
@@ -62,12 +41,7 @@ export function parsePickNote(raw: string): PickInput {
     const line = lines[nameIdx];
     const code = line.match(/\b(\d{6})\b/);
     out.ticker = code ? code[1] : "";
-    out.stockName = line
-      .replace(/\b\d{6}\b/, "")
-      .replace(/[^가-힣A-Za-z0-9·\s]/g, "")
-      .trim();
-
-    // 전략: 바로 다음 비어있지 않은 줄(차트/가격 섹션 시작 전). 끝의 "포착" 제거.
+    out.stockName = line.replace(/\b\d{6}\b/, "").replace(/[^가-힣A-Za-z0-9·\s]/g, "").trim();
     for (let i = nameIdx + 1; i < lines.length; i++) {
       const l = lines[i];
       if (/^[📌💰🎯⚠️📊•·\-]/.test(l) || /차트|포착가|목표가|손절/.test(l)) break;
@@ -76,14 +50,12 @@ export function parsePickNote(raw: string): PickInput {
     }
   }
 
-  // 포착가
   const entryLine = lines.find((l) => /포착가/.test(l));
   if (entryLine) {
     const m = entryLine.match(/포착가\D*([\d,]+)/);
     if (m) out.entry = m[1];
   }
 
-  // 손절 (가격 + 괄호 % 보존)
   const stopLine = lines.find((l) => /손절/.test(l));
   if (stopLine) {
     const price = stopLine.match(/손절\D*([\d,]+)/);
@@ -91,7 +63,6 @@ export function parsePickNote(raw: string): PickInput {
     if (price) out.stop = paren ? `${price[1]} (${paren[1]})` : price[1];
   }
 
-  // 목표가: "N차 PRICE원 +X.X%" 줄들 (단 "이상"·"자율" 줄 제외)
   for (const l of lines) {
     if (/이상|자율/.test(l)) continue;
     const m = l.match(/(\d+)\s*차\s*([\d,]+)\s*원?\s*([+-]\d+(?:\.\d+)?%)?/);
@@ -102,19 +73,14 @@ export function parsePickNote(raw: string): PickInput {
   }
   if (out.targets.length === 0) out.targets = ["", "", "", ""];
 
-  // 근거 메모: 일봉·분봉·핵심 요점 압축
   const noteParts: string[] = [];
   const ilbong = lines.find((l) => /일봉/.test(l));
   if (ilbong) {
     const pct = ilbong.match(/[+-]\d+(?:\.\d+)?%/);
     const ma =
-      /5일선/.test(ilbong) && /20일선/.test(ilbong)
-        ? "5·20일선 위"
-        : /20일선/.test(ilbong)
-          ? "20일선 위"
-          : /5일선/.test(ilbong)
-            ? "5일선 위"
-            : "";
+      /5일선/.test(ilbong) && /20일선/.test(ilbong) ? "5·20일선 위"
+      : /20일선/.test(ilbong) ? "20일선 위"
+      : /5일선/.test(ilbong) ? "5일선 위" : "";
     const seg = `일봉 ${pct ? pct[0] + "로 " : ""}${ma}`.trim();
     if (seg !== "일봉") noteParts.push(seg);
   }
@@ -129,66 +95,80 @@ export function parsePickNote(raw: string): PickInput {
     if (after) noteParts.push(after.replace(/,\s*/g, "·"));
   }
   out.note = noteParts.join(", ");
-
   return out;
 }
 
-/** variant 인덱스로 풀에서 하나 뽑기(순환·음수 안전) */
+/* ───────── 유틸 ───────── */
+
 function at<T>(arr: T[], v: number): T {
   return arr[((v % arr.length) + arr.length) % arr.length];
 }
-
-/** "5,070 (-3.1%)" → "5,070" (괄호 % 떼고 순수 가격만) */
 function bareStop(stop: string): string {
   return stop.replace(/\s*\(.*?\)\s*/g, "").trim() || stop.trim();
 }
-
-/** 목표 줄들 → "1차 5,280(+1.0%) · 2차 5,360(+2.5%)" 한 줄 */
-function targetsLine(targets: string[]): string {
-  return targets.map((t) => t.trim()).filter(Boolean).join(" · ");
+function targetsLine(t: string[]): string {
+  return t.map((x) => x.trim()).filter(Boolean).join(" · ");
+}
+function targetsPriceOnly(t: string[]): string {
+  return t.map((x) => (x.match(/[\d,]+/) || [""])[0]).filter(Boolean).join(" · ");
+}
+/** variant 정수를 (첫줄, 마무리, 길이모드) 세 선택으로 분해 */
+function decode(variant: number, nOpen: number, nClose: number) {
+  const v = Math.abs(variant);
+  return {
+    o: v % nOpen,
+    c: Math.floor(v / nOpen) % nClose,
+    lm: Math.floor(v / (nOpen * nClose)) % 3, // 0 짧게 · 1 보통 · 2 길게
+  };
+}
+function join(lines: string[]): string {
+  return lines.filter((l, i, a) => l !== null && l !== undefined && !(l === "" && a[i - 1] === "")).join("\n");
 }
 
-/** 목표 줄들 → 가격만 "5,280 · 5,360 · 5,460" (스캘퍼 단발용) */
-function targetsPriceOnly(targets: string[]): string {
-  return targets
-    .map((t) => {
-      const m = t.match(/[\d,]+/);
-      return m ? m[0] : "";
-    })
-    .filter(Boolean)
-    .join(" · ");
-}
+/* ───────── 페르소나별 풀 ───────── */
 
-/* ───────── 페르소나별 변형 풀 (회전) ───────── */
-
-const SIGNAL_OPEN = (subj: string, strategy: string) => [
-  `${subj}, ${strategy} 자리 포착.`,
-  `${subj}, 장중 ${strategy} 신호 들어왔습니다.`,
-  `${subj} 봅니다. ${strategy} 자리.`,
-  `${subj} — ${strategy} 자리 잡혔습니다.`,
-  `${subj}, 오늘 ${strategy} 흐름 체크.`,
+const SIGNAL_OPEN = (s: string, st: string) => [
+  `${s}, ${st} 자리 포착.`,
+  `${s}, 장중 ${st} 신호.`,
+  `${s} 봅니다. ${st} 자리.`,
+  `${s} — ${st} 자리 잡혔습니다.`,
+  `${s}, 오늘 ${st} 흐름.`,
 ];
 const SIGNAL_CLOSE = [
-  `- 거래대금·기준 지켜지는지가 관건. 본인 기준 맞으면 관심.`,
-  `- 기준 깨지면 흐름 종료. 본인 자리에 맞으면 관심.`,
-  `- 무리한 추격보다 기준 유지부터. 본인 판단으로.`,
-  `- 거래대금 실리는지 보고. 맞는 분만 관심.`,
+  `- 기준 지켜지는지가 관건. 본인 자리면 관심.`,
+  `- 깨지면 흐름 종료. 맞으면 관심.`,
+  `- 추격보다 기준 유지부터. 본인 판단으로.`,
+  `- 거래대금 실리는지 보고. 맞는 분만.`,
   `- 자리 지키는지가 전부. 본인 기준대로.`,
 ];
+const SIGNAL_EXTRA = [
+  `- 거래대금 한 번 더 확인하고.`,
+  `- 과열이면 한 박자 쉬어도 되고.`,
+  `- 시초 흐름만 체크.`,
+];
 
+const EAST_OPEN = (s: string, st: string) => [
+  `${s}, ${st} 자리가 눈에 들어옵니다.`,
+  `${s} 보고 있습니다. ${st} 자리네요.`,
+  `${s}, 오늘 ${st}로 잡힌 자리입니다.`,
+  `${s} — ${st}, 흐름 한번 볼만합니다.`,
+];
 const EAST_MID = (bs: string) => [
   `급하게 쫓기보다 ${bs} 안 깨지는지 먼저 보는 게 순서라고 봅니다.`,
   `자리는 기다리는 사람에게 옵니다. ${bs} 지켜지는지부터요.`,
   `남들 달려갈 때 ${bs} 라인부터 확인하는 게 먼저죠.`,
   `욕심보다 기준입니다. ${bs} 깨지면 미련 없이요.`,
-  `한 박자 늦더라도 ${bs} 지켜지는 걸 보고 가려 합니다.`,
 ];
 const EAST_CLOSE = [
   `오후까지 거래대금 받쳐줄까요?`,
   `이 자리, 끝까지 끌고 갈 수 있을까요?`,
   `수급이 진짜 받쳐주는 자리일까요?`,
   `결국 기준 지키는 쪽이 남지 않을까요?`,
-  `장 막판까지 흐름 이어질까요?`,
+];
+const EAST_ASIDE = [
+  `개인적으로는 무리하게 쫓진 않으려 합니다.`,
+  `저는 기준 깨지면 미련 없이 정리하는 편이고요.`,
+  `오늘 같은 장은 자리 안 주면 패스해도 되고요.`,
 ];
 
 const DAILY_HEAD = (mmdd: string) => [
@@ -203,12 +183,17 @@ const DAILY_CLOSE = [
   `무리한 진입은 피하고. 결정은 본인의 몫.`,
   `기준선 깨지면 비우고. 결정은 본인의 몫.`,
 ];
+const DAILY_ASIDE = [
+  `참고로 거래대금·테마 집중도도 같이 봅니다.`,
+  `외인·기관 수급 방향도 체크 포인트입니다.`,
+  `변동성 큰 구간이라 분할 대응이 편합니다.`,
+];
 
-const LAB_OPEN = (subj: string) => [
-  `${subj}, 단순 반등일까요? 안을 보면 다릅니다.`,
-  `${subj}, 그냥 오른 걸까요? 들여다보면 다릅니다.`,
-  `${subj}, 표면만 보면 놓치는 자리입니다.`,
-  `${subj}, 왜 하필 지금 움직일까요?`,
+const LAB_OPEN = (s: string) => [
+  `${s}, 단순 반등일까요? 안을 보면 다릅니다.`,
+  `${s}, 그냥 오른 걸까요? 들여다보면 다릅니다.`,
+  `${s}, 표면만 보면 놓치는 자리입니다.`,
+  `${s}, 왜 하필 지금 움직일까요?`,
 ];
 const LAB_CLOSE = [
   `흐름으로만 넘겨도 될까요?`,
@@ -216,12 +201,27 @@ const LAB_CLOSE = [
   `진짜 자리는 어디일까요?`,
   `차트 뒤 흐름, 보고 계신가요?`,
 ];
+const LAB_ASIDE = [
+  `표면 재료보다 수급이 먼저라고 봅니다.`,
+  `남들 다 아는 재료는 이미 늦은 경우가 많고요.`,
+  `결국 차트가 답을 말해주겠죠.`,
+];
 
+const SCALP_HEAD = (mmdd: string, st: string) => [
+  `[${mmdd}] ${st} 자리 체크`,
+  `[${mmdd}] 시초 이후 ${st} 자리`,
+  `[${mmdd}] 장중 ${st} 포착`,
+];
 const SCALP_CLOSE = [
   `오후까지 받쳐줄까?`,
   `시초 이어서 끌고 갈까?`,
   `이 자리 단발로 끝일까?`,
   `장중 어디서 받쳐주나?`,
+];
+const SCALP_ASIDE = [
+  `단발이면 욕심 없이.`,
+  `시초 못 받치면 바로 손 뗍니다.`,
+  `거래대금 빠지면 끝.`,
 ];
 
 export function pickCaptionByPersona(
@@ -239,84 +239,84 @@ export function pickCaptionByPersona(
   const note = pick.note.trim();
   const tline = targetsLine(pick.targets);
 
-  const entryStop = [entry ? `포착 ${entry}` : "", stop ? `손절 ${stop}` : ""]
-    .filter(Boolean)
-    .join(" / ");
-  const fullPrice = [entry ? `포착 ${entry}` : "", tline, stop ? `손절 ${stop}` : ""]
-    .filter(Boolean)
-    .join(" / ");
-
-  const dropDoubleBlank = (lines: string[]) =>
-    lines.filter((l, i, a) => !(l === "" && a[i - 1] === "")).join("\n");
+  const entryStop = [entry ? `포착 ${entry}` : "", stop ? `손절 ${stop}` : ""].filter(Boolean).join(" / ");
+  const fullPrice = [entry ? `포착 ${entry}` : "", tline, stop ? `손절 ${stop}` : ""].filter(Boolean).join(" / ");
 
   let body: string;
   switch (persona) {
-    case "단타시그널":
-      body = [
-        at(SIGNAL_OPEN(subj, strategy), variant),
-        note ? `- ${note}.` : "",
+    case "단타시그널": {
+      const opens = SIGNAL_OPEN(subj, strategy);
+      const { o, c, lm } = decode(variant, opens.length, SIGNAL_CLOSE.length);
+      body = join([
+        opens[o],
+        lm >= 1 && note ? `- ${note}.` : "",
         entryStop ? `- ${entryStop}.` : "",
-        at(SIGNAL_CLOSE, variant),
-      ]
-        .filter(Boolean)
-        .join("\n");
+        lm >= 2 ? at(SIGNAL_EXTRA, variant) : "",
+        SIGNAL_CLOSE[c],
+      ]);
       break;
-
-    case "단타이스트":
-      body = dropDoubleBlank([
-        `${subj}, ${strategy} 자리가 눈에 들어옵니다.`,
+    }
+    case "단타이스트": {
+      const opens = EAST_OPEN(subj, strategy);
+      const { o, c, lm } = decode(variant, opens.length, EAST_CLOSE.length);
+      body = join([
+        opens[o],
         note ? `${note}.` : "",
         "",
         fullPrice ? `${fullPrice}.` : "",
         "",
         at(EAST_MID(stop ? bareStop(stop) : "자리"), variant),
+        lm >= 2 ? at(EAST_ASIDE, variant) : "",
         "",
-        at(EAST_CLOSE, variant),
+        EAST_CLOSE[c],
       ]);
       break;
-
-    case "단타데일리":
-      body = [
-        at(DAILY_HEAD(mmdd), variant),
+    }
+    case "단타데일리": {
+      const heads = DAILY_HEAD(mmdd);
+      const { o, c, lm } = decode(variant, heads.length, DAILY_CLOSE.length);
+      body = join([
+        heads[o],
         note ? `${note}.` : "오늘 짚어볼 단타 자리입니다.",
         `1. ${subj}, ${strategy} 포착.`,
         `2. ${entryStop || "기준가 확인"}.`,
-        tline ? `3. 목표 ${tline}.` : "",
-        at(DAILY_CLOSE, variant),
-      ]
-        .filter(Boolean)
-        .join("\n");
-      break;
-
-    case "단타Lab":
-      body = dropDoubleBlank([
-        at(LAB_OPEN(subj), variant),
-        `1. 표면: 그냥 오른 자리로 보이는 흐름.`,
-        note ? `2. 진짜: ${note}.` : `2. 진짜: 수급·테마가 받치는 자리.`,
-        `3. ${strategy} 기준이 지켜지는 게 핵심.`,
-        "",
-        fullPrice ? `${fullPrice}.` : "",
-        "",
-        at(LAB_CLOSE, variant),
+        lm >= 1 && tline ? `3. 목표 ${tline}.` : "",
+        lm >= 2 ? at(DAILY_ASIDE, variant) : "",
+        DAILY_CLOSE[c],
       ]);
       break;
-
+    }
+    case "단타Lab": {
+      const opens = LAB_OPEN(subj);
+      const { o, c, lm } = decode(variant, opens.length, LAB_CLOSE.length);
+      body = join([
+        opens[o],
+        `1. 표면: 그냥 오른 자리로 보이는 흐름.`,
+        note ? `2. 진짜: ${note}.` : `2. 진짜: 수급·테마가 받치는 자리.`,
+        lm >= 1 ? `3. ${strategy} 기준이 지켜지는 게 핵심.` : "",
+        "",
+        fullPrice ? `${fullPrice}.` : "",
+        lm >= 2 ? at(LAB_ASIDE, variant) : "",
+        "",
+        LAB_CLOSE[c],
+      ]);
+      break;
+    }
     case "스캘퍼": {
+      const heads = SCALP_HEAD(mmdd, strategy);
+      const { o, c, lm } = decode(variant, heads.length, SCALP_CLOSE.length);
       const tpo = targetsPriceOnly(pick.targets);
-      body = [
-        `[${mmdd}] ${strategy} 자리 체크`,
+      body = join([
+        heads[o],
         `🔻 이슈`,
         note ? `${subj} — ${note}.` : `${subj} 자리 포착.`,
         `📍 자리`,
-        [entryStop, tpo ? `목표 ${tpo}` : ""].filter(Boolean).join(" / ") + ".",
-        `기준 유지 여부가 단발 포인트. 깨지면 흐름 종료.`,
-        at(SCALP_CLOSE, variant),
-      ]
-        .filter(Boolean)
-        .join("\n");
+        [entryStop, lm >= 1 && tpo ? `목표 ${tpo}` : ""].filter(Boolean).join(" / ") + ".",
+        lm >= 2 ? at(SCALP_ASIDE, variant) : `기준 유지 여부가 단발 포인트.`,
+        SCALP_CLOSE[c],
+      ]);
       break;
     }
-
     case "단타Pick":
       body = `${subj} 봤습니다.\n${note}.\n${fullPrice}.\n오늘 자리 잘 잡혔으면 좋겠습니다.`;
       break;

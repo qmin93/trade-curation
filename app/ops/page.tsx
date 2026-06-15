@@ -122,9 +122,15 @@ export default function OpsConsole() {
     if (resetBodies) { setEdited({}); setVariants({}); }
   };
 
+  // 페르소나마다 무작위 variant → 붙여넣을 때마다 길이·문구가 다르게(수동글 느낌).
+  const randomVariants = () =>
+    Object.fromEntries(PERSONAS.map((p) => [p, Math.floor(Math.random() * 90)]));
+
   const applyRaw = () => {
     if (!raw.trim()) return;
-    replacePick(parsePickNote(raw));
+    setPick(parsePickNote(raw));
+    setEdited({});
+    setVariants(randomVariants());
     setParsed(true);
     setTimeout(() => setParsed(false), 2000);
   };
@@ -136,11 +142,12 @@ export default function OpsConsole() {
   const displayText = (p: Persona) => edited[p] ?? baseText(p);
 
   const bump = (p: Persona) => {
-    setVariants((v) => ({ ...v, [p]: (v[p] ?? 0) + 1 }));
+    // 1~7 무작위 점프 → 첫줄·마무리뿐 아니라 길이(짧게/길게)도 자주 바뀜.
+    setVariants((v) => ({ ...v, [p]: (v[p] ?? 0) + 1 + Math.floor(Math.random() * 7) }));
     setEdited((e) => { const n = { ...e }; delete n[p]; return n; });
   };
   const bumpAll = () => {
-    setVariants((v) => { const n = { ...v }; for (const p of PERSONAS) n[p] = (n[p] ?? 0) + 1; return n; });
+    setVariants(randomVariants());
     setEdited({});
   };
 
@@ -374,7 +381,7 @@ export default function OpsConsole() {
                 />
               </div>
             ))}
-            <p className="mono text-[10px] text-[var(--text-caption)]">본문을 직접 고치면 그대로 저장됩니다. 계정마다 15~30분 간격, 차트 이미지와 함께 게시 권장.</p>
+            <p className="mono text-[10px] text-[var(--text-caption)]">붙여넣을 때마다 길이·말투가 새로 뽑힙니다. 🔄로 짧게/길게 다시 돌리고, 직접 고치면 그대로 저장됩니다.</p>
           </section>
         </div>
       </div>
