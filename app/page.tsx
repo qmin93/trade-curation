@@ -16,7 +16,8 @@ import { MarketNowBand } from "@/components/MarketNowBand";
 import { getMarketStatus } from "@/lib/market-status";
 import { rankNewsByPhase } from "@/lib/news-rank";
 
-export const revalidate = 120;
+// 비용 최적화: 10분마다 재생성(뉴스 신선도 충분 + claude 요약 호출 빈도 ↓)
+export const revalidate = 600;
 
 export default async function Home() {
   const news = await getRecentNewsUnified(40);

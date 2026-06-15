@@ -36,10 +36,13 @@ async function enrichWithSummaryAndImages(
 
   const toEnrich = items.slice(0, enrichLimit);
 
+  // ★ 비용 최적화: claude 요약은 상위 SUMMARIZE_CAP건만(노출 상단 위주). 나머지는 스니펫 그대로.
+  //   같은 기사는 캐싱으로 1회만 호출되지만, 한 번에 도는 건수를 줄여 신규 기사 과금을 더 낮춘다.
+  const SUMMARIZE_CAP = 15;
   // DART 공시는 템플릿 요약이 완성형 + 뷰어가 og:image를 공유 → claude 요약·이미지 중복제거에서 제외.
-  const claudeEligible = toEnrich.filter(
-    (n) => n.origin !== "mock" && n.origin !== "dart" && n.summary.length > 0,
-  );
+  const claudeEligible = toEnrich
+    .slice(0, SUMMARIZE_CAP)
+    .filter((n) => n.origin !== "mock" && n.origin !== "dart" && n.summary.length > 0);
   const summaryMap = await summarizeBatch(
     claudeEligible.map((n) => ({
       sourceUrl: n.sourceUrl,
