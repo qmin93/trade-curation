@@ -9,6 +9,7 @@ import { NewsFeed } from "@/components/NewsFeed";
 import { KeywordChip } from "@/components/KeywordChip";
 import { TelegramCTA } from "@/components/TelegramCTA";
 import { PickPopup } from "@/components/PickPopup";
+import { HeroFunnel } from "@/components/HeroFunnel";
 import { MarketNowBand } from "@/components/MarketNowBand";
 import { getMarketStatus } from "@/lib/market-status";
 import { rankNewsByPhase } from "@/lib/news-rank";
@@ -31,6 +32,9 @@ export default async function Home() {
     <div className="max-w-[1280px] mx-auto px-4 py-6">
       {/* 진입 광고 팝업 — 검증 성과 + 오늘 픽 + 텔레그램 (인라인 픽/성과 섹션 대체) */}
       <PickPopup />
+
+      {/* 후크-스토리-제안 히어로 — 차가운 방문자를 텔레그램으로 (마케팅 설계자 Secret 1·2·19) */}
+      <HeroFunnel />
 
       {/* 지금 장 상태 + 시간대 맞춤 데이터 (밤=장전, 장중=테마 주도주) */}
       <MarketNowBand />
