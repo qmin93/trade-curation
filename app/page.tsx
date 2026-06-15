@@ -8,9 +8,8 @@ import { HeroNews } from "@/components/HeroNews";
 import { NewsFeed } from "@/components/NewsFeed";
 import { KeywordChip } from "@/components/KeywordChip";
 import { TelegramCTA } from "@/components/TelegramCTA";
-import { PickSpotlight } from "@/components/PickSpotlight";
+import { PickPopup } from "@/components/PickPopup";
 import { MarketNowBand } from "@/components/MarketNowBand";
-import { MONTHLY_STATS } from "@/lib/results";
 import { getMarketStatus } from "@/lib/market-status";
 import { rankNewsByPhase } from "@/lib/news-rank";
 
@@ -30,40 +29,11 @@ export default async function Home() {
   const ranked = rankNewsByPhase(rest, status.phase);
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-6">
+      {/* 진입 광고 팝업 — 검증 성과 + 오늘 픽 + 텔레그램 (인라인 픽/성과 섹션 대체) */}
+      <PickPopup />
+
       {/* 지금 장 상태 + 시간대 맞춤 데이터 (밤=장전, 장중=테마 주도주) */}
       <MarketNowBand />
-
-      {/* 오늘의 픽 스포트라이트 */}
-      <PickSpotlight />
-
-      {/* 검증된 성과 배지 → 성과 페이지 */}
-      <a
-        href="/results"
-        className="group mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/[0.06] px-5 py-3 text-sm"
-      >
-        <span className="mono text-[10px] uppercase tracking-[0.2em] text-[var(--accent)]">
-          검증된 성과
-        </span>
-        <span className="font-bold text-[var(--text)]">
-          {MONTHLY_STATS.month} 승률{" "}
-          <span className="text-[var(--red)]">{MONTHLY_STATS.winRate}%</span>
-        </span>
-        <span className="text-[var(--text-muted)]">
-          누적{" "}
-          <span className="font-semibold text-[var(--red)]">
-            +{MONTHLY_STATS.cumulativeReturn}%
-          </span>
-        </span>
-        <span className="text-[var(--text-caption)]">
-          적중 {MONTHLY_STATS.hitCount}·손절 {MONTHLY_STATS.missCount} 전부 공개
-        </span>
-        <span className="ml-auto inline-flex items-center gap-1 font-semibold text-[var(--accent)]">
-          전체 기록
-          <span className="transition-transform group-hover:translate-x-1" aria-hidden>
-            →
-          </span>
-        </span>
-      </a>
 
       {/* Headline strip */}
       <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
