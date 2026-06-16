@@ -23,6 +23,7 @@ export function FormatStudio({ mmdd }: { mmdd: string }) {
   const [variants, setVariants] = useState<Record<string, number>>({});
   const [edited, setEdited] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState<string>("");
+  const [paste, setPaste] = useState("");
 
   const meta = useMemo(() => FORMATS.find((f) => f.id === fmt)!, [fmt]);
 
@@ -40,6 +41,30 @@ export function FormatStudio({ mmdd }: { mmdd: string }) {
   const setField = (k: "subj" | "noteA" | "noteB", v: string) => {
     setInput((s) => ({ ...s, [k]: v }));
     setEdited({}); // 입력 바뀌면 본문 새로
+  };
+  // 붙여넣은 원문(뉴스·메모·아이디어)을 현재 포맷의 입력칸에 자동 분배.
+  const applyPaste = () => {
+    const raw = paste.trim();
+    if (!raw) return;
+    const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+    const keys = meta.fields.map((f) => f.key);
+    const next = { subj: "", noteA: "", noteB: "" };
+    if (keys.includes("subj")) {
+      next.subj = lines[0] ?? "";
+      const rest = lines.slice(1);
+      if (keys.includes("noteB")) {
+        next.noteA = rest[0] ?? "";
+        next.noteB = rest.slice(1).join(" ");
+      } else {
+        next.noteA = rest.join(" ");
+      }
+    } else {
+      // 종목칸 없는 포맷(격언·일상·리드마그넷) → 전체를 본문 노트로.
+      next.noteA = raw;
+    }
+    setInput(next);
+    setEdited({});
+    setVariants({});
   };
   const bump = (p: Persona) => {
     setVariants((v) => ({ ...v, [key(p)]: (v[key(p)] ?? 0) + 1 + Math.floor(Math.random() * 5) }));
@@ -83,6 +108,23 @@ export function FormatStudio({ mmdd }: { mmdd: string }) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
         {/* 입력 */}
         <section className="space-y-3">
+          {/* 붙여넣기 → 자동 채우기 (픽 탭과 동일한 편의) */}
+          <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--bg-subtle)] p-2.5">
+            <label className={labelCls}>📋 붙여넣기 → 자동 채우기</label>
+            <textarea
+              className={`${inputCls} resize-none`}
+              rows={2}
+              value={paste}
+              onChange={(e) => setPaste(e.target.value)}
+              placeholder="뉴스·메모·아이디어를 통째로 붙여넣고 ↓ 누르세요. 첫 줄=종목/주제, 나머지=내용."
+            />
+            <button
+              onClick={applyPaste}
+              className="mt-2 w-full rounded-md bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90"
+            >
+              ↓ 자동 채우기
+            </button>
+          </div>
           {meta.fields.map((fl) => (
             <div key={fl.key}>
               <label className={labelCls}>{fl.label}</label>
