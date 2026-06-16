@@ -193,8 +193,8 @@ function dedupeByUrlAndTitle(items: UnifiedNewsItem[]): UnifiedNewsItem[] {
 }
 
 /** 주제 쏠림 방지: 핵심 토큰 2+개를 공유하면 같은 테마로 보고 테마당 maxPer건까지만 통과.
- *  "같은 느낌 뉴스는 하나만" 지향 → 2건으로 조임(대형 이벤트만 살짝 여유). */
-function diversifyByTheme(items: UnifiedNewsItem[], maxPer = 2): UnifiedNewsItem[] {
+ *  "같은 사건은 1건만" → 1건으로 조임. 빈자리는 커진 풀(키워드 15×12)의 다른 종목이 채움. */
+function diversifyByTheme(items: UnifiedNewsItem[], maxPer = 1): UnifiedNewsItem[] {
   const clusters: { toks: Set<string>; count: number }[] = [];
   const out: UnifiedNewsItem[] = [];
   for (const item of items) {
@@ -379,7 +379,7 @@ export async function getRecentNewsUnified(
 
   const naverResults = await Promise.all(
     actualKeywords.map((k) =>
-      searchNaverNews(k, { display: 5, sort: "date" }).then((items) =>
+      searchNaverNews(k, { display: 12, sort: "date" }).then((items) =>
         items.map((item) => {
           const normalized = normalizeNaverNews(item, [k], []);
           return {
