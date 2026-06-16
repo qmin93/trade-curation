@@ -18,7 +18,9 @@ const CTA_POOL = [
   "이런 자리, 채널에선 미리 짚습니다.",
 ];
 
-export type FormatId = "question" | "quote" | "thread" | "journal" | "proof" | "news";
+export type FormatId =
+  | "question" | "quote" | "thread" | "journal" | "proof" | "news"
+  | "watch" | "recap" | "magnet";
 
 export interface FormatMeta {
   id: FormatId;
@@ -64,6 +66,35 @@ export const FORMATS: FormatMeta[] = [
     desc: "휴먼화·캐릭터 빌딩. 정직 톤이 신뢰를 쌓는다.",
     fields: [
       { key: "noteA", label: "오늘 있었던 일·감정", placeholder: "예) 오전에 익절하고 오후엔 관망. 손이 근질거렸다", area: true },
+    ],
+    personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
+  },
+  {
+    id: "watch",
+    label: "관심종목 공개",
+    desc: "전환 엔진. 가격 없이 자리만 공개 → 다음날 '결과 인증'과 짝. 적중이 쌓이면 방으로 온다.",
+    fields: [
+      { key: "subj", label: "종목", placeholder: "예) 한화에어로스페이스" },
+      { key: "noteA", label: "보는 자리·이유 (가격 X)", placeholder: "예) 5·20일선 위 눌림, 거래대금 유지", area: true },
+    ],
+    personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
+  },
+  {
+    id: "recap",
+    label: "차트 복기",
+    desc: "전문가 신뢰. '오늘 이 자리 왜 줬나' 끝나고 해설 → 다 안다는 인상.",
+    fields: [
+      { key: "subj", label: "종목", placeholder: "예) 두산에너빌리티" },
+      { key: "noteA", label: "오늘 흐름·핵심 포인트", placeholder: "예) 시초 갭 뜨고 VWAP 위 지지, 오후 거래대금 재유입", area: true },
+    ],
+    personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
+  },
+  {
+    id: "magnet",
+    label: "리드마그넷",
+    desc: "직접 전환. 무료 자료(체크리스트·기준)를 미끼로 방 유입. 첫 댓글에 받는 법.",
+    fields: [
+      { key: "noteA", label: "무료로 주는 것", placeholder: "예) 급등주 시초가 진입 체크리스트" },
     ],
     personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
   },
@@ -171,8 +202,8 @@ export function generateFormatPost(
       }
       case "스캘퍼": {
         const O = [`[${mmdd}] 시초 질문`, `[${mmdd}] 단발 체크`, `[${mmdd}] 시초가 베팅`];
-        const Q = [`${subj} 시초가 어디서 잡힐까?`, `${subj}, 시초 받쳐줄까?`, `${subj} 갭 띄울까 눌릴까?`];
-        const C = [`댓글로 한 번 찍어봅시다.`, `시초가 어디냐?`, `각자 시초 예상 ㄱ.`];
+        const Q = [`${subj} 시초가 어디서 잡힐까요?`, `${subj}, 시초 받쳐줄까요?`, `${subj} 갭 띄울까요 눌릴까요?`];
+        const C = [`댓글로 한 번 찍어봅시다.`, `시초가 어디서 잡힐까요?`, `각자 시초 예상 남겨봅시다.`];
         const { o, c } = dec(variant, O.length, C.length);
         body = joinLines([O[o], at(Q, variant), ctx ? `${ctx}.` : "", C[c]]);
         break;
@@ -216,7 +247,7 @@ export function generateFormatPost(
     } else if (persona === "단타시그널") {
       body = `${subj}, 왜 강한지 짧게.\n${numbered}\n- 결국 이 흐름 유지되는지가 전부.`;
     } else if (persona === "스캘퍼") {
-      body = `[${mmdd}] ${subj} 단발 구조\n${numbered}\n시초가 어디서 받쳐주나?`;
+      body = `[${mmdd}] ${subj} 단발 구조\n${numbered}\n시초가 어디서 받쳐줄까요?`;
     } else {
       body = `[${mmdd}] ${subj} 구조 정리\n${numbered}\n추격보다 이 흐름이 유지되는지 확인. 결정은 본인의 몫.`;
     }
@@ -317,14 +348,119 @@ export function generateFormatPost(
       }
       case "스캘퍼": {
         const H = [`[${mmdd}] 시초 이슈`, `[${mmdd}] 단발 재료`, `[${mmdd}] 시초 체크`];
-        const P = [`📍 시초가 갭·거래대금만 보고 단발 대응.`, `📍 갭 크면 추격 X, 눌림 단발.`, `📍 거래대금 실리는지만 보고.`];
-        const C = [`시초가 어디냐?`, `시초 받쳐줄까?`, `갭 띄울까?`];
+        const P = [`📍 시초가 갭·거래대금만 보고 단발 대응합니다.`, `📍 갭 크면 추격 X, 눌림 단발로 봅니다.`, `📍 거래대금 실리는지만 봅니다.`];
+        const C = [`시초가 어디서 잡힐까요?`, `시초 받쳐줄까요?`, `갭 띄울까요?`];
         const { o, c } = dec(variant, H.length, C.length);
         body = joinLines([H[o], `🔻 ${subj} — ${fact}.`, at(P, variant), C[c]]);
         break;
       }
       default:
         body = `${subj}: ${fact}`;
+    }
+  } else if (id === "watch") {
+    // 관심종목 공개 = 가격 없이 자리만. 다음날 '결과 인증'과 짝 → 적중 누적 = 전환 엔진.
+    const reason = a || "거래대금 유지되는지부터";
+    switch (persona) {
+      case "단타시그널": {
+        const O = [`${subj}, 다음 거래일 이 자리 봅니다.`, `${subj} 관심권에 둡니다.`, `${subj}, 미리 자리 잡아둡니다.`];
+        const C = [`정확한 진입가는 자리 오면 따로 짚겠습니다.`, `맞는지 내일 같이 확인하시죠.`, `기준 깨지면 관심에서 빼고요.`];
+        const { o, c } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], `- ${reason}.`, C[c]]);
+        break;
+      }
+      case "단타이스트": {
+        const O = [`${subj}, 미리 자리 하나 적어둡니다.`, `${subj} 보고 있습니다. 아직 들어간 건 아니고요.`];
+        const M = [`자리는 미리 봐두고 오는 걸 기다리는 거라고 봅니다.`, `쫓는 게 아니라, 올 때까지 적어두는 거죠.`];
+        const C = [`내일 이 자리, 같이 보실래요?`, `오면 어떻게 대응하실 건가요?`];
+        const { o, c } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], `${reason}.`, "", at(M, variant), "", C[c]]);
+        break;
+      }
+      case "단타데일리": {
+        const H = [`[${mmdd}] 관심권에 둘 자리`, `[${mmdd}] 미리 적어두는 자리`];
+        const { o } = dec(variant, H.length, 1);
+        body = joinLines([H[o], `1. ${subj} — 관심권.`, `2. 근거: ${reason}.`, `정확한 진입은 자리 확인 후. 결정은 본인의 몫.`]);
+        break;
+      }
+      case "단타Lab": {
+        const O = [`${subj}, 지금은 조용하죠. 그래서 더 봅니다.`, `${subj}, 남들 안 볼 때 미리 적어둡니다.`];
+        const C = [`터지고 나서 보면 늦죠. 미리 보실래요?`, `진짜 자리는 조용할 때 잡힙니다.`];
+        const { o, c } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], `${reason}.`, C[c]]);
+        break;
+      }
+      case "스캘퍼": {
+        const H = [`[${mmdd}] 내일 시초 관심`, `[${mmdd}] 미리 찍어두는 자리`];
+        const { o } = dec(variant, H.length, 1);
+        body = joinLines([H[o], `🔻 ${subj} — ${reason}.`, `📍 정확한 진입은 시초 보고 따로.`, `시초가 받쳐주면 단발로 봅니다.`]);
+        break;
+      }
+      default:
+        body = `${subj}, 이 자리 봅니다. ${reason}.`;
+    }
+  } else if (id === "recap") {
+    // 차트 복기 = 끝난 흐름 해설. 전문가 신뢰(다 안다는 인상).
+    const what = a || "시초 갭 뜨고 VWAP 위 지지";
+    switch (persona) {
+      case "단타시그널": {
+        const O = [`${subj}, 오늘 흐름 짧게 복기.`, `${subj} 오늘 자리 정리.`];
+        const C = [`- 결국 거래대금이 다 말해줬고요.`, `- 기준 지킨 자리는 역시 다르네요.`];
+        const { o, c } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], `- ${what}.`, C[c]]);
+        break;
+      }
+      case "단타이스트": {
+        const C = [`복기 안 하면 같은 실수 반복하더라고요. 다들 복기하셨어요?`, `잘 본 날일수록 왜 맞았는지 남겨둡니다. 어떻게 보셨어요?`];
+        const { c } = dec(variant, 1, C.length);
+        body = joinLines([`${subj}, 오늘 복기해봅니다.`, `${what}.`, "", C[c]]);
+        break;
+      }
+      case "단타데일리": {
+        body = joinLines([`[${mmdd}] 오늘 복기`, `${subj} — ${what}.`, `1. 왜 줬나: 수급·거래대금.`, `2. 다음 관찰: 이 자리 유지 여부.`, `복기도 매매의 일부. 결정은 본인의 몫.`]);
+        break;
+      }
+      case "단타Lab": {
+        const O = [`${subj}, 오늘 왜 줬을까요? 끝났으니 솔직히 풉니다.`, `${subj}, 결과 나왔으니 진짜 이유 복기.`];
+        const C = [`표면 말고 수급으로 보면 보였던 자리죠. 다들 보셨나요?`, `차트 뒤 흐름, 오늘은 맞았네요.`];
+        const { o, c } = dec(variant, O.length, C.length);
+        body = joinLines([O[o], `${what}.`, C[c]]);
+        break;
+      }
+      case "스캘퍼": {
+        body = joinLines([`[${mmdd}] 시초 복기`, `🔻 ${subj} — ${what}.`, `📍 시초 받친 자리가 끝까지 갔네요.`, `다음 시초도 같은 기준으로.`]);
+        break;
+      }
+      default:
+        body = `${subj} 복기 — ${what}.`;
+    }
+  } else if (id === "magnet") {
+    // 리드마그넷 = 무료 자료로 방 유입. 실제 받는 법은 첫 댓글/프로필.
+    const give = a || "급등주 시초가 진입 체크리스트";
+    switch (persona) {
+      case "단타시그널": {
+        const C = [`필요하신 분 댓글 남겨주세요.`, `원하시면 첫 댓글에서 받아가시고요.`];
+        const { c } = dec(variant, 1, C.length);
+        body = joinLines([`${give}, 한 장으로 정리했습니다.`, `- 장중에 바로 쓰는 기준만 담았고요.`, C[c]]);
+        break;
+      }
+      case "단타이스트": {
+        body = joinLines([`${give} 정리해뒀습니다.`, `저 혼자 보던 기준인데, 도움 되실 분 계실 것 같아서요.`, `필요하신 분 댓글 주세요.`]);
+        break;
+      }
+      case "단타데일리": {
+        body = joinLines([`[${mmdd}] 무료 자료`, `${give} — 한 장 요약본 만들었습니다.`, `1. 시초 갭 체크.`, `2. 거래대금·VWAP 확인.`, `필요하신 분 댓글 남겨주세요.`]);
+        break;
+      }
+      case "단타Lab": {
+        body = joinLines([`${give}, 남들 잘 안 알려주는 기준으로 정리했습니다.`, `표면 재료 말고 수급으로 거르는 법이고요.`, `원하시는 분 댓글 주세요.`]);
+        break;
+      }
+      case "스캘퍼": {
+        body = joinLines([`[${mmdd}] 무료 자료`, `🔻 ${give}.`, `📍 시초 단발용 체크 포인트만 추렸습니다.`, `필요하신 분 댓글 남겨주세요.`]);
+        break;
+      }
+      default:
+        body = `${give} — 필요하신 분 댓글 주세요.`;
     }
   }
 
