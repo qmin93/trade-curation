@@ -177,6 +177,52 @@ function matchesAdPattern(text: string): boolean {
   return AD_PATTERNS.some((re) => re.test(text));
 }
 
+/**
+ * ★ 비-actionable 노이즈 차단 — Tier-1 단어(반도체·삼성 등)가 들어갔어도
+ * 인물 인터뷰·칼럼·정책·행사·노조 같은 "시세 안 움직이는" 기사를 걸러낸다.
+ */
+const NOISE_PATTERNS = [
+  "교수", "교육감", "총장", "장관", "의원", "후보", "출마", "당선", "취임", "위촉", "임명",
+  "별세", "부고", "동정", "인사발령",
+  "인터뷰", "칼럼", "사설", "기고", "특별기고", "오피니언",
+  "논란", "균형발전", "지역균형", "공약", "정책토론",
+  "세미나", "포럼", "토론회", "간담회", "공청회", "강연", "특강", "축사",
+  "시상", "수상", "시상식", "공모전",
+  "노조", "파업", "임금협상", "단체협약", "노사",
+  "손잡", "맞손", "업무협약", "mou", "양해각서",
+];
+function containsNoise(text: string): boolean {
+  // 띄어쓰기 무시("균형 발전"도 "균형발전" 패턴에 걸리게).
+  const flat = text.toLowerCase().replace(/\s+/g, "");
+  return NOISE_PATTERNS.some((p) => flat.includes(p.toLowerCase().replace(/\s+/g, "")));
+}
+
+/** ★ 시세 신호어 — 실제로 가격이 움직이는 단타 재료. 하나는 있어야 통과. */
+const SIGNAL_TOKENS = [
+  "급등", "급락", "강세", "약세", "상한가", "하한가", "점상", "갭상승", "갭하락",
+  "신고가", "신저가", "52주", "돌파", "반등", "조정", "급증", "치솟", "뛰",
+  "수급", "외국인", "외인", "기관", "연기금", "순매수", "순매도", "거래대금", "거래량", "공매도",
+  "실적", "영업이익", "순이익", "매출", "어닝", "흑자", "적자", "잠정실적",
+  "수주", "공급계약", "단일판매", "납품", "계약 체결", "유상증자", "무상증자", "자사주", "배당",
+  "인수", "합병", "지분", "상장", "공모", "청약", "임상", "신약", "기술수출", "품목허가",
+  "목표주가", "컨센서스", "상향", "하향", "수혜", "수출", "출하", "업황", "시초가", "특징주",
+];
+function hasSignal(text: string): boolean {
+  const lower = text.toLowerCase();
+  return SIGNAL_TOKENS.some((t) => lower.includes(t.toLowerCase()));
+}
+
+/** 지수·매크로 — 그 자체로 시장을 움직이는 맥락(시세 신호어 없어도 통과). */
+const INDEX_MACRO = [
+  "코스피", "코스닥", "코스피200", "증시", "지수", "환율", "원/달러", "원달러",
+  "금리", "기준금리", "FOMC", "연준", "파월", "CPI", "나스닥", "S&P", "다우",
+  "선물", "옵션", "만기", "비트코인", "이더리움",
+];
+function hasIndexMacro(text: string): boolean {
+  const lower = text.toLowerCase();
+  return INDEX_MACRO.some((t) => lower.includes(t.toLowerCase()));
+}
+
 export function shouldKeep(item: UnifiedNewsItem): boolean {
   // dart(공시)는 하드 재료라 항상 통과.
   if (item.origin === "dart") return true;
@@ -194,6 +240,19 @@ export function shouldKeep(item: UnifiedNewsItem): boolean {
 
   // D. 광고성 헤드라인 차단
   if (matchesAdPattern(text)) return false;
+
+  // ★ C. 비-actionable 노이즈 차단 (인물·칼럼·정책·행사·노조) — Tier-1 단어만 걸린 가짜 제거
+  if (containsNoise(text)) return false;
+
+  // ★ E. 시세 substance 필수 — 종목 태그·시세 신호어·지수/매크로·대형주 앵커 중 하나는 있어야 통과.
+  //    (naver는 종목 태그가 비어 있어 앵커/신호로 판별) "주식·테마주" 같은 약한 단어만 걸린 글 차단.
+  //    진짜 가짜(교수·교육감·노조·칼럼·정책)는 위 노이즈 차단이 잡는다.
+  const actionable =
+    (item.stocks && item.stocks.length > 0) ||
+    hasSignal(text) ||
+    hasIndexMacro(text) ||
+    hasTrafficAnchor(text);
+  if (!actionable) return false;
 
   // B. 최근 48시간만
   if (!isRecent(item.date)) return false;
