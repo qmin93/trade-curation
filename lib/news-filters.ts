@@ -178,8 +178,11 @@ function matchesAdPattern(text: string): boolean {
 }
 
 export function shouldKeep(item: UnifiedNewsItem): boolean {
-  // mock(운영자 큐레이션)·dart(공시)는 항상 통과
-  if (item.origin === "mock" || item.origin === "dart") return true;
+  // dart(공시)는 하드 재료라 항상 통과.
+  if (item.origin === "dart") return true;
+  // mock(운영자 큐레이션)은 관련성·광고 검사는 면제하되 ★신선도는 적용한다.
+  //   → 오래된 큐레이션(예: 6/11)이 신선한 Tier-1을 밀어내고 상단에 박히는 문제 차단.
+  if (item.origin === "mock") return isRecent(item.date);
 
   const text = `${item.headline} ${item.summary}`;
 
