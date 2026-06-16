@@ -8,6 +8,7 @@
  */
 import type { Persona } from "./threads-caption";
 import { NEWS_TEMPLATES } from "./persona-templates";
+import { OPTION_BANK } from "./persona-option-bank";
 
 const DISC = "※ 시장 관찰용 정보 · 매수·매도 추천 아님 · 판단과 책임은 본인에게";
 // 노골적 "텔레그램 👇" 대신 은근하게. 실제 링크는 본문 말고 첫 댓글/프로필에.
@@ -184,80 +185,55 @@ function newsFromSummary(persona: Persona, subj: string, fIn: string[], mmdd: st
   const f2 = facts.length > 2 ? rot(2) : "";
   const lm = Math.floor(v / 6) % 3; // 0 짧게 · 1 보통 · 2 길게
   const bullets = (lm === 0 ? [] : lm === 1 ? [f1] : [f1, f2]).filter(Boolean);
+  // 토큰 치환 — 옵션 뱅크의 {subj}/{fact}/{mmdd}를 실제 값으로.
+  const sub = (t: string, fact: string) =>
+    t.split("{subj}").join(subj).split("{fact}").join(fact).split("{mmdd}").join(mmdd);
+  const bank = OPTION_BANK[persona];
 
   switch (persona) {
     case "단타시그널": {
-      const O = [
-        `${subj}, ${f0}.`, `${subj} — ${f0}.`, `${subj}, ${f0} 나왔습니다.`,
-        `장중 ${subj} 봅니다. ${f0}.`, `${subj}, 방금 ${f0}.`, `${subj}, ${f0} 확인.`,
-      ];
-      const C = [
-        `본인 기준에 맞다면 관심.`, `기준 맞으면 관심.`, `자리 지키는지가 관건이고요.`,
-        `추격보다 기준부터.`, `다음 거래일 이어질지가 관건.`, `거래대금 한 번 더 보고.`,
-      ];
-      const { o, c } = dec(variant, O.length, C.length);
-      return joinLines([O[o], ...bullets.map((x) => `- ${x}.`), `- ${C[c]}`]);
+      const { o, c } = dec(variant, bank.openers!.length, bank.closes.length);
+      return joinLines([
+        sub(bank.openers![o], f0),
+        ...bullets.map((x) => `- ${x}.`),
+        `- ${sub(bank.closes[c], f0)}`,
+      ]);
     }
     case "단타이스트": {
-      const O = [
-        `${subj}, ${f0}.`, `${subj} 보고 있습니다. ${f0}.`, `${subj}, 오늘은 ${f0}.`,
-        `${subj} — ${f0}, 한 번 짚어봅니다.`, `${subj}, ${f0} 소식이고요.`,
-      ];
-      const M = [
-        `재료보다 수급이 받쳐주는지가 먼저라고 봅니다.`, `호재일수록 이미 반영됐는지 의심해봐야죠.`,
-        `한 박자 늦더라도 자리 확인하고 갑니다.`, `급하게 쫓기보다 기준부터 보는 게 순서고요.`,
-        `좋아 보이는 자리일수록 더 차분해지려 합니다.`,
-      ];
-      const C = [
-        `이 흐름, 이어질까요?`, `여러분은 어떻게 보세요?`, `결국 수급이 답 아닐까요?`,
-        `이 자리, 끝까지 갈 수 있을까요?`, `오늘은 어떻게 대응하셨나요?`,
-      ];
-      const { o, c } = dec(variant, O.length, C.length);
+      const { o, c } = dec(variant, bank.openers!.length, bank.closes.length);
       return joinLines([
-        O[o],
-        bullets[0] ? `${bullets[0]}.` : "",
-        lm >= 2 && bullets[1] ? `${bullets[1]}.` : "",
+        sub(bank.openers![o], f0),
+        lm >= 1 && f1 ? `${f1}.` : "",
+        lm >= 2 && f2 ? `${f2}.` : "",
         "",
-        at(M, variant),
+        at(bank.mids!, variant),
         "",
-        C[c],
+        sub(bank.closes[c], f0),
       ]);
     }
     case "단타데일리": {
-      const H = [
-        `[${mmdd}] 짚어볼 뉴스`, `[${mmdd}] 오늘의 재료`, `[${mmdd}] 체크할 뉴스`,
-        `[${mmdd}] 시황 메모`, `[${mmdd}] 오늘 이 종목`,
-      ];
-      const { o } = dec(variant, H.length, 1);
-      const numbered = [f0, ...bullets].filter(Boolean).map((x, i) => `${i + 1}. ${x}.`);
-      return joinLines([H[o], `${subj} 관련 —`, ...numbered, `결정은 본인의 몫.`]);
+      const { o } = dec(variant, bank.headers!.length, 1);
+      const facts = [f0, ...bullets].filter(Boolean);
+      const numbered = facts.map((x, i) => `${i + 1}. ${x}.`);
+      return joinLines([sub(bank.headers![o], f0), `${subj} 관련 —`, ...numbered, at(bank.closes, variant)]);
     }
     case "단타Lab": {
-      const O = [
-        `${subj}, ${f0} — 표면만 보면 놓칩니다.`, `${subj}, ${f0}. 호재로만 보면 함정일 수 있고요.`,
-        `${subj}, ${f0} 떴는데 — 진짜 이유는 따로입니다.`, `${subj}, 다들 ${f0}만 보죠. 근데 진짜는요.`,
-        `${subj}, ${f0}. 표면 말고 안을 봅니다.`,
-      ];
-      const C = [
-        `차트 뒤 진짜 판은 어디일까요?`, `진짜 자리는 어디일까요?`, `이 재료, 진짜일까요?`,
-        `남들 다 아는 재료, 이미 늦은 건 아닐까요?`, `수급으로 보면 다른 그림 아닐까요?`,
-      ];
-      const { o, c } = dec(variant, O.length, C.length);
+      const { o, c } = dec(variant, bank.openers!.length, bank.closes.length);
       return joinLines([
-        O[o],
-        bullets[0] ? `진짜는 ${bullets[0]}.` : "",
-        lm >= 2 && bullets[1] ? `${bullets[1]}.` : "",
-        C[c],
+        sub(bank.openers![o], f0),
+        lm >= 1 && f1 ? sub(at(bank.reveals!, variant), f1) : "",
+        lm >= 2 && f2 ? `${f2}.` : "",
+        sub(bank.closes[c], f0),
       ]);
     }
     case "스캘퍼": {
-      const H = [`[${mmdd}] 시초 체크`, `[${mmdd}] 시초 이슈`, `[${mmdd}] 단발 재료`, `[${mmdd}] 시초 단발`];
-      const P = [
-        `📍 시초가 갭·거래대금만 보고 단발.`, `📍 갭 크면 추격 X, 눌림 단발.`, `📍 거래대금 실리는지만 봅니다.`,
-      ];
-      const C = [`시초가 어디서 잡힐까요?`, `시초 받쳐줄까요?`, `갭 띄울까요?`, `단발로 끝일까요?`];
-      const { o, c } = dec(variant, H.length, C.length);
-      return joinLines([H[o], `🔻 ${subj} — ${f0}.`, bullets[0] ? `📍 ${bullets[0]}.` : at(P, variant), C[c]]);
+      const { o, c } = dec(variant, bank.headers!.length, bank.closes.length);
+      return joinLines([
+        sub(bank.headers![o], f0),
+        sub(at(bank.issues!, variant), f0),
+        f1 ? `📍 ${f1}.` : at(bank.spots!, variant),
+        sub(bank.closes[c], f0),
+      ]);
     }
     default:
       return `${subj}, ${f0}.`;
