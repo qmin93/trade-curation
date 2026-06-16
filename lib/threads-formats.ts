@@ -7,6 +7,7 @@
  * · 결과 인증은 금감원 사기 프레임 회피 위해 "손실 공개+권유 아님" 강제.
  */
 import type { Persona } from "./threads-caption";
+import { NEWS_TEMPLATES } from "./persona-templates";
 
 const DISC = "※ 시장 관찰용 정보 · 매수·매도 추천 아님 · 판단과 책임은 본인에게";
 const CTA_POOL = [
@@ -265,8 +266,15 @@ export function generateFormatPost(
     }
     body += `\n\n※ 손실도 함께 공개 · 수익 보장 아님 · 종목 추천 아님`;
   } else if (id === "news") {
-    // 뉴스 본문 = 사실(재료)부터. 관찰·체크포인트 중심, 마무리는 가벼운 한 줄.
+    // 뉴스 본문 = 사실(재료)부터. voice-builder 프로필 기반 대량 템플릿 풀(계정당 18개)을 variant로 회전.
     const fact = a || "오늘 나온 재료";
+    const tpl = NEWS_TEMPLATES[persona];
+    if (tpl && tpl.length) {
+      body = at(tpl, variant)
+        .split("{subj}").join(subj)
+        .split("{fact}").join(fact)
+        .split("{mmdd}").join(mmdd);
+    } else
     switch (persona) {
       case "단타시그널": {
         const O = [`${subj}, ${fact}.`, `${subj} — ${fact}.`, `${subj}, ${fact} 나왔습니다.`];
