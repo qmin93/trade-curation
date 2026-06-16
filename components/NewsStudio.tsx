@@ -37,7 +37,8 @@ export function NewsStudio({
   const [copied, setCopied] = useState("");
   const [err, setErr] = useState("");
 
-  const input = { subj, noteA: headline };
+  // noteB = 기사 실제 요약 → 무료(🔄) 뉴스 본문이 제목만이 아니라 내용을 반영($0).
+  const input = { subj, noteA: headline, noteB: summary };
   const k = (p: Persona) => `${fmt}:${p}`;
   const base = (p: Persona) => generateFormatPost(fmt, input, p, mmdd, variants[k(p)] ?? 0, withCTA, withDisc);
   const text = (p: Persona) => edited[k(p)] ?? base(p);
