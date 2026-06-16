@@ -193,8 +193,8 @@ function dedupeByUrlAndTitle(items: UnifiedNewsItem[]): UnifiedNewsItem[] {
 }
 
 /** 주제 쏠림 방지: 핵심 토큰 2+개를 공유하면 같은 테마로 보고 테마당 maxPer건까지만 통과.
- *  "같은 느낌 뉴스는 하나만" 지향 → 2건으로 조임(대형 이벤트만 살짝 여유). */
-function diversifyByTheme(items: UnifiedNewsItem[], maxPer = 2): UnifiedNewsItem[] {
+ *  "같은 사건은 무조건 1개만" → 1건으로 조임. 빈자리는 풀(키워드 15×5=수십 건)의 다른 종목 뉴스가 채움. */
+function diversifyByTheme(items: UnifiedNewsItem[], maxPer = 1): UnifiedNewsItem[] {
   const clusters: { toks: Set<string>; count: number }[] = [];
   const out: UnifiedNewsItem[] = [];
   for (const item of items) {
@@ -418,7 +418,7 @@ export async function getRecentNewsUnified(
   // 안전망: 아카이브에 과거 DART가 남아 있어도 방문자 화면엔 안 나오게.
   if (!includeDart) deduped = deduped.filter((n) => n.origin !== "dart");
 
-  // 한 주제(예: 미-이란 종전합의) 쏠림 방지 → 테마당 최대 3건, 나머지는 다른 토픽에 양보.
+  // 한 주제(예: 종전합의·코스피 지수) 쏠림 방지 → 같은 사건은 1건만, 나머지는 다른 종목에 양보.
   const filtered = diversifyByTheme(applyFilters(deduped)).slice(0, limit);
   return enrichWithSummaryAndImages(filtered, limit);
 }
