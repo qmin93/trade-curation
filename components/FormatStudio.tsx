@@ -18,7 +18,8 @@ export function FormatStudio({ mmdd }: { mmdd: string }) {
   const [input, setInput] = useState<{ subj: string; noteA: string; noteB: string }>({
     subj: "", noteA: "", noteB: "",
   });
-  const [withCTA, setWithCTA] = useState(true);
+  const [withCTA, setWithCTA] = useState(false);
+  const [withDisc, setWithDisc] = useState(false);
   const [variants, setVariants] = useState<Record<string, number>>({});
   const [edited, setEdited] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState<string>("");
@@ -27,7 +28,7 @@ export function FormatStudio({ mmdd }: { mmdd: string }) {
 
   const key = (p: Persona) => `${fmt}:${p}`;
   const base = (p: Persona) =>
-    generateFormatPost(fmt, input, p, mmdd, variants[key(p)] ?? 0, withCTA);
+    generateFormatPost(fmt, input, p, mmdd, variants[key(p)] ?? 0, withCTA, withDisc);
   const text = (p: Persona) => edited[key(p)] ?? base(p);
 
   const pickFormat = (id: FormatId) => {
@@ -106,7 +107,11 @@ export function FormatStudio({ mmdd }: { mmdd: string }) {
           <div className="flex items-center gap-3 pt-1">
             <label className="flex items-center gap-2 text-xs text-[var(--text-muted)] cursor-pointer select-none">
               <input type="checkbox" checked={withCTA} onChange={(e) => setWithCTA(e.target.checked)} className="accent-[var(--accent)]" />
-              텔레그램 CTA 넣기
+              채널 멘트
+            </label>
+            <label className="flex items-center gap-2 text-xs text-[var(--text-muted)] cursor-pointer select-none">
+              <input type="checkbox" checked={withDisc} onChange={(e) => setWithDisc(e.target.checked)} className="accent-[var(--accent)]" />
+              면책
             </label>
             <button onClick={bumpAll} className="rounded-md border border-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[var(--accent)] hover:bg-[var(--accent)]/[0.06]">
               🔄 전체 변주

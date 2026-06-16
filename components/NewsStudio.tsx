@@ -29,7 +29,8 @@ export function NewsStudio({
     return `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}`;
   }, []);
   const [fmt, setFmt] = useState<FormatId>("news");
-  const [withCTA, setWithCTA] = useState(true);
+  const [withCTA, setWithCTA] = useState(false);
+  const [withDisc, setWithDisc] = useState(false);
   const [variants, setVariants] = useState<Record<string, number>>({});
   const [edited, setEdited] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string>("");
@@ -38,7 +39,7 @@ export function NewsStudio({
 
   const input = { subj, noteA: headline };
   const k = (p: Persona) => `${fmt}:${p}`;
-  const base = (p: Persona) => generateFormatPost(fmt, input, p, mmdd, variants[k(p)] ?? 0, withCTA);
+  const base = (p: Persona) => generateFormatPost(fmt, input, p, mmdd, variants[k(p)] ?? 0, withCTA, withDisc);
   const text = (p: Persona) => edited[k(p)] ?? base(p);
 
   const setFormat = (id: FormatId) => { setFmt(id); setEdited({}); setErr(""); };
@@ -61,7 +62,7 @@ export function NewsStudio({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          persona: p, fmt, headline, summary, stocks, mmdd, withCTA,
+          persona: p, fmt, headline, summary, stocks, mmdd, withCTA, withDisc,
           variant: variants[k(p)] ?? 0,
         }),
       });
@@ -104,7 +105,11 @@ export function NewsStudio({
         ))}
         <label className="ml-auto flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] cursor-pointer select-none">
           <input type="checkbox" checked={withCTA} onChange={(e) => setWithCTA(e.target.checked)} className="accent-[var(--accent)]" />
-          CTA
+          채널 멘트
+        </label>
+        <label className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] cursor-pointer select-none">
+          <input type="checkbox" checked={withDisc} onChange={(e) => setWithDisc(e.target.checked)} className="accent-[var(--accent)]" />
+          면책
         </label>
       </div>
 
