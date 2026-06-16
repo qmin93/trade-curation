@@ -4,8 +4,21 @@
  * ANTHROPIC_API_KEY 필요. 실패 시 ok:false + (호출 측은 규칙 기반 초안 유지).
  */
 import { NextResponse } from "next/server";
+import { NEWS_TEMPLATES } from "@/lib/persona-templates";
 
 export const runtime = "nodejs";
+
+/** 페르소나 구조 예시(few-shot) — 틀 강제용. 내용 토큰은 중립 표기로 치환해 '구조'만 보여준다. */
+function structureExamples(persona: string): string {
+  const pool = (NEWS_TEMPLATES as Record<string, string[]>)[persona] ?? [];
+  if (pool.length === 0) return "";
+  return pool
+    .slice(0, 2)
+    .map((t) =>
+      t.split("{subj}").join("○○종목").split("{fact}").join("△△ 재료").split("{mmdd}").join("MM/DD"),
+    )
+    .join("\n---\n");
+}
 
 const DISC = "※ 시장 관찰용 정보 · 매수·매도 추천 아님 · 판단과 책임은 본인에게";
 
@@ -37,6 +50,7 @@ const CLOSE: Record<string, string> = {
 function systemPrompt(persona: string, fmt: string, withCTA: boolean): string {
   const tone = TONE[persona] ?? "단타 트레이더의 자연스러운 톤.";
   const close = CLOSE[persona] ?? "";
+  const examples = fmt === "news" ? structureExamples(persona) : "";
   const formatLine =
     fmt === "question"
       ? "포맷: 질문형 — 첫 줄부터 답글을 부르는 질문으로 시작(사실은 보조). 댓글 유도."
@@ -46,7 +60,7 @@ function systemPrompt(persona: string, fmt: string, withCTA: boolean): string {
 페르소나 톤: ${tone}
 ${formatLine}
 ${close ? `마무리 시그니처(필수): ${close} (면책·CTA는 그 아래)` : ""}
-
+${examples ? `\n★구조 예시(이 계정의 '틀' — 줄 구성·불릿/번호/이모지 위치·마무리 형식을 똑같이 따라라. 단 내용은 ○○·△△ 말고 주어진 기사로 새로 채운다):\n${examples}\n위 틀을 절대 벗어나지 마라. 자유 산문으로 풀어쓰지 마라.\n` : ""}
 절대 규칙:
 - ★전문가 느낌(최우선): 짧게 써도 시장 전체를 꿰뚫은 10년차 고수처럼. 수급 주체(외인·기관·연기금)·거래대금 강도·매물대·추세 위치(이평/VWAP)·섹터 순환·시초가 갭 같은 핵심을 정확한 용어로 자연스럽게 한두 개 짚어, "이 사람 상황 다 알고 있다"는 인상을 줘라. 두루뭉술·초보 설명조 절대 X. (단 관찰·해설 톤 유지, 단정·추천 X)
 - 기사를 읽고 핵심만 추려 '새로 쓴다'. 헤드라인·요약 문장 복붙 금지.
