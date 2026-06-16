@@ -8,6 +8,7 @@
  */
 import type { Persona } from "./threads-caption";
 import { PERSONAS } from "./threads-caption";
+import { OPTION_BANK } from "./persona-option-bank";
 
 export { PERSONAS };
 export type { Persona };
@@ -140,6 +141,7 @@ const SIGNAL_CLOSE = [
   `- 깨지면 흐름 종료. 맞으면 관심.`,
   `- 추격보다 기준 유지부터. 본인 판단으로.`,
   `- 자리 지키는지가 전부. 본인 기준대로.`,
+  ...OPTION_BANK.단타시그널.closes.map((c) => `- ${c}`), // 옵션 뱅크 연결
 ];
 const SIGNAL_EXTRA = [
   `- 거래대금 한 번 더 확인하고.`,
@@ -165,6 +167,7 @@ const EAST_CLOSE = [
   `이 자리, 끝까지 끌고 갈 수 있을까요?`,
   `수급이 진짜 받쳐주는 자리일까요?`,
   `결국 기준 지키는 쪽이 남지 않을까요?`,
+  ...OPTION_BANK.단타이스트.closes, // 옵션 뱅크 연결
 ];
 const EAST_ASIDE = [
   `개인적으로는 무리하게 쫓진 않으려 합니다.`,
@@ -183,6 +186,7 @@ const DAILY_CLOSE = [
   `자리 지켜지는지 보고. 결정은 본인의 몫.`,
   `무리한 진입은 피하고. 결정은 본인의 몫.`,
   `기준선 깨지면 비우고. 결정은 본인의 몫.`,
+  ...OPTION_BANK.단타데일리.closes, // 옵션 뱅크 연결
 ];
 const DAILY_ASIDE = [
   `참고로 거래대금·테마 집중도도 같이 봅니다.`,
@@ -201,6 +205,7 @@ const LAB_CLOSE = [
   `흐름으로만 넘겨도 될까요?`,
   `표면만 보고 지나쳐도 될까요?`,
   `진짜 자리는 어디일까요?`,
+  ...OPTION_BANK.단타Lab.closes, // 옵션 뱅크 연결
 ];
 const LAB_ASIDE = [
   `표면 재료보다 수급이 먼저라고 봅니다.`,
@@ -219,6 +224,7 @@ const SCALP_CLOSE = [
   `시초 이어서 끌고 갈 수 있을까요?`,
   `이 자리, 단발로 끝일까요?`,
   `장중 어디서 받쳐줄까요?`,
+  ...OPTION_BANK.스캘퍼.closes, // 옵션 뱅크 연결
 ];
 const SCALP_ASIDE = [
   `단발이면 욕심 없이.`,
