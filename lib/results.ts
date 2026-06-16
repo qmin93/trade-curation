@@ -26,6 +26,24 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-06-16",
+    totalReturn: 7.00,
+    summary:
+      "DL이앤씨 세력 포착 09:22 — 1~4차 목표가 전부 달성(최고 +7.13%). 추격 자리였지만 거래대금 받쳐준 단발 정통.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "DL이앤씨",
+        ticker: "375500",
+        entryPrice: 88300,
+        targetReached: 4,
+        resultPercent: 7.13,
+        status: "hit",
+        note: "1차(+1.0%)·2차(+2.5%)·3차(+4.5%)·4차(+7.0%) 전부 달성, 최고 +7.13%",
+      },
+    ],
+  },
+  {
     date: "2026-06-15",
     totalReturn: 8.40,
     summary:
@@ -91,10 +109,10 @@ export const DAILY_RESULTS: DailyResult[] = [
 
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
-  hitCount: 6,
+  hitCount: 7,
   missCount: 2,
-  winRate: 75.0,
-  cumulativeReturn: 13.52,
+  winRate: 77.8,
+  cumulativeReturn: 20.52,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {

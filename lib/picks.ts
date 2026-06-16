@@ -29,5 +29,6 @@ export const ACTIVE_PICK: SitePick | null = {
   targets: ["1차 +1.0%", "2차 +2.5%", "3차 +4.5%", "4차 +7.0%"],
   thesis:
     "세력 포착 09:22 — 일봉 +12.2%로 강세, 다만 시가 대비 이미 +9.9% 움직인 자리(20일 고점 대비 -2.2%)라 차익 매물 확인이 관건. 추격보다 포착가 근처에서 거래대금이 계속 붙는지 기준 확인이 먼저.",
-  status: "live",
+  status: "done",
+  resultPercent: 7.13,
 };
