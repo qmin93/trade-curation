@@ -190,6 +190,8 @@ const NOISE_PATTERNS = [
   "시상", "수상", "시상식", "공모전",
   "노조", "파업", "임금협상", "단체협약", "노사",
   "손잡", "맞손", "업무협약", "mou", "양해각서",
+  "국회", "의장", "시의회", "도의회", "지자체", "자치단체", "지방선거",
+  "워크숍", "예산학교", "출범식", "발대식", "기념식", "주민참여",
 ];
 function containsNoise(text: string): boolean {
   // 띄어쓰기 무시("균형 발전"도 "균형발전" 패턴에 걸리게).
@@ -223,6 +225,22 @@ function hasIndexMacro(text: string): boolean {
   return INDEX_MACRO.some((t) => lower.includes(t.toLowerCase()));
 }
 
+/**
+ * actionable 판별용 ★대형주 "종목명"만 (섹터·테마어 AI·반도체·HBM은 제외).
+ * 섹터어를 넣으면 "AI 정책 연설"·"반도체 공장 칼럼"까지 통과하므로 실제 회사명만 쓴다.
+ */
+const ACTIONABLE_ANCHORS = [
+  "삼성전자", "SK하이닉스", "하이닉스", "삼성SDS", "삼성SDI", "삼성전기", "삼성바이오",
+  "한미반도체", "LG에너지솔루션", "LG전자", "LG이노텍", "에코프로", "포스코",
+  "현대차", "기아", "현대모비스", "셀트리온", "카카오", "네이버", "NAVER",
+  "두산에너빌리티", "한화에어로", "한화오션", "HD현대", "HMM", "고려아연",
+  "엔비디아", "마이크론", "TSMC", "테슬라", "애플",
+];
+function hasCompanyAnchor(text: string): boolean {
+  const lower = text.toLowerCase();
+  return ACTIONABLE_ANCHORS.some((t) => lower.includes(t.toLowerCase()));
+}
+
 export function shouldKeep(item: UnifiedNewsItem): boolean {
   // dart(공시)는 하드 재료라 항상 통과.
   if (item.origin === "dart") return true;
@@ -251,7 +269,7 @@ export function shouldKeep(item: UnifiedNewsItem): boolean {
     (item.stocks && item.stocks.length > 0) ||
     hasSignal(text) ||
     hasIndexMacro(text) ||
-    hasTrafficAnchor(text);
+    hasCompanyAnchor(text);
   if (!actionable) return false;
 
   // B. 최근 48시간만
