@@ -149,6 +149,16 @@ function points(raw: string): string[] {
 function mmddOf(s: string) {
   return s;
 }
+/** 옵션 뱅크 토큰 치환 — {subj}/{fact}/{mmdd}를 실제 값으로. */
+function subTokens(t: string, subj: string, fact: string, mmdd: string): string {
+  return t.split("{subj}").join(subj).split("{fact}").join(fact).split("{mmdd}").join(mmdd);
+}
+/** 질문형 댓글 유도(comment-bait) 마무리 풀. */
+const COMMENT_BAIT = [
+  "댓글로 방향 한 번 찍어봅시다.", "다들 어느 쪽 보세요?", "솔직한 의견 궁금합니다.",
+  "근거도 댓글로 같이 적어주시면 좋고요.", "여러분 생각이 궁금합니다.", "각자 기준 댓글로 남겨주세요.",
+  "어떻게 보고 계신지 궁금합니다.", "지금 어떻게 대응하고 계세요?",
+];
 
 /** 기사 요약 → 핵심 사실 절(clause) 최대 3개. 무료(🔄) 뉴스 본문이 실제 내용을 반영하게 한다. */
 function summaryClauses(raw: string): string[] {
@@ -185,9 +195,7 @@ function newsFromSummary(persona: Persona, subj: string, fIn: string[], mmdd: st
   const f2 = facts.length > 2 ? rot(2) : "";
   const lm = Math.floor(v / 6) % 3; // 0 짧게 · 1 보통 · 2 길게
   const bullets = (lm === 0 ? [] : lm === 1 ? [f1] : [f1, f2]).filter(Boolean);
-  // 토큰 치환 — 옵션 뱅크의 {subj}/{fact}/{mmdd}를 실제 값으로.
-  const sub = (t: string, fact: string) =>
-    t.split("{subj}").join(subj).split("{fact}").join(fact).split("{mmdd}").join(mmdd);
+  const sub = (t: string, fact: string) => subTokens(t, subj, fact, mmdd);
   const bank = OPTION_BANK[persona];
 
   switch (persona) {
@@ -257,50 +265,20 @@ export function generateFormatPost(
   let body = "";
 
   if (id === "question") {
-    // 질문형 = 첫 줄부터 질문(답글 유도). 사실은 보조.
+    // 질문형 = 첫 줄부터 질문(답글 유도). 옵션 뱅크 hooks(계정당 12~16개) + 댓글 유도 마무리.
     const ctx = a;
-    switch (persona) {
-      case "단타시그널": {
-        const O = [`${subj}, 지금 들어간 사람 있어요?`, `${subj}, 이 자리 어떻게 보세요?`, `${subj}, 자리일까요 꼭지일까요?`, `${subj} 보는 중 — 갈까요 빠질까요?`, `${subj}, 지금 담아도 될 자리일까요?`];
-        const C = [`댓글로 방향 한 번 찍어봅시다.`, `다들 어느 쪽 보세요?`, `솔직한 의견 궁금합니다.`, `각자 기준 댓글로 ㄱ.`];
-        const { o, c, lm } = dec(variant, O.length, C.length);
-        body = joinLines([O[o], lm && ctx ? `- ${ctx}.` : "", C[c]]);
-        break;
-      }
-      case "단타이스트": {
-        const O = [`${subj}, 이런 자리 다들 어떻게 대응하세요?`, `${subj}, 지금 들어가는 건 용기일까요 욕심일까요?`, `${subj} 보면서 드는 생각인데요.`, `${subj}, 쫓는 게 맞을까요 기다리는 게 맞을까요?`];
-        const M = [`${ctx ? ctx + " " : ""}쫓을지 기다릴지, 결국 그 차이가 수익을 가르더라고요.`, `${ctx ? ctx + " " : ""}자리를 기다리는 게 더 어려운 일이죠.`, `${ctx ? ctx + " " : ""}조급함이 결국 손실로 돌아오더라고요.`];
-        const C = [`여러분은 어느 쪽이세요?`, `결국 그 한 끗 차이 아닐까요?`, `오늘은 어떻게 보고 계세요?`, `이럴 때 다들 어떻게 버티세요?`];
-        const { o, c, lm } = dec(variant, O.length, C.length);
-        body = joinLines([O[o], lm ? at(M, variant) : (ctx ? `${ctx}.` : ""), "", C[c]]);
-        break;
-      }
-      case "단타데일리": {
-        const H = [`[${mmdd}] 오늘의 질문`, `[${mmdd}] 같이 생각해볼 거리`, `[${mmdd}] 댓글로 의견 모아요`];
-        const Q = [`${subj}, 갭상 vs 갭하 — 어느 쪽 보세요?`, `${subj}, 오늘 더 갈까요 쉬어갈까요?`, `${subj}, 주도주로 남을까요 하루짜리일까요?`];
-        const C = [`근거도 댓글로 같이 적어주시면 좋고요.`, `여러분 생각이 궁금합니다.`, `판단은 각자, 의견은 댓글로.`];
-        const { o, c } = dec(variant, H.length, C.length);
-        body = joinLines([H[o], at(Q, variant), ctx ? `${ctx}.` : "", C[c]]);
-        break;
-      }
-      case "단타Lab": {
-        const O = [`${subj}, 다들 좋게만 보는데 — 진짜 그럴까요?`, `${subj}, 왜 하필 지금 움직일까요?`, `${subj}, 재료 때문일까요 수급 때문일까요?`, `${subj}, 표면만 보고 판단해도 될까요?`];
-        const M = [`${ctx ? ctx + " " : ""}표면 말고 수급으로 보면 다른 그림이 보입니다.`, `${ctx ? ctx + " " : ""}진짜 이유는 차트 뒤에 있고요.`, `${ctx ? ctx + " " : ""}남들 다 아는 재료는 이미 늦은 경우가 많죠.`];
-        const C = [`여러분은 어디를 보고 계세요?`, `차트 뒤 흐름, 같이 보실래요?`, `진짜 자리는 어디일까요?`];
-        const { o, c, lm } = dec(variant, O.length, C.length);
-        body = joinLines([O[o], lm ? at(M, variant) : "", "", C[c]]);
-        break;
-      }
-      case "스캘퍼": {
-        const O = [`[${mmdd}] 시초 질문`, `[${mmdd}] 단발 체크`, `[${mmdd}] 시초가 베팅`];
-        const Q = [`${subj} 시초가 어디서 잡힐까요?`, `${subj}, 시초 받쳐줄까요?`, `${subj} 갭 띄울까요 눌릴까요?`];
-        const C = [`댓글로 한 번 찍어봅시다.`, `시초가 어디서 잡힐까요?`, `각자 시초 예상 남겨봅시다.`];
-        const { o, c } = dec(variant, O.length, C.length);
-        body = joinLines([O[o], at(Q, variant), ctx ? `${ctx}.` : "", C[c]]);
-        break;
-      }
-      default:
-        body = `${subj}, 어떻게 보세요?`;
+    const qbank = OPTION_BANK[persona];
+    const { o, c, lm } = dec(variant, qbank.hooks.length, COMMENT_BAIT.length);
+    const hook = subTokens(qbank.hooks[o], subj, ctx || subj, mmdd);
+    if (persona === "단타데일리" || persona === "스캘퍼") {
+      // 데일리·스캘퍼 hook은 [MM/DD] 헤더형 → 헤더 + 실제 질문 한 줄 + 마무리.
+      const Q =
+        persona === "스캘퍼"
+          ? subTokens(at(qbank.closes, variant), subj, ctx || subj, mmdd)
+          : `${subj}, 오늘 더 갈까요 쉬어갈까요?`;
+      body = joinLines([hook, Q, ctx ? `${ctx}.` : "", COMMENT_BAIT[c]]);
+    } else {
+      body = joinLines([hook, lm && ctx ? `- ${ctx}.` : "", COMMENT_BAIT[c]]);
     }
   } else if (id === "quote") {
     const p = a || at(PRINCIPLES, variant);
@@ -388,6 +366,9 @@ export function generateFormatPost(
       default:
         body = `${subj}: ${res}`;
     }
+    // 옵션 뱅크 close를 회전 추가 → 매 🔄마다 다른 마무리·댓글 유도(변주).
+    const pbank = OPTION_BANK[persona];
+    if (pbank) body += `\n${subTokens(at(pbank.closes, variant), subj, "", mmdd)}`;
     body += `\n\n※ 손실도 함께 공개 · 수익 보장 아님 · 종목 추천 아님`;
   } else if (id === "news") {
     // ★ 기사 실제 요약(noteB)이 있으면 그 내용을 페르소나 톤으로 엮는다($0, 내용 정확).
