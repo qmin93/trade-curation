@@ -198,31 +198,44 @@ export function shouldKeep(item: UnifiedNewsItem): boolean {
   return true;
 }
 
+// ★ 고트래픽 앵커 — 사람들이 가장 많이 보는 주제(대형주·메모리·핫테마). 있으면 상위 노출.
+const TRAFFIC_ANCHORS = [
+  "삼성전자", "SK하이닉스", "하이닉스", "삼성", "HBM", "D램", "디램", "낸드", "반도체",
+  "코스피", "코스닥", "외국인", "외인", "기관", "연기금", "엔비디아", "마이크론", "TSMC",
+  "AI", "데이터센터", "파운드리", "2차전지", "배터리", "삼성SDI", "LG에너지솔루션", "에코프로",
+  "원전", "SMR", "방산", "한화에어로", "조선", "한화오션", "HD현대", "로봇", "휴머노이드",
+  "카카오", "네이버", "현대차", "기아", "셀트리온", "두산에너빌리티", "한미반도체", "삼성SDS",
+  "비트코인", "코인", "트럼프", "관세", "FOMC", "금리", "엔비디아",
+];
+function hasTrafficAnchor(text: string): boolean {
+  const lower = text.toLowerCase();
+  return TRAFFIC_ANCHORS.some((a) => lower.includes(a.toLowerCase()));
+}
+/** 갓 나온 기사 가점(최대 +36, 36시간 지나면 0) — 고트래픽 우선 속에서도 신선도 반영. */
+function recencyBonus(item: UnifiedNewsItem): number {
+  const t = new Date(item.publishedAt ?? `${item.date}T00:00:00+09:00`).getTime();
+  if (isNaN(t)) return 0;
+  const hours = (Date.now() - t) / 3_600_000;
+  return Math.max(0, 36 - hours);
+}
+
 export function applyFilters(items: UnifiedNewsItem[]): UnifiedNewsItem[] {
   const filtered = items.filter(shouldKeep);
 
-  // 점수 계산 — 단타 적합 부스트 + 매체 우선순위
   const scored = filtered.map((item) => {
     const text = `${item.headline} ${item.summary}`;
-    // mock(운영자 큐레이션) 최상위. DART 공시는 기사보다 빠른 하드 재료라 라이브 위에 가점.
-    const boost =
-      item.origin === "mock"
-        ? 200
-        : item.origin === "dart"
-          ? 120
-          : calculateBoost(text);
-    const sourcePriority = getSourcePriority(item.source);
-    return { item, score: boost + sourcePriority };
+    // mock(운영자 큐레이션) 최상위. DART 공시는 하드 재료라 가점.
+    const originBoost =
+      item.origin === "mock" ? 200 : item.origin === "dart" ? 120 : calculateBoost(text);
+    // ★ 고트래픽 앵커(삼성·하이닉스·HBM·코스피 등)면 크게 가점 → 위로.
+    const anchor =
+      (item.origin === "naver" || item.origin === "rss") && hasTrafficAnchor(text) ? 90 : 0;
+    const score = originBoost + getSourcePriority(item.source) + anchor + recencyBonus(item);
+    return { item, score };
   });
 
-  // 정렬: 날짜 desc → 점수 desc (같은 날짜면 부스트 + 매체 점수 높은 것 먼저)
-  return scored
-    .sort((a, b) => {
-      const dateCompare = b.item.date.localeCompare(a.item.date);
-      if (dateCompare !== 0) return dateCompare;
-      return b.score - a.score;
-    })
-    .map((s) => s.item);
+  // 정렬: 점수 desc (고트래픽 앵커 + 매체 + 신선도가 종합 반영). 니치 종목은 자연히 아래로.
+  return scored.sort((a, b) => b.score - a.score).map((s) => s.item);
 }
 
 export const FILTER_INFO = {
