@@ -25,8 +25,18 @@ const TONE: Record<string, string> = {
 
 const ANGLES = ["실시간 발견", "혼잣말 관찰", "차트 보다가", "한 박자 늦게", "회고조", "담담한 정리"];
 
+/** 페르소나별 마무리 시그니처(강제) — 벤치 매치 100% 위해 본문 끝(면책·CTA 위)을 이걸로. */
+const CLOSE: Record<string, string> = {
+  단타시그널: "마지막 줄(불릿)을 '본인 기준에 맞다면 관심' 류로 짧게.",
+  단타이스트: "반드시 수급·방향을 묻는 의문형 한 줄로 끝낸다(평서 X).",
+  단타데일리: "반드시 마지막 줄을 정확히 '결정은 본인의 몫.' 으로 끝낸다.",
+  단타Lab: "반드시 '차트 뒤 진짜 판은 어디?' 류 의문형으로 끝낸다.",
+  스캘퍼: "반드시 '시초가 어디냐?' 류 짧은 의문으로 끝낸다.",
+};
+
 function systemPrompt(persona: string, fmt: string, withCTA: boolean): string {
   const tone = TONE[persona] ?? "단타 트레이더의 자연스러운 톤.";
+  const close = CLOSE[persona] ?? "";
   const formatLine =
     fmt === "question"
       ? "포맷: 질문형 — 첫 줄부터 답글을 부르는 질문으로 시작(사실은 보조). 댓글 유도."
@@ -35,6 +45,7 @@ function systemPrompt(persona: string, fmt: string, withCTA: boolean): string {
 
 페르소나 톤: ${tone}
 ${formatLine}
+${close ? `마무리 시그니처(필수): ${close} (면책·CTA는 그 아래)` : ""}
 
 절대 규칙:
 - ★전문가 느낌(최우선): 짧게 써도 시장 전체를 꿰뚫은 10년차 고수처럼. 수급 주체(외인·기관·연기금)·거래대금 강도·매물대·추세 위치(이평/VWAP)·섹터 순환·시초가 갭 같은 핵심을 정확한 용어로 자연스럽게 한두 개 짚어, "이 사람 상황 다 알고 있다"는 인상을 줘라. 두루뭉술·초보 설명조 절대 X. (단 관찰·해설 톤 유지, 단정·추천 X)
