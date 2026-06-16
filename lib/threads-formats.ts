@@ -149,6 +149,121 @@ function mmddOf(s: string) {
   return s;
 }
 
+/** 기사 요약 → 핵심 사실 절(clause) 최대 3개. 무료(🔄) 뉴스 본문이 실제 내용을 반영하게 한다. */
+function summaryClauses(raw: string): string[] {
+  if (!raw) return [];
+  const sentences = raw.replace(/\s+/g, " ").split(/(?<=[.。!?])\s+/u).map((s) => s.trim()).filter(Boolean);
+  const out: string[] = [];
+  for (const s of sentences) {
+    let c = s.replace(/[.。!?]+$/u, "").trim();
+    if (c.length > 55) {
+      const cut = c.lastIndexOf(",", 55);
+      c = (cut > 20 ? c.slice(0, cut) : c.slice(0, 55)).replace(/,$/u, "").trim();
+    }
+    if (c.length >= 6) out.push(c);
+    if (out.length >= 3) break;
+  }
+  return out;
+}
+
+/**
+ * 실제 요약 절을 페르소나 톤·존댓말·시그니처로 엮어 본문 생성.
+ * ★다양화: opener×close 독립 회전 + 길이모드(짧게/보통/길게) + 사실 순서 회전
+ *   → 페르소나당 수십 조합. 같은 기사라도 🔄 누를 때마다 길이·각도·구성이 바뀐다($0).
+ */
+function newsFromSummary(persona: Persona, subj: string, fIn: string[], mmdd: string, variant: number): string {
+  // 사실 절 맨 앞에 종목명이 또 나오면 제거("SK하이닉스, SK하이닉스가…" 중복 방지).
+  const esc = subj.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const stripSubj = (s: string) =>
+    s.replace(new RegExp(`^${esc}\\s*[가이은는을를도라며과와의]?\\s*`), "").trim() || s;
+  const facts = (fIn.length ? fIn : ["오늘 나온 재료"]).map(stripSubj);
+  const v = Math.abs(variant);
+  const rot = (i: number) => facts[(i + v) % facts.length]; // 어떤 사실이 hook이 될지 회전
+  const f0 = rot(0);
+  const f1 = facts.length > 1 ? rot(1) : "";
+  const f2 = facts.length > 2 ? rot(2) : "";
+  const lm = Math.floor(v / 6) % 3; // 0 짧게 · 1 보통 · 2 길게
+  const bullets = (lm === 0 ? [] : lm === 1 ? [f1] : [f1, f2]).filter(Boolean);
+
+  switch (persona) {
+    case "단타시그널": {
+      const O = [
+        `${subj}, ${f0}.`, `${subj} — ${f0}.`, `${subj}, ${f0} 나왔습니다.`,
+        `장중 ${subj} 봅니다. ${f0}.`, `${subj}, 방금 ${f0}.`, `${subj}, ${f0} 확인.`,
+      ];
+      const C = [
+        `본인 기준에 맞다면 관심.`, `기준 맞으면 관심.`, `자리 지키는지가 관건이고요.`,
+        `추격보다 기준부터.`, `다음 거래일 이어질지가 관건.`, `거래대금 한 번 더 보고.`,
+      ];
+      const { o, c } = dec(variant, O.length, C.length);
+      return joinLines([O[o], ...bullets.map((x) => `- ${x}.`), `- ${C[c]}`]);
+    }
+    case "단타이스트": {
+      const O = [
+        `${subj}, ${f0}.`, `${subj} 보고 있습니다. ${f0}.`, `${subj}, 오늘은 ${f0}.`,
+        `${subj} — ${f0}, 한 번 짚어봅니다.`, `${subj}, ${f0} 소식이고요.`,
+      ];
+      const M = [
+        `재료보다 수급이 받쳐주는지가 먼저라고 봅니다.`, `호재일수록 이미 반영됐는지 의심해봐야죠.`,
+        `한 박자 늦더라도 자리 확인하고 갑니다.`, `급하게 쫓기보다 기준부터 보는 게 순서고요.`,
+        `좋아 보이는 자리일수록 더 차분해지려 합니다.`,
+      ];
+      const C = [
+        `이 흐름, 이어질까요?`, `여러분은 어떻게 보세요?`, `결국 수급이 답 아닐까요?`,
+        `이 자리, 끝까지 갈 수 있을까요?`, `오늘은 어떻게 대응하셨나요?`,
+      ];
+      const { o, c } = dec(variant, O.length, C.length);
+      return joinLines([
+        O[o],
+        bullets[0] ? `${bullets[0]}.` : "",
+        lm >= 2 && bullets[1] ? `${bullets[1]}.` : "",
+        "",
+        at(M, variant),
+        "",
+        C[c],
+      ]);
+    }
+    case "단타데일리": {
+      const H = [
+        `[${mmdd}] 짚어볼 뉴스`, `[${mmdd}] 오늘의 재료`, `[${mmdd}] 체크할 뉴스`,
+        `[${mmdd}] 시황 메모`, `[${mmdd}] 오늘 이 종목`,
+      ];
+      const { o } = dec(variant, H.length, 1);
+      const numbered = [f0, ...bullets].filter(Boolean).map((x, i) => `${i + 1}. ${x}.`);
+      return joinLines([H[o], `${subj} 관련 —`, ...numbered, `결정은 본인의 몫.`]);
+    }
+    case "단타Lab": {
+      const O = [
+        `${subj}, ${f0} — 표면만 보면 놓칩니다.`, `${subj}, ${f0}. 호재로만 보면 함정일 수 있고요.`,
+        `${subj}, ${f0} 떴는데 — 진짜 이유는 따로입니다.`, `${subj}, 다들 ${f0}만 보죠. 근데 진짜는요.`,
+        `${subj}, ${f0}. 표면 말고 안을 봅니다.`,
+      ];
+      const C = [
+        `차트 뒤 진짜 판은 어디일까요?`, `진짜 자리는 어디일까요?`, `이 재료, 진짜일까요?`,
+        `남들 다 아는 재료, 이미 늦은 건 아닐까요?`, `수급으로 보면 다른 그림 아닐까요?`,
+      ];
+      const { o, c } = dec(variant, O.length, C.length);
+      return joinLines([
+        O[o],
+        bullets[0] ? `진짜는 ${bullets[0]}.` : "",
+        lm >= 2 && bullets[1] ? `${bullets[1]}.` : "",
+        C[c],
+      ]);
+    }
+    case "스캘퍼": {
+      const H = [`[${mmdd}] 시초 체크`, `[${mmdd}] 시초 이슈`, `[${mmdd}] 단발 재료`, `[${mmdd}] 시초 단발`];
+      const P = [
+        `📍 시초가 갭·거래대금만 보고 단발.`, `📍 갭 크면 추격 X, 눌림 단발.`, `📍 거래대금 실리는지만 봅니다.`,
+      ];
+      const C = [`시초가 어디서 잡힐까요?`, `시초 받쳐줄까요?`, `갭 띄울까요?`, `단발로 끝일까요?`];
+      const { o, c } = dec(variant, H.length, C.length);
+      return joinLines([H[o], `🔻 ${subj} — ${f0}.`, bullets[0] ? `📍 ${bullets[0]}.` : at(P, variant), C[c]]);
+    }
+    default:
+      return `${subj}, ${f0}.`;
+  }
+}
+
 export function generateFormatPost(
   id: FormatId,
   input: { subj?: string; noteA?: string; noteB?: string },
@@ -299,7 +414,12 @@ export function generateFormatPost(
     }
     body += `\n\n※ 손실도 함께 공개 · 수익 보장 아님 · 종목 추천 아님`;
   } else if (id === "news") {
-    // 뉴스 본문 = 사실(재료)부터. voice-builder 프로필 기반 대량 템플릿 풀(계정당 18개)을 variant로 회전.
+    // ★ 기사 실제 요약(noteB)이 있으면 그 내용을 페르소나 톤으로 엮는다($0, 내용 정확).
+    const clauses = summaryClauses(b);
+    if (clauses.length >= 1) {
+      body = newsFromSummary(persona, subj, clauses, mmdd, variant);
+    } else {
+    // 요약이 없으면(수동 입력 등) 제목 기반 템플릿 풀(계정당 18개)을 variant로 회전.
     const fact = a || "오늘 나온 재료";
     const tpl = NEWS_TEMPLATES[persona];
     if (tpl && tpl.length) {
@@ -356,6 +476,7 @@ export function generateFormatPost(
       }
       default:
         body = `${subj}: ${fact}`;
+    }
     }
   } else if (id === "watch") {
     // 관심종목 공개 = 가격 없이 자리만. 다음날 '결과 인증'과 짝 → 적중 누적 = 전환 엔진.
