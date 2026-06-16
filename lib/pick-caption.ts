@@ -231,6 +231,7 @@ export function pickCaptionByPersona(
   persona: Persona,
   mmdd: string,
   variant = 0,
+  withDisc = false,
 ): string {
   const name = pick.stockName.trim() || "해당 종목";
   const code = pick.ticker.trim();
@@ -324,5 +325,5 @@ export function pickCaptionByPersona(
       break;
   }
 
-  return `${body}\n\n${DISCLAIMER}`;
+  return withDisc ? `${body}\n\n${DISCLAIMER}` : body;
 }

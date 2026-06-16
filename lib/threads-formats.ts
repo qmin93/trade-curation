@@ -10,11 +10,12 @@ import type { Persona } from "./threads-caption";
 import { NEWS_TEMPLATES } from "./persona-templates";
 
 const DISC = "※ 시장 관찰용 정보 · 매수·매도 추천 아님 · 판단과 책임은 본인에게";
+// 노골적 "텔레그램 👇" 대신 은근하게. 실제 링크는 본문 말고 첫 댓글/프로필에.
 const CTA_POOL = [
-  "실시간 자리는 텔레그램에 먼저 올립니다 👇",
-  "빠른 알림은 텔레그램 무료 채널에서 →",
-  "오늘 같은 자리, 텔레그램에 먼저 공유합니다 👇",
-  "장중 급변동은 텔레그램이 빠릅니다 →",
+  "실시간 흐름은 채널에서 따로 이어갑니다.",
+  "구체적인 진입·관리는 채널에서.",
+  "장중 대응은 채널에서 더 빠르게.",
+  "이런 자리, 채널에선 미리 짚습니다.",
 ];
 
 export type FormatId = "question" | "quote" | "thread" | "journal" | "proof" | "news";
@@ -124,6 +125,7 @@ export function generateFormatPost(
   mmdd: string,
   variant: number,
   withCTA: boolean,
+  withDisc = false,
 ): string {
   const subj = (input.subj || "이 종목").trim();
   const a = (input.noteA || "").trim();
@@ -327,5 +329,7 @@ export function generateFormatPost(
   }
 
   const cta = withCTA ? `\n${at(CTA_POOL, variant)}` : "";
-  return `${body}${cta}\n\n${DISC}`;
+  // 면책은 기본 OFF(사람이 쓴 듯). 필요 시(픽·결과) withDisc로 켠다. 결과인증은 내부 손익 면책 별도 유지.
+  const disc = withDisc ? `\n\n${DISC}` : "";
+  return `${body}${cta}${disc}`;
 }
