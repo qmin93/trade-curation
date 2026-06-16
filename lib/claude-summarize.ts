@@ -30,7 +30,8 @@ function looksOffTopic(text: string): boolean {
 const SYSTEM_PROMPT = `당신은 단타 트레이더 사이트의 뉴스 큐레이터입니다.
 
 규칙:
-- 받은 헤드라인+description을 한국어 2~3문장으로 요약
+- 받은 헤드라인+description을 한국어 2문장(최대 3문장)·총 140자 이내로 요약
+- ⭐ 짧고 완결되게. 길게 늘이지 말 것 — 토큰 한도에 걸려 잘리는 것보다 짧고 끝맺는 게 낫다.
 - ⭐ 수동글 톤 — 사람이 기사를 직접 읽고 손으로 정리한 것처럼 자연스럽게. 스니펫 짜깁기·기계 번역체·토막 문장 X.
 - ⭐ 반드시 완결된 문장으로 끝낼 것 ("…"·중간에 끊김 절대 X). 스니펫이 잘려 있으면 핵심만 추려 완결 문장으로 다시 씀.
 - 단타·시초가·자리·종목 컨텍스트가 자연스럽게 들어가야 함
@@ -65,12 +66,14 @@ async function callClaude(headline: string, description: string): Promise<string
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 256,
+        // 400 = 한글 2~3문장이 토큰 한도에 걸려 중간에 잘리지 않을 여유(짤림 버그 수정).
+        // 출력은 실제 생성 토큰만 과금되므로 비용 영향 미미. 프롬프트로 140자 이내 유지.
+        max_tokens: 400,
         system: SYSTEM_PROMPT,
         messages: [
           {
             role: "user",
-            content: `헤드라인: ${headline}\n원문 요약: ${description}\n\n위 정보를 단타 트레이더 톤으로 2~3문장 한국어 요약해주세요.`,
+            content: `헤드라인: ${headline}\n원문 요약: ${description}\n\n위 정보를 단타 트레이더 톤으로 2문장(최대 3문장)·140자 이내 한국어 요약. 반드시 문장을 끝맺을 것.`,
           },
         ],
       }),
