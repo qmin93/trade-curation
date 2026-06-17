@@ -147,6 +147,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "빈 응답" });
     }
     let body = text.trim();
+    // 모델이 멋대로 붙인 '---'·'***' 구분선 제거 + (요청 안 했으면) 자가 추가 면책 줄 제거.
+    let cleaned = body
+      .split("\n")
+      .filter((l) => !/^\s*[-*_]{3,}\s*$/.test(l)); // 구분선 줄
+    if (!(b.withDisc ?? false)) {
+      cleaned = cleaned.filter(
+        (l) => !/(투자\s*판단은?\s*본인|매수·매도 추천 아님|시장 관찰용 정보|책임은? 본인)/.test(l),
+      );
+    }
+    body = cleaned.join("\n").trim();
     // ★ 5줄 안전망: 모델이 길게 뽑으면 앞 4줄 + 마지막(시그니처/질문) 줄만 유지.
     const nonEmpty = body.split("\n").filter((l) => l.trim());
     if (nonEmpty.length > 5) {
