@@ -5,6 +5,7 @@ import { TickerBar } from "@/components/TickerBar";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationLd, websiteLd } from "@/lib/seo";
 import { TELEGRAM_INVITE_URL } from "@/lib/site";
+import { Analytics } from "@vercel/analytics/next";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
@@ -96,6 +97,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
