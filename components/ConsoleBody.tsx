@@ -62,6 +62,7 @@ export function ConsoleBody({ embedded = false }: { embedded?: boolean }) {
   const [errMsg, setErrMsg] = useState("");
   const [copied, setCopied] = useState<Persona | null>(null);
   const [withPrices, setWithPrices] = useState(false); // 기본 게이팅(Threads). 켜면 유료 텔레그램용 정확한 가 포함.
+  const [hookMode, setHookMode] = useState(false); // 트래픽 후킹형(첫 줄 호기심+댓글 유발) ↔ 관찰형(기본)
 
   const [trending, setTrending] = useState<TrendStock[]>([]);
   const [drafts, setDrafts] = useState<CloudDraft[]>([]);
@@ -130,8 +131,8 @@ export function ConsoleBody({ embedded = false }: { embedded?: boolean }) {
   };
 
   const baseText = useCallback(
-    (p: Persona) => pickCaptionByPersona(pick, p, mmdd, variants[p] ?? 0, false, withPrices),
-    [pick, mmdd, variants, withPrices],
+    (p: Persona) => pickCaptionByPersona(pick, p, mmdd, variants[p] ?? 0, false, withPrices, hookMode),
+    [pick, mmdd, variants, withPrices, hookMode],
   );
   const displayText = (p: Persona) => edited[p] ?? baseText(p);
 
@@ -334,13 +335,21 @@ export function ConsoleBody({ embedded = false }: { embedded?: boolean }) {
               <button onClick={() => replacePick(EMPTY)} className="rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)]">비우기</button>
               <button onClick={() => replacePick(EXAMPLE)} className="rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)]">예시</button>
               <button onClick={bumpAll} className="rounded-md border border-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[var(--accent)] hover:bg-[var(--accent)]/[0.06]">🔄 전체 변주</button>
+              <label className="flex items-center gap-2 text-xs text-[var(--text-muted)] cursor-pointer select-none ml-1" title="첫 줄 호기심 갭 + 댓글 유발. 새 팔로워·도달용. (가격은 항상 게이팅)">
+                <input type="checkbox" checked={hookMode} onChange={(e) => { setHookMode(e.target.checked); setEdited({}); }} className="accent-[var(--accent)]" />
+                🎯 트래픽 후킹형
+              </label>
               <label className="flex items-center gap-2 text-xs text-[var(--text-muted)] cursor-pointer select-none ml-1" title="기본 OFF = Threads용(가격 게이팅). 켜면 유료 텔레그램용으로 포착·목표·손절가 포함.">
-                <input type="checkbox" checked={withPrices} onChange={(e) => { setWithPrices(e.target.checked); setEdited({}); }} className="accent-[var(--accent)]" />
+                <input type="checkbox" checked={withPrices} disabled={hookMode} onChange={(e) => { setWithPrices(e.target.checked); setEdited({}); }} className="accent-[var(--accent)] disabled:opacity-40" />
                 💰 가격 포함(유료방용)
               </label>
             </div>
             <p className="mono text-[9px] text-[var(--text-caption)]">
-              {withPrices ? "⚠️ 정확한 진입·목표·손절가 포함 — 유료 텔레그램방 전용. Threads엔 올리지 마세요." : "🔒 Threads용 — 정확한 가는 빠짐(포착·자리·근거만). 가격은 유료방 가치."}
+              {hookMode
+                ? "🎯 트래픽 후킹형 — 첫 줄 호기심+댓글 유발(새 팔로워·도달용). 가격 게이팅 고정."
+                : withPrices
+                ? "⚠️ 정확한 진입·목표·손절가 포함 — 유료 텔레그램방 전용. Threads엔 올리지 마세요."
+                : "🔒 관찰형(Threads) — 정확한 가는 빠짐(포착·자리·근거만). 가격은 유료방 가치."}
             </p>
 
             <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-subtle)] p-3 space-y-2.5">
