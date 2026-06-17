@@ -27,9 +27,9 @@ export interface MonthlyStats {
 export const DAILY_RESULTS: DailyResult[] = [
   {
     date: "2026-06-17",
-    totalReturn: 5.02,
+    totalReturn: 8.0,
     summary:
-      "예스티 1~3차(+5.5%)·동진쎄미켐 1~2차(+2.5%) 목표 달성, 한화생명은 -2.98% 손절. 적중도 손절도 전부 공개. 손절 지킨 것도 좋은 매매.",
+      "예스티 1~3차(+5.5%)·동진쎄미켐 1~2차(+2.5%) 목표 달성. 한화생명은 이미 +9% 추격 자리라 '추격 안 함'으로 진입 보류(미진입). 들어갈 자리만 들어간 날.",
     picks: [
       {
         rank: 1,
@@ -50,16 +50,6 @@ export const DAILY_RESULTS: DailyResult[] = [
         resultPercent: 2.5,
         status: "hit",
         note: "1차(+1.0%)·2차(+2.5%) 달성",
-      },
-      {
-        rank: 3,
-        stockName: "한화생명",
-        ticker: "088350",
-        entryPrice: 6160,
-        targetReached: 0,
-        resultPercent: -2.98,
-        status: "stop",
-        note: "기준 이탈 -2.98% 손절. 손실도 그대로 공개.",
       },
     ],
   },
@@ -148,9 +138,9 @@ export const DAILY_RESULTS: DailyResult[] = [
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
   hitCount: 9,
-  missCount: 3,
-  winRate: 75.0,
-  cumulativeReturn: 25.54,
+  missCount: 2,
+  winRate: 81.8,
+  cumulativeReturn: 28.52,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
