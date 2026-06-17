@@ -15,6 +15,59 @@ export interface NewsItem {
 }
 
 export const NEWS_MOCK: NewsItem[] = [
+  // ── 2026-06-17 큐레이션 (텔방 발굴 → 원본 기사 직접 읽고 중립 요약) ──
+  {
+    id: "20260617-skhynix-buyback-denial",
+    date: "2026-06-17",
+    publishedAt: "2026-06-17T09:00:00+09:00",
+    headline: "SK하이닉스, '100조 주주환원' 보도 부인…ADR 상장은 추진",
+    summary:
+      "SK하이닉스가 6월 17일 조회공시를 통해 일부 매체가 보도한 '100조원 규모 주주환원' 등 구체적 주주환원 규모·계획에 대해 \"검토한 바 없다\"고 부인했습니다. 미국주식예탁증서(ADR) 상장 추진 보도와 맞물려 주주환원 기대가 컸으나, 회사는 구체적 내용은 확정되지 않았다는 입장입니다. 대형 반도체주 관련 기대가 과열됐다 진정되는 국면으로 봅니다.",
+    source: "dart.fss.or.kr",
+    sourceUrl: "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260616800847",
+    keywords: ["SK하이닉스", "주주환원", "ADR", "반도체"],
+    stocks: ["SK하이닉스"],
+    personaComments: {},
+  },
+  {
+    id: "20260617-di-semiconductor-orders",
+    date: "2026-06-17",
+    publishedAt: "2026-06-17T09:30:00+09:00",
+    headline: "디아이·디지털프론티어, 상반기 반도체 검사장비 3,000억 수주",
+    summary:
+      "반도체 검사장비 기업 디아이와 자회사 디지털프론티어가 올 상반기 약 3,000억원 규모를 수주한 것으로 집계됐습니다. 디지털프론티어는 SK하이닉스로부터 HBM4 웨이퍼 번인 테스터 1,961억원을, 디아이는 삼성전자로부터 DDR5 테스터·패키지 검사장비 1,031억원을 수주했습니다. 삼성·SK의 D램·낸드 투자 확대로 하반기 추가 수주 기대가 나옵니다.",
+    source: "dealsite.co.kr",
+    sourceUrl: "https://dealsite.co.kr/articles/163686",
+    keywords: ["디아이", "반도체장비", "HBM4", "삼성전자"],
+    stocks: ["디아이"],
+    personaComments: {},
+  },
+  {
+    id: "20260617-sungho-ads-cpo",
+    date: "2026-06-17",
+    publishedAt: "2026-06-17T10:30:00+09:00",
+    headline: "성호전자 자회사 ADS테크, 엔비디아·마벨서 CPO 장비 100억 수주",
+    summary:
+      "성호전자의 자회사 ADS테크가 엔비디아 95억원, 마벨 5억원 등 총 100억원 규모의 공동광학패키징(CPO) 장비를 수주했습니다. CPO는 반도체 칩과 광학 부품을 한 패키지에 집적하는 차세대 기술로, 젠슨 황 엔비디아 CEO가 AI 반도체 한계 극복 방안으로 제시한 분야입니다. 성호전자는 이날 41,600원(+2.46%)에 거래됐습니다.",
+    source: "mt.co.kr",
+    sourceUrl: "https://www.mt.co.kr/stock/2026/06/17/2026061710331164662",
+    keywords: ["성호전자", "CPO", "엔비디아", "AI반도체"],
+    stocks: ["성호전자"],
+    personaComments: {},
+  },
+  {
+    id: "20260617-taewoong-smr",
+    date: "2026-06-17",
+    publishedAt: "2026-06-17T09:10:00+09:00",
+    headline: "태웅, 美 테라파워 SMR에 핵심부품 첫 상업공급",
+    summary:
+      "단조업체 태웅이 빌 게이츠가 설립한 테라파워의 미국 와이오밍주 케머러 SMR(소형모듈원자로) 프로젝트에 '로테이팅 플러그'를 납품하는 계약을 맺었습니다. 이 부품은 액체 나트륨 냉각재 공급을 조절하는 4세대 SMR 주기기 핵심부품으로, 태웅의 원전 주기기 분야 첫 실적입니다. 테라파워는 총 8기 규모의 케머러 프로젝트를 계획하고 있어 추가 수주 기대가 나옵니다.",
+    source: "busan.com",
+    sourceUrl: "https://www.busan.com/view/busan/view.php?code=2026061618232205577",
+    keywords: ["태웅", "SMR", "원전", "테라파워"],
+    stocks: ["태웅"],
+    personaComments: {},
+  },
   // ── 2026-06-11 큐레이션 (원본 기사 직접 읽고 중립 요약) ──
   {
     id: "20260611-close-market",
