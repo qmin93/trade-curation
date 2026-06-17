@@ -98,6 +98,21 @@ export function screenerCaption(tone: CaptionTone): string {
   );
 }
 
+/** 예상 시초가 카드용 — 미국 야간장 기준 다음 시초가 추정. */
+export function premarketCaption(date: string, tone: CaptionTone): string {
+  if (tone === "감성")
+    return withDisclaimer(
+      `${date} 미국 야간장 기준 예상 시초가입니다.\n내일 어디서 열릴지 미리 봐두면 마음이 편하죠.\n참고용 정보입니다.`,
+    );
+  if (tone === "분석")
+    return withDisclaimer(
+      `${date} 예상 시초가 — 미국 야간장 움직임을 원화로 환산한 추정치입니다.\n시초가 갭 방향 참고용으로 보세요.`,
+    );
+  return withDisclaimer(
+    `${date} 내일 예상 시초가 정리했습니다.\n미국 야간장 기준 추정 · 참고용.`,
+  );
+}
+
 export function perfCaption(tone: CaptionTone): string {
   const dis = "※ 과거 사례이며 향후 수익을 보장하지 않습니다 · 손실 가능성 있음";
   if (tone === "감성")
