@@ -232,6 +232,60 @@ const SCALP_ASIDE = [
   `거래대금 빠지면 끝.`,
 ];
 
+/**
+ * 트래픽 후킹형 픽 본문 — 첫 줄 호기심 갭("신호 떴는데 왜 안 사?") + 댓글 유발.
+ * 가격은 항상 게이팅(Threads 트래픽용). 벤치 페르소나 톤 유지.
+ */
+function pickHookBody(persona: Persona, subj: string, strategy: string, note: string, mmdd: string, variant: number): string {
+  const n = note ? ` ${note}.` : "";
+  switch (persona) {
+    case "단타시그널": {
+      const O = [
+        `세력 신호 떴는데 저는 아직 안 들어갔습니다.`,
+        `${subj}, 신호는 떴는데 추격은 안 합니다.`,
+        `다들 ${subj} 달려들 때, 저는 자리부터 봅니다.`,
+        `${subj} 세력 포착 — 지금 추격은 위험합니다.`,
+      ];
+      const C = [`자리 확인하고도 안 늦습니다. 다들 어떻게 보세요?`, `지금 들어가실 건가요, 확인하고 가실 건가요?`, `여기서 추격, 하실 건가요?`];
+      const { o, c } = decode(variant, O.length, C.length);
+      return join([O[o], `- ${subj}, ${strategy} 포착.${n}`, `- 신호만 보고 추격? 그게 계좌 녹이는 길입니다.`, `- ${C[c]}`]);
+    }
+    case "단타이스트": {
+      const O = [
+        `오늘 가장 비싼 교훈 하나 — 신호와 자리는 다릅니다.`,
+        `${subj}, 신호 떴다고 바로 들어가면 십중팔구 물립니다.`,
+        `밑바닥서 배운 것 하나 — 신호는 시작일 뿐, 자리가 답입니다.`,
+      ];
+      const C = [`신호에 손이 나가셨나요, 참으셨나요?`, `여기서 추격이 맞을까요, 기다림이 맞을까요?`, `다들 이럴 때 어떻게 버티세요?`];
+      const { o, c } = decode(variant, O.length, C.length);
+      return join([O[o], `${subj}, ${strategy} 포착됐습니다.${n}`, `추격하는 사람과 기다리는 사람, 6개월 뒤 계좌가 갈리더라고요.`, "", C[c]]);
+    }
+    case "단타데일리": {
+      const Q = [`"세력 신호 = 매수 신호"라고 생각하시나요?`, `신호가 뜨면 바로 들어가시는 편인가요?`, `세력 포착, 어디까지 믿고 가시나요?`];
+      const { o } = decode(variant, Q.length, 1);
+      return join([`[${mmdd}] 오늘의 질문 하나`, Q[o], `${subj} ${strategy} 포착.${n} 저는 자리 확인 전 추격은 보류합니다.`, `신호와 진입은 다릅니다. 여러분 기준은 어디까지인가요?`]);
+    }
+    case "단타Lab": {
+      const O = [
+        `세력 신호 떴다고 다들 달려들 때, 진짜는 멈춥니다.`,
+        `${subj}, 신호 떴으니 사야 한다? 그게 함정일 수 있습니다.`,
+        `다들 ${subj} 신호에 환호할 때, 저는 거래대금을 봅니다.`,
+      ];
+      const C = [`차트 뒤 진짜 판은 거래대금이 말해줍니다. 보고 계신가요?`, `진짜 자리는 신호가 아니라 수급이죠. 어디로 보세요?`, `이 신호, 진짜일까요 미끼일까요?`];
+      const { o, c } = decode(variant, O.length, C.length);
+      return join([O[o], `${subj} ${strategy} 포착.${n}`, `신호는 "여기 뭔가 있다"일 뿐, "지금 사라"가 아닙니다. 이 차이를 모르면 평생 꼭지만 잡죠.`, "", C[c]]);
+    }
+    case "스캘퍼": {
+      const H = [`[${mmdd}] 신호 떴는데 손 멈춤`, `[${mmdd}] 세력 신호 — 근데 추격 X`, `[${mmdd}] 시초 신호 체크`];
+      const C = [`다들 들어가셨나요?`, `시초가 어디서 잡힐까요?`, `여기서 추격하실 건가요?`];
+      const { o, c } = decode(variant, H.length, C.length);
+      return join([H[o], `🔻 ${subj} — ${strategy} 포착.${n}`, `📍 신호만 보고 추격? 안 합니다. 자리 확인이 먼저.`, C[c]]);
+    }
+    default:
+      return `${subj}, ${strategy} 포착. 신호와 자리는 다릅니다.`;
+  }
+}
+
 export function pickCaptionByPersona(
   pick: PickInput,
   persona: Persona,
@@ -239,6 +293,7 @@ export function pickCaptionByPersona(
   variant = 0,
   withDisc = false,
   withPrices = false, // ★ 기본 게이팅 — Threads엔 정확한 가(포착·목표·손절) 안 넣음. 유료 텔레그램용일 때만 true.
+  hookMode = false, // ★ 트래픽 후킹형(첫 줄 호기심+댓글 유발). 가격은 항상 게이팅.
 ): string {
   const name = pick.stockName.trim() || "해당 종목";
   const code = pick.ticker.trim();
@@ -247,6 +302,13 @@ export function pickCaptionByPersona(
   const entry = pick.entry.trim();
   const stop = pick.stop.trim();
   const note = pick.note.trim();
+
+  // ★ 트래픽 후킹형 — 첫 줄 호기심 갭 + 댓글 유발(가격 항상 게이팅).
+  if (hookMode && persona !== "단타Pick") {
+    const hb = pickHookBody(persona, subj, strategy, note, mmdd, variant);
+    return withDisc ? `${hb}\n\n${DISCLAIMER}` : hb;
+  }
+
   // 가격 라인은 withPrices일 때만. 게이팅(기본) 땐 빈 문자열 → 가격 줄이 자동으로 빠진다.
   const tline = withPrices ? targetsLine(pick.targets) : "";
   const entryStop = withPrices ? [entry ? `포착 ${entry}` : "", stop ? `손절 ${stop}` : ""].filter(Boolean).join(" / ") : "";
