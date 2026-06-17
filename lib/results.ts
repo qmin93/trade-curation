@@ -26,6 +26,44 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-06-17",
+    totalReturn: 5.02,
+    summary:
+      "예스티 1~3차(+5.5%)·동진쎄미켐 1~2차(+2.5%) 목표 달성, 한화생명은 -2.98% 손절. 적중도 손절도 전부 공개. 손절 지킨 것도 좋은 매매.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "예스티",
+        ticker: "122640",
+        entryPrice: 32400,
+        targetReached: 3,
+        resultPercent: 5.5,
+        status: "hit",
+        note: "1차(+1.4%)·2차(+3.4%)·3차(+5.5%) 달성",
+      },
+      {
+        rank: 2,
+        stockName: "동진쎄미켐",
+        ticker: "005290",
+        entryPrice: 64800,
+        targetReached: 2,
+        resultPercent: 2.5,
+        status: "hit",
+        note: "1차(+1.0%)·2차(+2.5%) 달성",
+      },
+      {
+        rank: 3,
+        stockName: "한화생명",
+        ticker: "088350",
+        entryPrice: 6160,
+        targetReached: 0,
+        resultPercent: -2.98,
+        status: "stop",
+        note: "기준 이탈 -2.98% 손절. 손실도 그대로 공개.",
+      },
+    ],
+  },
+  {
     date: "2026-06-16",
     totalReturn: 7.00,
     summary:
@@ -109,10 +147,10 @@ export const DAILY_RESULTS: DailyResult[] = [
 
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
-  hitCount: 7,
-  missCount: 2,
-  winRate: 77.8,
-  cumulativeReturn: 20.52,
+  hitCount: 9,
+  missCount: 3,
+  winRate: 75.0,
+  cumulativeReturn: 25.54,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
