@@ -351,6 +351,70 @@ async function ScreenerCard(brand: boolean) {
   );
 }
 
+/**
+ * 예상 시초가 카드 — 미국 야간장 기준 내일 시초가 추정(검증된 포맷).
+ * items=이름~예상가~등락%~KRX종가|이름~... (최대 5개)
+ */
+function PremarketCard(p: URLSearchParams, brand: boolean) {
+  const date = p.get("date") || "내일";
+  const raw =
+    p.get("items") ||
+    "코스피~8,757.0~-1.21~8,864.2pt|삼성전자~34.0만~-1.88~34.6만|SK하이닉스~247.6만~-1.79~252.1만|현대차~61.4만~-0.72~61.8만";
+  const items = raw
+    .split("|")
+    .map((s) => s.split("~").map((x) => x.trim()))
+    .filter((a) => a[0])
+    .slice(0, 5);
+  return (
+    <Shell>
+      {eyebrow(`📊 ${date} 실시간 예상 시초가`)}
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {items.map((it, i) => {
+          const [name, est, ch, krx] = [it[0] || "", it[1] || "", it[2] || "", it[3] || ""];
+          const chNum = Number(ch);
+          const col = chNum >= 0 ? UP : DOWN;
+          return (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "28px 34px",
+                borderRadius: 22,
+                background: PANEL,
+                border: `1px solid ${BORDER}`,
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", fontSize: 48, fontWeight: 600, color: TEXT }}>{name}</div>
+                {krx ? (
+                  <div style={{ display: "flex", fontSize: 26, color: MUTED, marginTop: 6 }}>
+                    KRX 종가 {krx}
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", height: 4 }} />
+                )}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <div style={{ display: "flex", fontSize: 58, fontWeight: 600, color: TEXT }}>{est}</div>
+                <div style={{ display: "flex", fontSize: 34, fontWeight: 600, color: col, marginTop: 4 }}>
+                  {chNum >= 0 ? "▲ +" : "▼ "}
+                  {ch}%
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: "flex", fontSize: 26, color: MUTED, marginTop: 28, lineHeight: 1.4 }}>
+        미국 야간장 기준 추정 · 참고용 정보 · 투자권유 아님
+      </div>
+      <Brand on={brand} />
+    </Shell>
+  );
+}
+
 export async function GET(
   req: Request,
   ctx: { params: Promise<{ type: string }> },
@@ -360,14 +424,16 @@ export async function GET(
   const p = url.searchParams;
   const brand = p.get("brand") === "1";
   const ratio = p.get("ratio");
-  // 테마 카드는 항목이 많아 기본 세로형(명시적 square만 정사각).
+  // 테마·예상시초가 카드는 항목이 많아 기본 세로형(명시적 square만 정사각).
   const height =
-    ratio === "portrait" || (type === "theme" && ratio !== "square")
+    ratio === "portrait" ||
+    ((type === "theme" || type === "premarket") && ratio !== "square")
       ? PORTRAIT
       : SQUARE;
 
   let node: React.ReactNode;
   if (type === "chart") node = ChartCard(p, brand);
+  else if (type === "premarket") node = PremarketCard(p, brand);
   else if (type === "news") node = NewsCard(p, brand);
   else if (type === "pick") node = PickCard(p, brand);
   else if (type === "perf") node = PerfCard(brand);

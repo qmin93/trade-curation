@@ -10,11 +10,13 @@ import {
   perfCaption,
   themeCaption,
   screenerCaption,
+  premarketCaption,
 } from "@/lib/card-caption";
 
-type CardType = "chart" | "news" | "pick" | "perf" | "theme" | "screener";
+type CardType = "chart" | "news" | "pick" | "perf" | "theme" | "screener" | "premarket";
 
 const TYPES: { key: CardType; label: string; hint: string }[] = [
+  { key: "premarket", label: "예상 시초가", hint: "저녁/장전 글 · 반응 좋음" },
   { key: "theme", label: "테마 주도주", hint: "장중 글" },
   { key: "screener", label: "급등·신고가", hint: "장중 글" },
   { key: "chart", label: "종목 차트", hint: "급등주 글" },
@@ -31,6 +33,10 @@ const DEFAULTS = {
     source: "연합뉴스",
   },
   pick: { name: "샘씨엔에스", ticker: "252990", entry: "16,210", target: "1차 +1.4%", stop: "15,560" },
+  premarket: {
+    date: "6/18(목)",
+    text: "코스피, 8,757.0, -1.21, 8,864.2pt\n삼성전자, 34.0만, -1.88, 34.6만\nSK하이닉스, 247.6만, -1.79, 252.1만\n현대차, 61.4만, -0.72, 61.8만",
+  },
 };
 
 export function StudioClient() {
@@ -42,6 +48,7 @@ export function StudioClient() {
   const [chart, setChart] = useState(DEFAULTS.chart);
   const [news, setNews] = useState(DEFAULTS.news);
   const [pick, setPick] = useState(DEFAULTS.pick);
+  const [premarket, setPremarket] = useState(DEFAULTS.premarket);
 
   // 카드 이미지 URL (타이핑 디바운스 — 매 글자마다 og 렌더 방지)
   const liveSrc = useMemo(() => {
@@ -61,11 +68,20 @@ export function StudioClient() {
       p.set("entry", pick.entry);
       p.set("target", pick.target);
       p.set("stop", pick.stop);
+    } else if (type === "premarket") {
+      p.set("date", premarket.date);
+      const items = premarket.text
+        .split("\n")
+        .map((l) => l.split(",").map((x) => x.trim()).filter(Boolean))
+        .filter((a) => a[0])
+        .map((a) => a.join("~"))
+        .join("|");
+      p.set("items", items);
     }
     p.set("brand", brand ? "1" : "0");
     if (portrait) p.set("ratio", "portrait");
     return `/api/card/${type}?${p.toString()}`;
-  }, [type, brand, portrait, chart, news, pick]);
+  }, [type, brand, portrait, chart, news, pick, premarket]);
 
   const [src, setSrc] = useState(liveSrc);
   useEffect(() => {
@@ -79,8 +95,9 @@ export function StudioClient() {
     if (type === "pick") return pickCaption(pick.name, tone);
     if (type === "theme") return themeCaption(tone);
     if (type === "screener") return screenerCaption(tone);
+    if (type === "premarket") return premarketCaption(premarket.date, tone);
     return perfCaption(tone);
-  }, [type, tone, chart, news, pick]);
+  }, [type, tone, chart, news, pick, premarket]);
 
   const [copied, setCopied] = useState(false);
   const copy = async () => {
@@ -136,6 +153,20 @@ export function StudioClient() {
               <Field label="진입가" value={pick.entry} onChange={(v) => setPick({ ...pick, entry: v })} />
               <Field label="목표" value={pick.target} onChange={(v) => setPick({ ...pick, target: v })} />
               <Field label="손절가" value={pick.stop} onChange={(v) => setPick({ ...pick, stop: v })} />
+            </>
+          )}
+          {type === "premarket" && (
+            <>
+              <Field label="날짜" value={premarket.date} onChange={(v) => setPremarket({ ...premarket, date: v })} />
+              <Field
+                label="종목 (한 줄에 하나: 이름, 예상가, 등락%, KRX종가)"
+                value={premarket.text}
+                onChange={(v) => setPremarket({ ...premarket, text: v })}
+                textarea
+              />
+              <p className="mono text-[10px] text-[var(--text-caption)]">
+                예) <code>삼성전자, 34.0만, -1.88, 34.6만</code> — 최대 5종목. 위젯 값 그대로 복붙하세요.
+              </p>
             </>
           )}
           {type === "perf" && (
