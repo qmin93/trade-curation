@@ -238,6 +238,7 @@ export function pickCaptionByPersona(
   mmdd: string,
   variant = 0,
   withDisc = false,
+  withPrices = false, // ★ 기본 게이팅 — Threads엔 정확한 가(포착·목표·손절) 안 넣음. 유료 텔레그램용일 때만 true.
 ): string {
   const name = pick.stockName.trim() || "해당 종목";
   const code = pick.ticker.trim();
@@ -246,10 +247,10 @@ export function pickCaptionByPersona(
   const entry = pick.entry.trim();
   const stop = pick.stop.trim();
   const note = pick.note.trim();
-  const tline = targetsLine(pick.targets);
-
-  const entryStop = [entry ? `포착 ${entry}` : "", stop ? `손절 ${stop}` : ""].filter(Boolean).join(" / ");
-  const fullPrice = [entry ? `포착 ${entry}` : "", tline, stop ? `손절 ${stop}` : ""].filter(Boolean).join(" / ");
+  // 가격 라인은 withPrices일 때만. 게이팅(기본) 땐 빈 문자열 → 가격 줄이 자동으로 빠진다.
+  const tline = withPrices ? targetsLine(pick.targets) : "";
+  const entryStop = withPrices ? [entry ? `포착 ${entry}` : "", stop ? `손절 ${stop}` : ""].filter(Boolean).join(" / ") : "";
+  const fullPrice = withPrices ? [entry ? `포착 ${entry}` : "", tline, stop ? `손절 ${stop}` : ""].filter(Boolean).join(" / ") : "";
 
   let body: string;
   switch (persona) {
@@ -258,7 +259,7 @@ export function pickCaptionByPersona(
       const { o, c, lm } = decode(variant, opens.length, SIGNAL_CLOSE.length);
       body = join([
         opens[o],
-        lm >= 1 && note ? `- ${note}.` : "",
+        note ? `- ${note}.` : "", // 차트 근거(게이팅 본문의 핵심 substance)
         entryStop ? `- ${entryStop}.` : "",
         lm >= 2 ? at(SIGNAL_EXTRA, variant) : "",
         SIGNAL_CLOSE[c],
@@ -288,7 +289,7 @@ export function pickCaptionByPersona(
         heads[o],
         note ? `${note}.` : "오늘 짚어볼 단타 자리입니다.",
         `1. ${subj}, ${strategy} 포착.`,
-        `2. ${entryStop || "기준가 확인"}.`,
+        `2. ${entryStop || (withPrices ? "기준가 확인" : "포착가 근처 거래 유지 여부 확인")}.`,
         lm >= 1 && tline ? `3. 목표 ${tline}.` : "",
         lm >= 2 ? at(DAILY_ASIDE, variant) : "",
         DAILY_CLOSE[c],
@@ -320,14 +321,21 @@ export function pickCaptionByPersona(
         `🔻 이슈`,
         note ? `${subj} — ${note}.` : `${subj} 자리 포착.`,
         `📍 자리`,
-        [entryStop, lm >= 1 && tpo ? `목표 ${tpo}` : ""].filter(Boolean).join(" / ") + ".",
+        (withPrices
+          ? [entryStop, lm >= 1 && tpo ? `목표 ${tpo}` : ""].filter(Boolean).join(" / ")
+          : "추격 X, 포착가 근처 거래 붙는지만 단발") + ".",
         lm >= 2 ? at(SCALP_ASIDE, variant) : `기준 유지 여부가 단발 포인트.`,
         SCALP_CLOSE[c],
       ]);
       break;
     }
     case "단타Pick":
-      body = `${subj} 봤습니다.\n${note}.\n${fullPrice}.\n오늘 자리 잘 잡혔으면 좋겠습니다.`;
+      body = join([
+        `${subj} 봤습니다.`,
+        note ? `${note}.` : "",
+        fullPrice ? `${fullPrice}.` : "추격보다 포착가 근처 거래 붙는지부터 봅니다.",
+        `오늘 자리 잘 잡혔으면 좋겠습니다.`,
+      ]);
       break;
   }
 
