@@ -56,18 +56,16 @@ export function PickPopup() {
 
   if (!open) return null;
 
-  // 오늘 픽 한 줄 — 장중 live면 🔴진행 중, 마감이면 결과, 없으면 텔레그램 안내.
+  // 오늘 픽 한 줄 — 장중 live면 🔴진행 중, 마감이면 종목명(결과%는 우측 별도), 없으면 텔레그램 안내.
   const status = getMarketStatus(new Date());
+  const monthLabel = `${Number(MONTHLY_STATS.month.split("-")[1])}월`;
   let pickLine: string;
   if (ACTIVE_PICK && ACTIVE_PICK.status === "live") {
     pickLine = status.isLive
-      ? `오늘 픽 · ${ACTIVE_PICK.stockName} ${ACTIVE_PICK.ticker} 진행 중 🔴`
-      : `오늘 픽 · ${ACTIVE_PICK.stockName} ${ACTIVE_PICK.ticker} 포착`;
+      ? `오늘 픽 · ${ACTIVE_PICK.stockName} 진행 중`
+      : `오늘 픽 · ${ACTIVE_PICK.stockName} 포착`;
   } else if (ACTIVE_PICK && ACTIVE_PICK.status === "done") {
-    const r = ACTIVE_PICK.resultPercent;
-    pickLine = `오늘 픽 · ${ACTIVE_PICK.stockName} 마감${
-      typeof r === "number" ? ` ${r > 0 ? "+" : ""}${r}%` : ""
-    }`;
+    pickLine = `최근 픽 · ${ACTIVE_PICK.stockName}`;
   } else {
     pickLine = "오늘의 픽은 텔레그램에서 실시간 공개";
   }
@@ -93,45 +91,53 @@ export function PickPopup() {
           ✕
         </button>
 
-        {/* 헤더 */}
-        <div className="px-7 pt-8 pb-5 bg-gradient-to-br from-[var(--accent)]/[0.08] to-transparent">
+        {/* 검증 성과 카드 (HomeHero 동일 결) */}
+        <div className="px-7 pt-9 pb-2 bg-gradient-to-br from-[var(--accent)]/[0.06] to-transparent">
           <div className="mono text-[10px] uppercase tracking-[0.25em] text-[var(--accent)] mb-3">
             검증된 기록 공개
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="mono text-xs text-[var(--text-caption)]">
-              {MONTHLY_STATS.month}
-            </span>
-            <span className="text-2xl font-bold text-[var(--text)]">
-              승률{" "}
-              <span className="text-3xl text-[var(--red)]">{MONTHLY_STATS.winRate}%</span>
-            </span>
+          <div className="text-sm font-semibold uppercase tracking-wider text-[var(--text-caption)]">
+            {monthLabel} 검증 성과
           </div>
-          <div className="mt-1.5 text-sm text-[var(--text-muted)]">
-            누적{" "}
-            <span className="font-semibold text-[var(--red)]">
-              +{MONTHLY_STATS.cumulativeReturn}%
-            </span>{" "}
-            · 적중 {MONTHLY_STATS.hitCount}·손절 {MONTHLY_STATS.missCount} 전부 공개
+          <div className="mt-1.5 text-5xl font-bold tabular-nums leading-none text-[var(--red)]">
+            +{MONTHLY_STATS.cumulativeReturn.toFixed(1)}%
+          </div>
+          <div className="mt-2 text-sm text-[var(--text-muted)]">누적 수익률 · 추천별 단순 합산</div>
+
+          <div className="mt-5 grid grid-cols-3 gap-2.5">
+            {[
+              { v: `${MONTHLY_STATS.winRate}%`, l: "승률" },
+              { v: `${MONTHLY_STATS.hitCount}`, l: "적중" },
+              { v: `${MONTHLY_STATS.missCount}`, l: "손절" },
+            ].map((t) => (
+              <div key={t.l} className="rounded-xl bg-[var(--bg-subtle)] px-2 py-3 text-center">
+                <div className="text-xl font-bold tabular-nums text-[var(--text)]">{t.v}</div>
+                <div className="mt-0.5 text-xs text-[var(--text-muted)]">{t.l}</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* 오늘 픽 */}
-        <div className="px-7 py-5 border-t border-[var(--border)]">
-          <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text)]">
-            {ACTIVE_PICK && ACTIVE_PICK.status === "live" && status.isLive && (
-              <span className="h-2 w-2 rounded-full bg-[var(--red)] pulse-dot" />
+        {/* 최근/오늘 픽 */}
+        <div className="px-7 pt-4">
+          <div className="flex items-center justify-between rounded-xl bg-[var(--bg-subtle)] px-4 py-3.5">
+            <span className="flex items-center gap-2 text-sm font-semibold text-[var(--text)]">
+              {ACTIVE_PICK && ACTIVE_PICK.status === "live" && status.isLive && (
+                <span className="h-2 w-2 rounded-full bg-[var(--red)] pulse-dot" />
+              )}
+              {pickLine}
+            </span>
+            {ACTIVE_PICK && ACTIVE_PICK.status === "done" && typeof ACTIVE_PICK.resultPercent === "number" && (
+              <span
+                className={`text-sm font-bold tabular-nums ${ACTIVE_PICK.resultPercent >= 0 ? "text-[var(--red)]" : "text-[var(--accent)]"}`}
+              >
+                {ACTIVE_PICK.resultPercent >= 0 ? "+" : ""}
+                {ACTIVE_PICK.resultPercent}%
+              </span>
             )}
-            {pickLine}
           </div>
-          {/* 진행 중 픽: 정확한 진입·목표·손절가는 공개 X → 유료 텔레그램에서만. */}
-          {ACTIVE_PICK && ACTIVE_PICK.status === "done" && (
-            <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-caption)] line-clamp-2">
-              {ACTIVE_PICK.thesis}
-            </p>
-          )}
           {ACTIVE_PICK && ACTIVE_PICK.status === "live" && (
-            <p className="mt-1.5 text-xs leading-relaxed text-[var(--text-caption)]">
+            <p className="mt-2 text-xs leading-relaxed text-[var(--text-caption)]">
               정확한 진입·목표·손절가는 텔레그램에서 실시간 공개합니다.
             </p>
           )}
