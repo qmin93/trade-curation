@@ -38,9 +38,9 @@ export function TickerBar() {
   const items = [...MOCK_TICKERS, ...MOCK_TICKERS];
   const status = getMarketStatus(new Date());
   return (
-    <div className="border-b border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-4 py-2 flex items-center gap-3">
-        <div className="flex items-center gap-1.5 shrink-0">
+    <div className="border-b border-[var(--border)] bg-[var(--bg-subtle)] overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-4 py-2.5 flex items-center gap-3">
+        <div className="flex items-center gap-1.5 shrink-0 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1">
           {status.isLive && (
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
           )}
@@ -49,10 +49,10 @@ export function TickerBar() {
           </span>
         </div>
         <div className="relative flex-1 overflow-hidden">
-          <div className="ticker-track flex gap-8 whitespace-nowrap">
+          <div className="ticker-track flex gap-3 whitespace-nowrap">
             {items.map((t, i) => (
-              <div key={`${t.label}-${i}`} className="flex items-center gap-2 mono text-xs">
-                <span className="text-[var(--text-muted)]">{t.label}</span>
+              <div key={`${t.label}-${i}`} className="flex items-center gap-2 mono text-xs rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1.5 transition-colors duration-200 hover:border-[var(--border-strong)]">
+                <span className="text-[var(--text-caption)]">{t.label}</span>
                 <span className="text-[var(--text)] font-semibold">{t.value}</span>
                 <span className={dirColor(t.direction)}>
                   {dirArrow(t.direction)} {t.change}

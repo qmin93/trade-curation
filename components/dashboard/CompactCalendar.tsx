@@ -31,8 +31,8 @@ export function CompactCalendar() {
 
   if (current === null) {
     return (
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
-        <div className="mono text-[9px] uppercase tracking-widest text-[var(--text-caption)]">
+      <div className="card-surface p-4">
+        <div className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-caption)]">
           Calendar
         </div>
       </div>
@@ -43,24 +43,24 @@ export function CompactCalendar() {
   const display = upcoming.length > 0 ? upcoming : events.slice(-4);
 
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
-      <div className="mono text-[9px] uppercase tracking-widest text-[var(--text-caption)] mb-2 flex items-center justify-between">
-        <Link href="/calendar" className="hover:text-[var(--accent)]">
+    <div className="card-surface p-4">
+      <div className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-caption)] mb-3 flex items-center justify-between">
+        <Link href="/calendar" className="transition-colors hover:text-[var(--accent)]">
           Calendar ↗
         </Link>
-        <span className="mono tabular-nums text-[var(--accent)] font-bold">
+        <span className="mono tabular-nums text-[var(--accent)] font-semibold">
           {pad(Math.floor(current / 60))}:{pad(current % 60)}
         </span>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         {display.map((e) => {
           const past = current >= eventMinutes(e.time);
           return (
             <div
               key={`${e.time}-${e.label}`}
-              className={`flex items-center gap-2 text-[11px] ${past ? "opacity-40" : ""}`}
+              className={`flex items-center gap-2 text-[11px] transition-opacity ${past ? "opacity-40" : ""}`}
             >
-              <span className="mono text-[var(--accent)] font-bold w-10 shrink-0">
+              <span className="mono tabular-nums text-[var(--accent)] font-semibold w-10 shrink-0">
                 {e.time}
               </span>
               <span className="text-[var(--text)] truncate flex-1">
@@ -70,10 +70,10 @@ export function CompactCalendar() {
           );
         })}
       </div>
-      <div className="border-t border-[var(--border)] mt-2 pt-2 space-y-1">
+      <div className="border-t border-[var(--border)] mt-3 pt-3 space-y-1.5">
         {WEEK_AHEAD.slice(0, 3).map((e) => (
           <div key={`${e.date}-${e.label}`} className="text-[11px]">
-            <span className="mono font-bold text-[var(--text-caption)] mr-2">
+            <span className="mono tabular-nums font-semibold text-[var(--text-caption)] mr-2">
               {e.date}
             </span>
             <span className="text-[var(--text-muted)]">{e.label}</span>

@@ -2,11 +2,11 @@ import { MARKET_INDICES, FX_RATES } from "@/lib/market-snapshot";
 
 export function IndexBoard() {
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
-      <div className="mono text-[9px] uppercase tracking-widest text-[var(--text-caption)] mb-2">
+    <div className="card-surface p-4">
+      <div className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-caption)] mb-3">
         Indices · FX
       </div>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
         {MARKET_INDICES.map((m) => (
           <Row
             key={m.label}
@@ -16,7 +16,7 @@ export function IndexBoard() {
           />
         ))}
       </div>
-      <div className="border-t border-[var(--border)] mt-2 pt-2 grid grid-cols-2 gap-x-3 gap-y-1.5">
+      <div className="border-t border-[var(--border)] mt-3 pt-3 grid grid-cols-2 gap-x-4 gap-y-2">
         {FX_RATES.map((f) => (
           <Row
             key={f.pair}
@@ -51,7 +51,7 @@ function Row({
       ? "text-[var(--red)]"
       : "text-[var(--green)]";
   return (
-    <div className="flex items-center gap-1 text-[11px] mono tabular-nums">
+    <div className="flex items-center gap-1.5 text-[11px] mono tabular-nums">
       <span className="text-[var(--text-muted)] truncate min-w-0">{label}</span>
       <span className="ml-auto text-[var(--text)] font-semibold shrink-0">{value}</span>
       <span className={`font-semibold w-11 text-right shrink-0 ${color}`}>
