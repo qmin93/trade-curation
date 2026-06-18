@@ -13,13 +13,13 @@ export function LatestResultCard() {
   return (
     <Link
       href={`/results/${latest.date}`}
-      className="group mb-6 block rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/[0.05] p-4 hover:border-[var(--accent)]/60 transition-colors"
+      className="group mb-6 block rounded-2xl border border-[var(--accent)]/25 bg-[var(--accent)]/[0.05] p-5 shadow-[var(--shadow-card)] transition-all duration-200 hover:border-[var(--accent)]/50 hover:bg-[var(--accent)]/[0.08]"
     >
-      <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="mono text-[10px] uppercase tracking-widest text-[var(--accent)]">
-          ✅ 검증 · {latest.date} 마감
+      <div className="flex items-center gap-2.5 mb-2.5 flex-wrap">
+        <span className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--accent)]">
+          검증 · {latest.date} 마감
         </span>
-        <span className={`mono text-sm font-bold ${pos ? "text-[var(--red)]" : "text-[var(--green)]"}`}>
+        <span className={`mono text-sm font-semibold tabular-nums ${pos ? "text-[var(--red)]" : "text-[var(--green)]"}`}>
           {pos ? "▲ +" : "▼ "}
           {Math.abs(latest.totalReturn).toFixed(2)}%
         </span>
@@ -29,7 +29,7 @@ export function LatestResultCard() {
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
         {latest.picks.map((p) => (
           <span key={p.ticker} className="inline-flex items-center gap-1.5">
             <span className="font-medium text-[var(--text)]">{p.stockName}</span>
@@ -39,7 +39,7 @@ export function LatestResultCard() {
             {p.status === "stop" && (
               <span className="mono text-[10px] text-[var(--green)]">손절</span>
             )}
-            <span className={`mono font-semibold ${p.resultPercent >= 0 ? "text-[var(--red)]" : "text-[var(--green)]"}`}>
+            <span className={`mono font-semibold tabular-nums ${p.resultPercent >= 0 ? "text-[var(--red)]" : "text-[var(--green)]"}`}>
               {p.resultPercent >= 0 ? "+" : ""}
               {p.resultPercent.toFixed(2)}%
             </span>
@@ -47,7 +47,7 @@ export function LatestResultCard() {
         ))}
       </div>
 
-      <div className="mt-2 mono text-[10px] text-[var(--text-caption)]">
+      <div className="mt-3 mono text-[10px] tabular-nums text-[var(--text-caption)]">
         6월 승률 {MONTHLY_STATS.winRate}% · 누적 +{MONTHLY_STATS.cumulativeReturn}% · 적중 {MONTHLY_STATS.hitCount}·손절 {MONTHLY_STATS.missCount}
       </div>
     </Link>

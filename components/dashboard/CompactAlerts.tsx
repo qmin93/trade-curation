@@ -10,21 +10,21 @@ const sevColor = {
 export function CompactAlerts({ limit = 6 }: { limit?: number }) {
   const alerts = getRecentAlerts(limit);
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
-      <div className="mono text-[9px] uppercase tracking-widest text-[var(--text-caption)] mb-2 flex items-center justify-between">
-        <Link href="/alerts" className="hover:text-[var(--accent)]">
+    <div className="card-surface p-4">
+      <div className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-caption)] mb-3 flex items-center justify-between">
+        <Link href="/alerts" className="transition-colors hover:text-[var(--accent)]">
           Live Alerts ↗
         </Link>
         <span className="flex items-center gap-1">
-          <span className="w-1 h-1 rounded-full bg-[var(--red)] pulse-dot" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
         </span>
       </div>
-      <div className="space-y-0.5">
+      <div className="space-y-0.5 -mx-1.5">
         {alerts.map((a) => {
           const inner = (
             <div className="flex items-start gap-2 text-[11px]">
               <span
-                className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${sevColor[a.severity]}`}
+                className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${sevColor[a.severity]}`}
               />
               <span className="mono text-[10px] text-[var(--text-caption)] w-10 shrink-0 tabular-nums">
                 {a.time}
@@ -40,7 +40,7 @@ export function CompactAlerts({ limit = 6 }: { limit?: number }) {
               href={a.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block px-1.5 py-1 rounded hover:bg-[var(--bg-hover)] transition-colors"
+              className="block px-1.5 py-1.5 rounded-lg hover:bg-[var(--bg-subtle)] transition-colors"
             >
               {inner}
             </a>
@@ -48,7 +48,7 @@ export function CompactAlerts({ limit = 6 }: { limit?: number }) {
             <Link
               key={a.id}
               href={a.sourceUrl}
-              className="block px-1.5 py-1 rounded hover:bg-[var(--bg-hover)] transition-colors"
+              className="block px-1.5 py-1.5 rounded-lg hover:bg-[var(--bg-subtle)] transition-colors"
             >
               {inner}
             </Link>

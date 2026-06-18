@@ -37,7 +37,7 @@ export function NewsModal({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
     >
@@ -49,13 +49,13 @@ export function NewsModal({
         <button
           onClick={onClose}
           aria-label="닫기"
-          className="absolute -top-3 -right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)] shadow-lg"
+          className="absolute -top-3 -right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text)] shadow-[var(--shadow-card-hover)]"
         >
           ✕
         </button>
 
         {/* 캡처 카드 */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden shadow-2xl">
+        <div className="rounded-3xl border border-[var(--border)] bg-[var(--bg-elevated)] overflow-hidden shadow-[var(--shadow-card-hover)]">
           {news.imageUrl && (
             <div className="w-full aspect-[16/9] bg-[var(--bg-subtle)] overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}

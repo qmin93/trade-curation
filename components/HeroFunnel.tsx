@@ -11,31 +11,31 @@ export function HeroFunnel({ variant = "side" }: { variant?: "side" | "hero" }) 
 
   if (variant === "side") {
     return (
-      <section className="rounded-xl border border-[var(--accent)]/40 bg-gradient-to-br from-[var(--accent)]/15 to-[var(--bg-elevated)] p-4">
-        <div className="mono text-[10px] uppercase tracking-[0.25em] text-[var(--accent)] mb-2">
+      <section className="rounded-2xl border border-[var(--accent)]/30 bg-gradient-to-br from-[var(--accent)]/10 to-[var(--bg-elevated)] p-5 shadow-[var(--shadow-card)]">
+        <div className="mono text-[10px] uppercase tracking-[0.22em] text-[var(--accent)] mb-2.5">
           Free · Telegram
         </div>
-        <h2 className="text-base font-bold leading-snug text-[var(--text)]">
+        <h2 className="text-base font-semibold tracking-tight leading-snug text-[var(--text)]">
           장 열기 전 5분,
           <br />
           오늘 뜰 자리 놓치고 계신가요?
         </h2>
-        <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
+        <p className="mt-2.5 text-xs leading-relaxed text-[var(--text-muted)]">
           흩어진 단타 뉴스를 시초가 직전 한 화면에.{" "}
           <span className="font-semibold text-[var(--text)]">
-            6월 승률 <span className="text-[var(--red)]">{win}%</span>
+            6월 승률 <span className="text-[var(--red)] tabular-nums">{win}%</span>
           </span>
         </p>
         <a
           href={TELEGRAM_INVITE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-3 flex w-full items-center justify-center gap-1.5 rounded-md bg-[var(--accent)] px-3 py-2.5 text-sm font-bold text-white hover:opacity-90 transition-opacity"
+          className="group mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--accent)] px-3 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 hover:shadow-lg hover:shadow-[var(--accent)]/20"
         >
           텔레그램 무료로 받기
           <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
         </a>
-        <p className="mt-2 mono text-[9px] text-[var(--text-caption)]">
+        <p className="mt-2.5 mono text-[9px] text-[var(--text-caption)]">
           매일 아침 무료 · 종목 추천 아님 · 매매 본인 책임
         </p>
       </section>
@@ -43,9 +43,9 @@ export function HeroFunnel({ variant = "side" }: { variant?: "side" | "hero" }) 
   }
 
   return (
-    <section className="mb-6 overflow-hidden rounded-2xl border border-[var(--accent)]/30 bg-gradient-to-br from-[var(--accent)]/[0.10] via-[var(--bg-elevated)] to-[var(--bg-elevated)]">
-      <div className="px-6 py-8 md:px-10 md:py-10">
-        <h1 className="text-2xl md:text-4xl font-bold tracking-tight leading-snug text-[var(--text)]">
+    <section className="mb-6 overflow-hidden rounded-2xl border border-[var(--accent)]/25 bg-gradient-to-br from-[var(--accent)]/[0.10] via-[var(--bg-elevated)] to-[var(--bg-elevated)] shadow-[var(--shadow-card)]">
+      <div className="px-6 py-8 md:px-10 md:py-12">
+        <h1 className="text-2xl md:text-4xl font-semibold tracking-tight leading-snug text-[var(--text)]">
           장 열기 전 5분,
           <br />
           오늘 뜰 자리를 놓치고 계신가요?
@@ -53,7 +53,7 @@ export function HeroFunnel({ variant = "side" }: { variant?: "side" | "hero" }) 
         <p className="mt-4 max-w-2xl text-sm md:text-base leading-relaxed text-[var(--text-muted)]">
           매경·연합·한경에 흩어진 단타 뉴스를 직접 골라, 시초가 직전 한 화면에.{" "}
           <span className="font-semibold text-[var(--text)]">
-            6월 승률 <span className="text-[var(--red)]">{win}%</span> · 손절까지 전부 공개
+            6월 승률 <span className="text-[var(--red)] tabular-nums">{win}%</span> · 손절까지 전부 공개
           </span>
           합니다.
         </p>
@@ -62,7 +62,7 @@ export function HeroFunnel({ variant = "side" }: { variant?: "side" | "hero" }) 
             href={TELEGRAM_INVITE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 rounded-md bg-[var(--accent)] px-6 py-3 text-sm font-bold text-white hover:opacity-90 transition-opacity"
+            className="group inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 hover:shadow-lg hover:shadow-[var(--accent)]/20"
           >
             텔레그램에서 무료로 받기
             <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
