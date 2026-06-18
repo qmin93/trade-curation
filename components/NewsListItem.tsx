@@ -64,11 +64,11 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
           setOpen(true);
         }
       }}
-      className="card-surface group block p-4 md:p-5 cursor-pointer hover:border-[var(--accent)]/40"
+      className="card-surface group block p-5 md:p-6 cursor-pointer hover:border-[var(--accent)]/40"
     >
       <div className="flex gap-4 md:gap-5 items-start">
         {news.imageUrl ? (
-          <div className="w-28 h-24 md:w-48 md:h-32 shrink-0 rounded-xl overflow-hidden bg-[var(--bg-subtle)] ring-1 ring-[var(--border)]">
+          <div className="w-28 h-24 md:w-48 md:h-32 shrink-0 rounded-2xl overflow-hidden bg-[var(--bg-subtle)] ring-1 ring-[var(--border)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={news.imageUrl}
@@ -77,7 +77,7 @@ export function NewsListItem({ news }: { news: UnifiedNewsItem }) {
             />
           </div>
         ) : (
-          <div className="w-28 h-24 md:w-48 md:h-32 shrink-0 rounded-xl bg-gradient-to-br from-[var(--accent)]/10 via-[var(--bg-subtle)] to-[var(--bg-hover)] ring-1 ring-[var(--border)] flex items-center justify-center">
+          <div className="w-28 h-24 md:w-48 md:h-32 shrink-0 rounded-2xl bg-gradient-to-br from-[var(--accent)]/10 via-[var(--bg-subtle)] to-[var(--bg-hover)] ring-1 ring-[var(--border)] flex items-center justify-center">
             <span className={`mono text-xs uppercase tracking-widest font-semibold ${tintForSource(news.source)}`}>
               {news.source}
             </span>

@@ -49,7 +49,7 @@ export function HeroNews({ news }: { news: UnifiedNewsItem }) {
           setOpen(true);
         }
       }}
-      className="group block relative overflow-hidden rounded-2xl border border-[var(--border)] aspect-[16/9] md:aspect-[21/9] cursor-pointer"
+      className="group block relative overflow-hidden rounded-3xl border border-[var(--border)] aspect-[16/9] md:aspect-[21/9] cursor-pointer shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-shadow duration-300"
     >
       {news.imageUrl ? (
         <>
