@@ -123,6 +123,8 @@
 
   html {
     overflow-x: clip;
+    /* 전체 글씨 키우기 — rem 기준 17px(기본 16px 대비 +6%). 텍스트·여백 비례 확대. */
+    font-size: 17px;
   }
 
   body {
