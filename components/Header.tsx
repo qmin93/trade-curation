@@ -19,14 +19,14 @@ export function Header() {
   const hot = getHotKeywords();
   const status = getMarketStatus(new Date());
   return (
-    <header className="border-b border-[var(--border)] bg-[var(--bg)]/95 backdrop-blur sticky top-0 z-30">
+    <header className="border-b border-[var(--border)] bg-[var(--bg-elevated)]/80 backdrop-blur-xl sticky top-0 z-30 transition-shadow">
       <div className="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 group shrink-0">
-          <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[var(--accent)] to-blue-700 flex items-center justify-center font-bold text-sm text-white">
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent)] to-blue-700 flex items-center justify-center font-bold text-sm text-white shadow-sm transition-transform duration-200 group-hover:scale-105">
             ▲
           </div>
           <div className="flex flex-col leading-none">
-            <span className="font-bold text-sm tracking-tight group-hover:text-[var(--accent)] transition-colors">
+            <span className="font-bold text-sm tracking-tight group-hover:text-[var(--accent)] transition-colors duration-200">
               단타 트레이드
             </span>
             <span className="text-[9px] mono text-[var(--text-caption)] uppercase tracking-widest">
@@ -35,12 +35,12 @@ export function Header() {
           </div>
         </Link>
 
-        <nav className="hidden lg:flex gap-1 text-sm shrink-0">
+        <nav className="hidden lg:flex gap-0.5 text-sm shrink-0">
           {TOP_NAV.map((n) => (
             <Link
               key={n.href}
               href={n.href}
-              className="px-3 py-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-elevated)] transition-colors"
+              className="px-3.5 py-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-subtle)] transition-all duration-200"
             >
               {n.label}
             </Link>
@@ -52,7 +52,7 @@ export function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-1.5 mono text-[10px] text-[var(--text-muted)] uppercase tracking-widest">
+          <div className="flex items-center gap-1.5 mono text-[10px] text-[var(--text-muted)] uppercase tracking-widest rounded-full border border-[var(--border)] bg-[var(--bg-subtle)] px-2.5 py-1">
             {status.isLive && (
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--red)] pulse-dot" />
             )}
@@ -64,7 +64,7 @@ export function Header() {
             href={TELEGRAM_INVITE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--accent)] px-3.5 py-1.5 text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:opacity-90 hover:shadow-md transition-all duration-200"
           >
             텔레그램 무료
             <span aria-hidden>→</span>
@@ -76,7 +76,7 @@ export function Header() {
             href={TELEGRAM_INVITE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center rounded-md bg-[var(--accent)] px-2.5 py-1.5 text-[11px] font-semibold text-white"
+            className="inline-flex items-center rounded-xl bg-[var(--accent)] px-3 py-2 text-[11px] font-semibold text-white shadow-sm transition-all duration-200"
           >
             텔레그램
           </a>

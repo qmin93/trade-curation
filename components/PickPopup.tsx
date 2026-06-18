@@ -75,14 +75,14 @@ export function PickPopup() {
   return (
     <div
       onClick={close}
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="검증된 기록 공개"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-[400px] rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] shadow-2xl overflow-hidden"
+        className="relative w-full max-w-[400px] rounded-3xl border border-[var(--border)] bg-[var(--bg-elevated)] shadow-[var(--shadow-card-hover)] overflow-hidden"
       >
         {/* 닫기 */}
         <button
@@ -94,8 +94,8 @@ export function PickPopup() {
         </button>
 
         {/* 헤더 */}
-        <div className="px-6 pt-6 pb-4 bg-gradient-to-br from-[var(--accent)]/[0.12] to-transparent">
-          <div className="mono text-[10px] uppercase tracking-[0.25em] text-[var(--accent)] mb-2">
+        <div className="px-7 pt-8 pb-5 bg-gradient-to-br from-[var(--accent)]/[0.08] to-transparent">
+          <div className="mono text-[10px] uppercase tracking-[0.25em] text-[var(--accent)] mb-3">
             검증된 기록 공개
           </div>
           <div className="flex items-baseline gap-2">
@@ -103,10 +103,11 @@ export function PickPopup() {
               {MONTHLY_STATS.month}
             </span>
             <span className="text-2xl font-bold text-[var(--text)]">
-              승률 <span className="text-[var(--red)]">{MONTHLY_STATS.winRate}%</span>
+              승률{" "}
+              <span className="text-3xl text-[var(--red)]">{MONTHLY_STATS.winRate}%</span>
             </span>
           </div>
-          <div className="mt-1 text-sm text-[var(--text-muted)]">
+          <div className="mt-1.5 text-sm text-[var(--text-muted)]">
             누적{" "}
             <span className="font-semibold text-[var(--red)]">
               +{MONTHLY_STATS.cumulativeReturn}%
@@ -116,7 +117,7 @@ export function PickPopup() {
         </div>
 
         {/* 오늘 픽 */}
-        <div className="px-6 py-4 border-t border-[var(--border)]">
+        <div className="px-7 py-5 border-t border-[var(--border)]">
           <div className="flex items-center gap-2 text-sm font-semibold text-[var(--text)]">
             {ACTIVE_PICK && ACTIVE_PICK.status === "live" && status.isLive && (
               <span className="h-2 w-2 rounded-full bg-[var(--red)] pulse-dot" />
@@ -137,13 +138,13 @@ export function PickPopup() {
         </div>
 
         {/* CTA */}
-        <div className="px-6 pb-5">
+        <div className="px-7 pb-6">
           <a
             href={TELEGRAM_INVITE_URL}
             target="_blank"
             rel="noopener noreferrer"
             onClick={close}
-            className="flex items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-4 py-3 text-sm font-bold text-white hover:opacity-90"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-3.5 text-sm font-bold text-white transition hover:bg-[var(--accent)]/90 hover:shadow-[var(--shadow-card-hover)]"
           >
             근거·실시간 텔레그램 →
           </a>
