@@ -70,6 +70,58 @@ export const NEWS_MOCK: NewsItem[] = [
   },
   // ── 2026-06-11 큐레이션 (원본 기사 직접 읽고 중립 요약) ──
   {
+    id: "20260611-goyoung-inspection",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T18:00:00+09:00",
+    headline: "고영 +10.5%…소캠2 검사장비 국내 메모리사 첫 수주",
+    summary:
+      "고영(098460)이 6월 11일 +10.5%(3만4200원)로 강세를 보였습니다. 반도체 검사장비 '소캠2'를 국내 메모리 제조사에 처음 공급하기 시작한 점이 재료로, 휴머노이드·우주산업 검사장비 수요 확대도 성장 동력으로 거론됩니다. 검사장비 부문에 신규 매출 라인이 열렸다는 점에서 후속 수주 여부가 관건으로 봅니다.",
+    source: "mt.co.kr",
+    sourceUrl: "https://www.mt.co.kr/stock/2026/06/11/2026061119007086910",
+    keywords: ["고영", "반도체장비", "검사장비", "로봇"],
+    stocks: ["고영"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-samsung-h2strategy",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T19:00:00+09:00",
+    headline: "삼성전자, 6/16~18 하반기 전략회의…HBM4·파운드리 점검",
+    summary:
+      "삼성전자가 6월 16~18일 하반기 글로벌 전략회의를 엽니다. DS부문(전영현 부회장)은 HBM4 양산 준비와 HBM4E 개발, 주요 고객사 공급 일정과 AI 데이터센터 수요를 점검하고, 테일러 팹 가동을 앞둔 파운드리의 고객 확보·수익성 회복을 다룹니다. DX부문(노태문 사장)은 갤럭시 Z 폴드·플립과 갤럭시 AI로 세트 경쟁력 강화를 논의합니다.",
+    source: "ajunews.com",
+    sourceUrl: "https://www.ajunews.com/view/20260611190212240",
+    keywords: ["삼성전자", "HBM", "파운드리", "갤럭시"],
+    stocks: ["삼성전자"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-skhynix-insider-sale",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T18:30:00+09:00",
+    headline: "SK하이닉스 신고가에 임원 자사주 매각…투심 우려",
+    summary:
+      "SK하이닉스가 젠슨 황 엔비디아 CEO의 HBM4 품질 통과 확인에 힘입어 230만원 신고가를 기록한 가운데, AI 사업을 총괄하는 임원이 1,000주(약 23억원)를 고점에서 매각했습니다. 회사는 정당한 개인 자산관리라고 설명했지만, 성장 핵심 국면에 나온 내부자 매도라 투자심리에 부정적이라는 우려가 시장에서 제기됩니다.",
+    source: "mdtoday.co.kr",
+    sourceUrl: "https://www.mdtoday.co.kr/news/articleView.html?idxno=600530",
+    keywords: ["SK하이닉스", "하이닉스", "HBM", "자사주"],
+    stocks: ["SK하이닉스"],
+    personaComments: {},
+  },
+  {
+    id: "20260611-csacosmic-rightsissue",
+    date: "2026-06-11",
+    publishedAt: "2026-06-11T16:30:00+09:00",
+    headline: "CSA코스믹 이틀 연속 급등…유증 기대 vs 상폐 기준 변수",
+    summary:
+      "CSA코스믹이 6월 10일 +30%, 11일 +29.91%로 이틀 연속 급등해 304원에 마감했습니다. 운영자금 조달을 위한 40억원 규모 제3자배정 유상증자(2,000만주·발행가 200원) 기대가 반영된 결과입니다. 다만 7월 1일 시행되는 새 상장폐지 기준상 주가를 1,000원 이상으로 끌어올리지 못하면 퇴출 압박이 현실화될 수 있어, 동전주 급등 특유의 변동성에 유의할 자리로 봅니다.",
+    source: "thebk.co.kr",
+    sourceUrl: "https://www.thebk.co.kr/news/articleView.html?idxno=310042",
+    keywords: ["CSA코스믹", "유상증자", "동전주", "코스닥"],
+    stocks: ["CSA코스믹"],
+    personaComments: {},
+  },
+  {
     id: "20260611-close-market",
     date: "2026-06-11",
     publishedAt: "2026-06-11T15:40:00+09:00",
