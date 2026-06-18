@@ -65,6 +65,8 @@ export function ConsoleBody({ embedded = false }: { embedded?: boolean }) {
   const [hookMode, setHookMode] = useState(false); // 트래픽 후킹형(첫 줄 호기심+댓글 유발) ↔ 관찰형(기본)
 
   const [trending, setTrending] = useState<TrendStock[]>([]);
+  const [themeTrends, setThemeTrends] = useState<{ theme: string; latest: number; change: number }[]>([]);
+  const [googleTrends, setGoogleTrends] = useState<{ query: string; traffic: string }[]>([]);
   const [drafts, setDrafts] = useState<CloudDraft[]>([]);
   const [showDrafts, setShowDrafts] = useState(false);
   const [label, setLabel] = useState("");
@@ -105,6 +107,10 @@ export function ConsoleBody({ embedded = false }: { embedded?: boolean }) {
     fetch("/api/ops/trending")
       .then((r) => r.json())
       .then((d) => setTrending(d.stocks ?? []))
+      .catch(() => {});
+    fetch("/api/ops/trends")
+      .then((r) => r.json())
+      .then((d) => { setThemeTrends(d.datalab ?? []); setGoogleTrends(d.google ?? []); })
       .catch(() => {});
     loadDraftsList();
   }, [isOperator, loadDraftsList]);
@@ -275,6 +281,50 @@ export function ConsoleBody({ embedded = false }: { embedded?: boolean }) {
                 </button>
               );
             })}
+          </div>
+        )}
+
+        {/* 📈 검색 트렌드 — 데이터랩 테마 모멘텀 + 구글 트렌딩 (클릭 = 복사) */}
+        {(themeTrends.length > 0 || googleTrends.length > 0) && (
+          <div className="mt-4 pt-3 border-t border-[var(--border)]">
+            <div className="mono text-[9px] uppercase tracking-widest text-[var(--text-caption)] mb-1.5">
+              📈 검색 트렌드 (클릭 = 복사) · 데이터랩 테마 검색 모멘텀
+            </div>
+            <div className="flex flex-wrap gap-1.5 mb-2.5">
+              {themeTrends.map((t) => {
+                const up = t.change >= 0;
+                return (
+                  <button
+                    key={t.theme}
+                    onClick={() => { navigator.clipboard.writeText(t.theme); setToast(`복사: ${t.theme}`); setTimeout(() => setToast(""), 1200); }}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--bg-subtle)] px-2 py-1 text-[11px] hover:border-[var(--accent)]"
+                    title="검색량 모멘텀(최근일 vs 직전평균)"
+                  >
+                    <span className="font-medium text-[var(--text)]">{t.theme}</span>
+                    <span className={`mono tabular-nums font-semibold ${up ? "text-[var(--red)]" : "text-[var(--green)]"}`}>
+                      {up ? "▲" : "▼"}{Math.abs(t.change)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {googleTrends.length > 0 && (
+              <>
+                <div className="mono text-[9px] uppercase tracking-widest text-[var(--text-caption)] mb-1.5">🔎 구글 트렌딩 (한국)</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {googleTrends.map((g) => (
+                    <button
+                      key={g.query}
+                      onClick={() => { navigator.clipboard.writeText(g.query); setToast(`복사: ${g.query}`); setTimeout(() => setToast(""), 1200); }}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--bg-subtle)] px-2 py-1 text-[11px] text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--text)]"
+                    >
+                      {g.query}
+                      {g.traffic && <span className="mono text-[9px] text-[var(--text-caption)]">{g.traffic}</span>}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
       </section>
