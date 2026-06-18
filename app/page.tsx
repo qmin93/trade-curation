@@ -11,7 +11,6 @@ import { TelegramCTA } from "@/components/TelegramCTA";
 import { PickPopup } from "@/components/PickPopup";
 import { ConsolePopup } from "@/components/ConsolePopup";
 import { HeroFunnel } from "@/components/HeroFunnel";
-import { HomeHero } from "@/components/HomeHero";
 import { LatestResultCard } from "@/components/LatestResultCard";
 import { MarketNowBand } from "@/components/MarketNowBand";
 import { getMarketStatus } from "@/lib/market-status";
@@ -39,9 +38,6 @@ export default async function Home() {
 
       {/* 운영자 전용 — 콘솔 팝업(픽+포맷). 방문자에겐 버튼 안 보임 */}
       <ConsolePopup />
-
-      {/* 메인 히어로 — 성과(검증) + 픽 중심 라이트 SaaS */}
-      <HomeHero />
 
       {/* 실시간 급등·인기검색 밴드 (공개) */}
       <LiveTrendingBand />
