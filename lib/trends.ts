@@ -68,28 +68,31 @@ export interface GoogleTrend {
   traffic: string;
 }
 
+function decodeXml(s: string): string {
+  return s
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
+}
+
+/** 구글 트렌드 신규 RSS(한국 일일 트렌딩). 일반 트렌드라 주식 관련은 가끔. */
 export async function fetchGoogleTrending(limit = 12): Promise<GoogleTrend[]> {
   try {
-    const res = await fetch(
-      "https://trends.google.com/trends/api/dailytrends?hl=ko&tz=-540&geo=KR",
-      { headers: { "User-Agent": "Mozilla/5.0" } },
-    );
+    const res = await fetch("https://trends.google.com/trending/rss?geo=KR", {
+      headers: { "User-Agent": "Mozilla/5.0" },
+    });
     if (!res.ok) return [];
-    let txt = await res.text();
-    txt = txt.replace(/^\)\]\}',?\s*/, ""); // 구글 안티-JSON 프리픽스 제거
-    const j = JSON.parse(txt) as {
-      default?: {
-        trendingSearchesDays?: {
-          trendingSearches?: { title?: { query?: string }; formattedTraffic?: string }[];
-        }[];
-      };
-    };
+    const xml = await res.text();
     const out: GoogleTrend[] = [];
-    for (const d of j.default?.trendingSearchesDays ?? []) {
-      for (const t of d.trendingSearches ?? []) {
-        if (t.title?.query) out.push({ query: t.title.query, traffic: t.formattedTraffic ?? "" });
-        if (out.length >= limit) return out;
-      }
+    // 채널 <title>(="Daily Search Trends")은 <item> 밖이라 split으로 제외.
+    for (const block of xml.split("<item>").slice(1)) {
+      const title = (block.match(/<title>([^<]+)<\/title>/) || [])[1];
+      const traffic = (block.match(/<ht:approx_traffic>([^<]+)<\/ht:approx_traffic>/) || [])[1] || "";
+      if (title) out.push({ query: decodeXml(title), traffic });
+      if (out.length >= limit) break;
     }
     return out;
   } catch {
