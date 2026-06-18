@@ -21,7 +21,7 @@ const CTA_POOL = [
 
 export type FormatId =
   | "question" | "quote" | "thread" | "journal" | "proof" | "news"
-  | "watch" | "recap" | "magnet";
+  | "watch" | "recap" | "magnet" | "flow";
 
 export interface FormatMeta {
   id: FormatId;
@@ -67,6 +67,16 @@ export const FORMATS: FormatMeta[] = [
     desc: "휴먼화·캐릭터 빌딩. 정직 톤이 신뢰를 쌓는다.",
     fields: [
       { key: "noteA", label: "오늘 있었던 일·감정", placeholder: "예) 오전에 익절하고 오후엔 관망. 손이 근질거렸다", area: true },
+    ],
+    personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
+  },
+  {
+    id: "flow",
+    label: "수급·테마",
+    desc: "지금 돈이 어디로 — 거래대금·매수세·테마 순환. 단타가 제일 원하는 정보(반응 좋음).",
+    fields: [
+      { key: "noteA", label: "돈 몰리는 테마·대장 (거래대금 1위)", placeholder: "예) 반도체 — SK하이닉스 4.5조 +4.0%, 다음 순환 화력·휴대폰부품", area: true },
+      { key: "noteB", label: "매수세 붙는 종목", placeholder: "예) 삼화전자 추세전환·에스투더블유·메디아나", area: true },
     ],
     personas: ["단타시그널", "단타이스트", "단타데일리", "단타Lab", "스캘퍼"],
   },
@@ -539,6 +549,57 @@ export function generateFormatPost(
       }
       default:
         body = `${give} — 필요하신 분 댓글 주세요.`;
+    }
+  } else if (id === "flow") {
+    // 수급·테마 정보성 — "지금 돈이 어디로". 거래대금·매수세·테마 순환. 옵션 뱅크 close로 변주.
+    const theme = a || "반도체 — 대장주 거래대금 1위";
+    const stocks = b || "추세전환·바닥반등 종목 다수";
+    const fbank = OPTION_BANK[persona];
+    switch (persona) {
+      case "단타시그널":
+        body = joinLines([
+          `장중 수급 정리합니다.`,
+          `- 돈 몰리는 테마: ${theme}.`,
+          `- 매수세 붙는 종목: ${stocks}.`,
+          `- ${at(fbank.closes, variant)}`,
+        ]);
+        break;
+      case "단타이스트":
+        body = joinLines([
+          `지금 시장, 돈이 어디로 가는지 보면 답이 보입니다.`,
+          `${theme}. ${stocks} 쪽으로도 매수세가 붙고 있고요.`,
+          `대장이 끌고 가는 흐름이라, 따라가는 종목이 진짜인지가 관건이죠.`,
+          "",
+          at(fbank.closes, variant),
+        ]);
+        break;
+      case "단타데일리":
+        body = joinLines([
+          `[${mmdd}] 장중 수급 메모`,
+          `1. 돈 몰리는 테마: ${theme}.`,
+          `2. 매수세 종목: ${stocks}.`,
+          `3. 단타 관점: 대장 따라가는 종목 거래대금 확인.`,
+          `결정은 본인의 몫.`,
+        ]);
+        break;
+      case "단타Lab":
+        body = joinLines([
+          `다들 오른 종목만 쫓죠. 저는 '돈이 어디로 몰리나'를 봅니다.`,
+          `${theme}.`,
+          `진짜는 그 다음 순환입니다 — ${stocks} 쪽으로 돈이 옮겨가는지가 핵심이고요.`,
+          at(fbank.closes, variant),
+        ]);
+        break;
+      case "스캘퍼":
+        body = joinLines([
+          `[${mmdd}] 장중 수급 체크`,
+          `🔻 돈 몰리는 테마: ${theme}.`,
+          `📍 매수세 종목: ${stocks}. 추격 X, 눌림 단발.`,
+          at(fbank.closes, variant),
+        ]);
+        break;
+      default:
+        body = `${theme} / ${stocks}`;
     }
   }
 
