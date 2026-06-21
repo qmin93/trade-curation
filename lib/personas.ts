@@ -54,15 +54,8 @@ export const PERSONAS: Persona[] = [
     toneDescription: "큰따옴표 헤더·통찰·메커니즘 분석",
     color: "#581c87",
   },
-  {
-    slug: "pick",
-    name: "단타Pick",
-    benchmark: "junseokstock",
-    benchmarkFollowers: "3.3만 / viral 133",
-    signature: "오늘 자리 잘 잡혔으면",
-    toneDescription: "친근 자기확신·단독 종목 호재",
-    color: "#065f46",
-  },
+  // 단타Pick(slug: "pick", junseokstock) — 2026-06-13 정지. 로스터에서 제외(필요 시 복구).
+  // PersonaSlug 타입엔 "pick" 유지(다른 코드 호환). threads-caption.ts PERSONAS도 동일하게 제외됨.
   {
     slug: "scalper",
     name: "스캘퍼",
