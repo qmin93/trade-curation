@@ -23,6 +23,7 @@ export interface TrendingStock {
 interface NaverSearchTopStock {
   itemCode: string;
   stockName: string;
+  stockEndType?: string; // "stock" | "etf" — ETF·레버리지 제외용
   closePrice: string;
   fluctuationsRatio: string; // 절대값 "11.87"
   compareToPreviousPrice?: { code?: string; name?: string };
@@ -94,6 +95,8 @@ export async function fetchTopGainers(limit = 12): Promise<TrendingStock[]> {
       (j: { stocks?: NaverSearchTopStock[] }) => j.stocks ?? [],
     );
     return all
+      // ETF·레버리지·인버스 제외 — 단타 개별주만 (KODEX·TIGER 등 노이즈 컷)
+      .filter((s) => s.stockEndType === "stock")
       .sort(
         (a, b) =>
           parseTradingValue(b.accumulatedTradingValueKrwHangeul) -
