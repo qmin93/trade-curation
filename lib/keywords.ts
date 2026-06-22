@@ -10,24 +10,15 @@ export interface Keyword {
 }
 
 export const KEYWORDS: Keyword[] = [
-  // ── Tier 1: 상시 대형주·지수 (검색량 큰 앵커 키워드) ──
+  // ── Tier 1: 섹터 대표 앵커 (서로 다른 섹터로 분산 — 같은 반도체 중복 방지) ──
   {
     slug: "samsung-electronics",
     label: "삼성전자",
     tier: 1,
-    category: "대형주",
+    category: "반도체",
     description:
       "코스피 시총 1위 삼성전자. AI 대전환·HBM·파운드리 흐름과 외인·연금 수급까지, 오늘 삼성전자를 움직인 이슈만 골라 정리합니다.",
     relatedStocks: ["삼성전자", "삼성SDS", "SK하이닉스"],
-  },
-  {
-    slug: "hynix",
-    label: "하이닉스",
-    tier: 1,
-    category: "대형주",
-    description:
-      "SK하이닉스 — HBM·D램 대장주. HBM4 본더 수주, 엔비디아 납품, 미국 ADR 같은 재료를 단타 관점에서 짚습니다.",
-    relatedStocks: ["SK하이닉스", "삼성전자", "한화세미텍"],
   },
   {
     slug: "kospi",
@@ -39,9 +30,47 @@ export const KEYWORDS: Keyword[] = [
     relatedStocks: ["삼성전자", "SK하이닉스", "코스피"],
   },
   {
+    slug: "battery",
+    label: "2차전지",
+    tier: 1,
+    category: "2차전지",
+    description:
+      "2차전지·배터리 대장주 — 전기차 수요, 미국 IRA, ESS·전고체 모멘텀까지. 반도체와 따로 도는 단타 대형 섹터를 짚습니다.",
+    relatedStocks: ["LG에너지솔루션", "삼성SDI", "에코프로비엠"],
+  },
+  {
+    slug: "defense",
+    label: "방산·조선",
+    tier: 1,
+    category: "방산·조선",
+    description:
+      "방산·조선 대장주 — 글로벌 수주, K-방산 수출, 군함·상선 사이클. 정책·수주 모멘텀으로 강하게 도는 섹터입니다.",
+    relatedStocks: ["한화에어로스페이스", "HD현대중공업", "한화오션"],
+  },
+  {
+    slug: "bio",
+    label: "바이오",
+    tier: 1,
+    category: "바이오",
+    description:
+      "바이오·제약 대장주 — 신약 파이프라인, 기술수출, 비만·항암 모멘텀. 시장이 약할 때 수급이 몰리는 방어·성장 섹터입니다.",
+    relatedStocks: ["셀트리온", "삼성바이오로직스", "알테오젠"],
+  },
+
+  // ── Tier 2 로 이동: 하이닉스·HBM (반도체 세부 — Tier1 삼성전자와 중복 방지) ──
+  {
+    slug: "hynix",
+    label: "하이닉스",
+    tier: 2,
+    category: "반도체",
+    description:
+      "SK하이닉스 — HBM·D램 대장주. HBM4 본더 수주, 엔비디아 납품, 미국 ADR 같은 재료를 단타 관점에서 짚습니다.",
+    relatedStocks: ["SK하이닉스", "삼성전자", "한화세미텍"],
+  },
+  {
     slug: "hbm",
     label: "HBM",
-    tier: 1,
+    tier: 2,
     category: "메모리",
     description:
       "고대역폭 메모리(HBM) — AI 데이터센터 수요 폭증의 핵심. SK하이닉스·삼성전자와 본더·소재 장비 수혜주까지.",
