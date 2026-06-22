@@ -10,7 +10,9 @@ export interface Keyword {
 }
 
 export const KEYWORDS: Keyword[] = [
-  // ── Tier 1: 섹터 대표 앵커 (서로 다른 섹터로 분산 — 같은 반도체 중복 방지) ──
+  // ── Tier 1: 메가 트래픽 앵커 (반도체 대형 4 + 고트래픽 분산 섹터) ──
+  // 트래픽 기준(docs/keyword-traffic-analysis): 반도체 4종목이 코스피 49.5%·매일 필수.
+  // 키워드 겹침은 OK, '같은 기사' 중복만 피드에서 제거. 분산은 고트래픽 원전·방산조선으로.
   {
     slug: "samsung-electronics",
     label: "삼성전자",
@@ -19,6 +21,15 @@ export const KEYWORDS: Keyword[] = [
     description:
       "코스피 시총 1위 삼성전자. AI 대전환·HBM·파운드리 흐름과 외인·연금 수급까지, 오늘 삼성전자를 움직인 이슈만 골라 정리합니다.",
     relatedStocks: ["삼성전자", "삼성SDS", "SK하이닉스"],
+  },
+  {
+    slug: "hynix",
+    label: "하이닉스",
+    tier: 1,
+    category: "반도체",
+    description:
+      "SK하이닉스 — HBM·D램 대장주. HBM4 본더 수주, 엔비디아 납품, 미국 ADR 같은 재료를 단타 관점에서 짚습니다.",
+    relatedStocks: ["SK하이닉스", "삼성전자", "한화세미텍"],
   },
   {
     slug: "kospi",
@@ -30,13 +41,13 @@ export const KEYWORDS: Keyword[] = [
     relatedStocks: ["삼성전자", "SK하이닉스", "코스피"],
   },
   {
-    slug: "battery",
-    label: "2차전지",
+    slug: "hbm",
+    label: "HBM",
     tier: 1,
-    category: "2차전지",
+    category: "메모리",
     description:
-      "2차전지·배터리 대장주 — 전기차 수요, 미국 IRA, ESS·전고체 모멘텀까지. 반도체와 따로 도는 단타 대형 섹터를 짚습니다.",
-    relatedStocks: ["LG에너지솔루션", "삼성SDI", "에코프로비엠"],
+      "고대역폭 메모리(HBM) — AI 데이터센터 수요 폭증의 핵심. SK하이닉스·삼성전자와 본더·소재 장비 수혜주까지.",
+    relatedStocks: ["SK하이닉스", "삼성전자", "한화세미텍"],
   },
   {
     slug: "defense",
@@ -44,37 +55,28 @@ export const KEYWORDS: Keyword[] = [
     tier: 1,
     category: "방산·조선",
     description:
-      "방산·조선 대장주 — 글로벌 수주, K-방산 수출, 군함·상선 사이클. 정책·수주 모멘텀으로 강하게 도는 섹터입니다.",
+      "방산·조선 대장주 — K-방산 수출(한화에어로 수주 23조)과 조선 슈퍼사이클. 외국인 순매수가 몰리는 고트래픽 섹터를 짚습니다.",
     relatedStocks: ["한화에어로스페이스", "HD현대중공업", "한화오션"],
+  },
+
+  // ── 롱테일 섹터(Tier-3) — 앵커는 아니지만 검색 유입용 페이지 유지 ──
+  {
+    slug: "battery",
+    label: "2차전지",
+    tier: 3,
+    category: "2차전지",
+    description:
+      "2차전지·배터리 — 전기차 수요, 미국 IRA, ESS·전고체 모멘텀. 조정 구간이라 단타는 선별 접근하는 섹터입니다.",
+    relatedStocks: ["LG에너지솔루션", "삼성SDI", "에코프로비엠"],
   },
   {
     slug: "bio",
     label: "바이오",
-    tier: 1,
+    tier: 3,
     category: "바이오",
     description:
-      "바이오·제약 대장주 — 신약 파이프라인, 기술수출, 비만·항암 모멘텀. 시장이 약할 때 수급이 몰리는 방어·성장 섹터입니다.",
+      "바이오·제약 — 신약 파이프라인, 기술수출, 비만·항암 모멘텀. 시장이 약할 때 수급이 몰리는 방어·성장 섹터입니다.",
     relatedStocks: ["셀트리온", "삼성바이오로직스", "알테오젠"],
-  },
-
-  // ── Tier 2 로 이동: 하이닉스·HBM (반도체 세부 — Tier1 삼성전자와 중복 방지) ──
-  {
-    slug: "hynix",
-    label: "하이닉스",
-    tier: 2,
-    category: "반도체",
-    description:
-      "SK하이닉스 — HBM·D램 대장주. HBM4 본더 수주, 엔비디아 납품, 미국 ADR 같은 재료를 단타 관점에서 짚습니다.",
-    relatedStocks: ["SK하이닉스", "삼성전자", "한화세미텍"],
-  },
-  {
-    slug: "hbm",
-    label: "HBM",
-    tier: 2,
-    category: "메모리",
-    description:
-      "고대역폭 메모리(HBM) — AI 데이터센터 수요 폭증의 핵심. SK하이닉스·삼성전자와 본더·소재 장비 수혜주까지.",
-    relatedStocks: ["SK하이닉스", "삼성전자", "한화세미텍"],
   },
 
   // ── Tier 2: 오늘의 테마 (트래픽 폭발·회전) ──
@@ -126,11 +128,11 @@ export const KEYWORDS: Keyword[] = [
   {
     slug: "nuclear",
     label: "원전",
-    tier: 2,
-    category: "테마",
+    tier: 1,
+    category: "원전·전력",
     description:
-      "원전·SMR 테마 — 신한울 납품, 소형모듈원전 사업 참여, 신재생 빅딜. 정책·수주 모멘텀으로 도는 단타 섹터.",
-    relatedStocks: ["두산에너빌리티", "한전기술", "비에이치아이"],
+      "원전·SMR·전력인프라 — AI 데이터센터 전력 수요, 신한울 납품, SMR 사업, 외국인 수급 부상. 고트래픽 분산 앵커입니다.",
+    relatedStocks: ["두산에너빌리티", "HD현대일렉트릭", "한전기술"],
   },
 
   // ── Tier 3: 수급·이벤트 ──
