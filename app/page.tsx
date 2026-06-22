@@ -1,8 +1,7 @@
 import { KEYWORDS } from "@/lib/keywords";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
 import { IndexBoard } from "@/components/dashboard/IndexBoard";
-import { LiveTrendingBand } from "@/components/LiveTrendingBand";
-import { LiveGainersBand } from "@/components/LiveGainersBand";
+import { LiveGainersNews } from "@/components/LiveGainersNews";
 import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
 import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
 import { HeroNews } from "@/components/HeroNews";
@@ -40,11 +39,8 @@ export default async function Home() {
       {/* 운영자 전용 — 콘솔 팝업(픽+포맷). 방문자에겐 버튼 안 보임 */}
       <ConsolePopup />
 
-      {/* 실시간 급등·인기검색 밴드 (공개) */}
-      <LiveTrendingBand />
-
-      {/* 단타 신호 — 급등주(거래대금 큰 순) (공개) */}
-      <LiveGainersBand />
+      {/* 🔥 오늘 급등 TOP + 한 줄 뉴스 (인기검색·급등 밴드 통합) */}
+      <LiveGainersNews news={news} />
 
       {/* 오늘 마감 리포트 — 검증(끝난 결과) 프루프, 홈에서 바로 */}
       <LatestResultCard />
