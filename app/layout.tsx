@@ -22,11 +22,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "단타 트레이드 — 키워드 큐레이션 터미널",
+    default: "단타 트레이드 — 오늘 시장을 쉽게 읽는 단타 큐레이션",
     template: "%s · 단타 트레이드",
   },
   description:
-    "하이닉스·삼성전자·연금·HBM·코스피 — 단타 트레이더가 직접 큐레이션하는 키워드 뉴스. 매경·연합·한경에서 흩어진 단타 뉴스를 시초가 직전 한 화면에.",
+    "삼성전자·하이닉스·오늘의 급등주까지, 왜 오르는지 어려운 용어 없이 쉽게 풀어주는 단타 뉴스. 초보를 막 뗀 분도 오늘 시장이 한눈에. 매경·연합·한경 뉴스를 시초가 직전 한 화면에.",
   keywords: [
     "하이닉스",
     "삼성전자",
@@ -43,15 +43,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: SITE_URL,
-    title: "단타 트레이드 — 키워드 큐레이션 터미널",
+    title: "단타 트레이드 — 오늘 시장을 쉽게 읽는 단타 큐레이션",
     description:
-      "하이닉스·삼성전자·연금·HBM·코스피 — 매경·연합·한경에서 흩어진 단타 뉴스를 한 화면에.",
+      "삼성전자·하이닉스·오늘의 급등주까지, 왜 오르는지 쉽게 풀어주는 단타 뉴스. 초보 막 뗀 분도 한 화면에.",
     siteName: "단타 트레이드",
   },
   twitter: {
     card: "summary_large_image",
-    title: "단타 트레이드 — 키워드 큐레이션 터미널",
-    description: "단타 뉴스 한 화면에·시초가 직전 키워드 큐레이션",
+    title: "단타 트레이드 — 오늘 시장을 쉽게 읽는 단타 큐레이션",
+    description: "오늘 뭐가 왜 올랐는지 쉽게·시초가 직전 단타 큐레이션",
   },
   robots: { index: true, follow: true },
 };
