@@ -23,11 +23,11 @@ export function TelegramCTA({
             Free · Telegram
           </div>
           <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-3 max-w-xl leading-snug">
-            장 열기 전, 오늘 뜰 자리부터 무료로 받아보세요
+            오늘 뭐가 왜 올랐는지, 매일 아침 쉽게 정리해드려요
           </h3>
           <p className="text-sm md:text-base text-[var(--text-muted)] max-w-xl mb-6 leading-relaxed">
-            흩어진 단타 뉴스를 직접 정리해 매일 아침 텔레그램으로. 오늘의 급등
-            테마·대장주를 시초가 직전에 한 번에 봅니다.
+            어려운 단타 용어 없이, 초보 막 뗀 분도 오늘 시장이 한눈에. 급등
+            테마·대장주와 그 이유를 시초가 직전 텔레그램으로.
           </p>
           <span className="inline-flex items-center gap-2 rounded-md bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white group-hover:opacity-90 transition-opacity">
             텔레그램에서 무료로 받기
@@ -54,10 +54,10 @@ export function TelegramCTA({
         Free · Telegram
       </div>
       <div className="text-sm font-bold text-[var(--text)] leading-snug mb-1.5">
-        오늘 뜰 자리, 매일 아침 무료로
+        오늘 왜 올랐는지, 매일 아침 쉽게
       </div>
       <p className="text-xs text-[var(--text-muted)] leading-relaxed mb-3">
-        직접 정리한 단타 종목·테마를 텔레그램으로 받아보세요.
+        어려운 용어 없이 정리한 단타 종목·테마·이유를 텔레그램으로.
       </p>
       <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white group-hover:opacity-90 transition-opacity">
         무료로 받기

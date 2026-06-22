@@ -16,12 +16,12 @@ export function HeroFunnel({ variant = "side" }: { variant?: "side" | "hero" }) 
           Free · Telegram
         </div>
         <h2 className="text-base font-semibold tracking-tight leading-snug text-[var(--text)]">
-          장 열기 전 5분,
+          오늘 왜 올랐는지,
           <br />
-          오늘 뜰 자리 놓치고 계신가요?
+          쉽게 정리해드려요
         </h2>
         <p className="mt-2.5 text-xs leading-relaxed text-[var(--text-muted)]">
-          흩어진 단타 뉴스를 시초가 직전 한 화면에.{" "}
+          어려운 용어 없이, 초보 막 뗀 분도 5분이면 한눈에.{" "}
           <span className="font-semibold text-[var(--text)]">
             6월 승률 <span className="text-[var(--red)] tabular-nums">{win}%</span>
           </span>
@@ -46,12 +46,12 @@ export function HeroFunnel({ variant = "side" }: { variant?: "side" | "hero" }) 
     <section className="mb-6 overflow-hidden rounded-2xl border border-[var(--accent)]/25 bg-gradient-to-br from-[var(--accent)]/[0.10] via-[var(--bg-elevated)] to-[var(--bg-elevated)] shadow-[var(--shadow-card)]">
       <div className="px-6 py-8 md:px-10 md:py-12">
         <h1 className="text-2xl md:text-4xl font-semibold tracking-tight leading-snug text-[var(--text)]">
-          장 열기 전 5분,
+          오늘 왜 올랐는지,
           <br />
-          오늘 뜰 자리를 놓치고 계신가요?
+          어려운 용어 없이 쉽게
         </h1>
         <p className="mt-4 max-w-2xl text-sm md:text-base leading-relaxed text-[var(--text-muted)]">
-          매경·연합·한경에 흩어진 단타 뉴스를 직접 골라, 시초가 직전 한 화면에.{" "}
+          매경·연합·한경 뉴스를 쉽게 풀어, 초보 막 뗀 분도 시초가 직전 한 화면에.{" "}
           <span className="font-semibold text-[var(--text)]">
             6월 승률 <span className="text-[var(--red)] tabular-nums">{win}%</span> · 손절까지 전부 공개
           </span>
