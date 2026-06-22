@@ -26,6 +26,24 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-06-22",
+    totalReturn: 4.5,
+    summary:
+      "하나마이크론 세력 포착 09:11 — 1차(+1.0%)·2차(+2.5%)·3차(+4.5%) 목표가 차례로 달성. 밤사이 SOX +6.42% 반도체 강세 흐름 속, 시초 추격 없이 기준 자리에서 기다린 결과. 거래대금 받쳐주며 단계적으로 상승.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "하나마이크론",
+        ticker: "067310",
+        entryPrice: 54200,
+        targetReached: 3,
+        resultPercent: 4.5,
+        status: "hit",
+        note: "1차(+1.0%)·2차(+2.5%)·3차(+4.5%) 달성. 추격 없이 기다린 자리.",
+      },
+    ],
+  },
+  {
     date: "2026-06-17",
     totalReturn: -0.48,
     summary:
@@ -137,10 +155,10 @@ export const DAILY_RESULTS: DailyResult[] = [
 
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
-  hitCount: 8,
+  hitCount: 10,
   missCount: 3,
-  winRate: 72.7,
-  cumulativeReturn: 20.04,
+  winRate: 76.9,
+  cumulativeReturn: 30.04,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
