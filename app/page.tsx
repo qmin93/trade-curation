@@ -1,5 +1,6 @@
-import { KEYWORDS } from "@/lib/keywords";
+import { KEYWORDS, FETCH_KEYWORDS_EXTRA } from "@/lib/keywords";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
+import { fetchTopGainers } from "@/lib/naver-trending";
 import { IndexBoard } from "@/components/dashboard/IndexBoard";
 import { LiveGainersNews } from "@/components/LiveGainersNews";
 import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
@@ -20,7 +21,15 @@ import { rankNewsByPhase } from "@/lib/news-rank";
 export const revalidate = 600;
 
 export default async function Home() {
-  const news = await getRecentNewsUnified(40);
+  // 오늘 급등 TOP 종목 + Tier1 키워드 뉴스를 홈 메인에 바로 노출 (이미지 포함).
+  const gainers = await fetchTopGainers(8);
+  const feedKeywords = [
+    ...gainers.map((g) => g.name),
+    ...KEYWORDS.filter((k) => k.tier === 1).map((k) => k.label),
+    "연기금 매수",
+    ...FETCH_KEYWORDS_EXTRA,
+  ].filter((v, i, a) => a.indexOf(v) === i);
+  const news = await getRecentNewsUnified(40, feedKeywords);
   // 최신순 정렬(게시시각 우선, 없으면 날짜) → 히어로가 항상 최신 반영.
   const sorted = [...news].sort((a, b) => {
     const ta = new Date(a.publishedAt ?? `${a.date}T00:00:00+09:00`).getTime();
