@@ -78,12 +78,21 @@ export const KEYWORDS: Keyword[] = [
     relatedStocks: ["SK하이닉스", "삼성전자", "HD현대일렉트릭"],
   },
   {
+    slug: "stablecoin",
+    label: "스테이블코인",
+    tier: 1,
+    category: "코인·핀테크",
+    description:
+      "스테이블코인·디지털자산 — 2026 원화 스테이블코인 제도화 추진. 두나무·카카오·네이버페이 등 거래소·핀테크 관련주가 도는 신규 메가 테마입니다.",
+    relatedStocks: ["카카오", "네이버", "한네트"],
+  },
+  {
     slug: "battery",
     label: "2차전지",
-    tier: 1,
+    tier: 3,
     category: "2차전지",
     description:
-      "2차전지·배터리 — 전기차 수요, 미국 IRA, ESS·전고체 모멘텀. 검색량 큰 대형 단타 섹터입니다.",
+      "2차전지·배터리 — 전기차 수요, 미국 IRA, ESS·전고체 모멘텀. 검색량 큰 대형 섹터입니다.",
     relatedStocks: ["LG에너지솔루션", "삼성SDI", "에코프로비엠"],
   },
 
@@ -111,7 +120,7 @@ export const KEYWORDS: Keyword[] = [
   {
     slug: "robot",
     label: "로봇",
-    tier: 1,
+    tier: 2,
     category: "테마",
     description:
       "로봇·피지컬 AI 테마 — 국책과제, 데이터·부품·구동계 수혜주. 휴머노이드 모멘텀과 함께 도는 단타 라인.",
@@ -120,7 +129,7 @@ export const KEYWORDS: Keyword[] = [
   {
     slug: "space",
     label: "우주항공",
-    tier: 2,
+    tier: 1,
     category: "테마",
     description:
       "우주항공·스페이스X 테마 — 상장 임박 모멘텀과 특수합금·발사체 부품 공급계약. 단타 수급이 몰리는 자리.",
