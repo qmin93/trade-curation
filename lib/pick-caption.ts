@@ -24,7 +24,9 @@ export interface PickInput {
 }
 
 const DISCLAIMER =
-  "※ 매수·매도 추천 아님 · 시장 관찰용 정보 · 투자 판단과 책임은 본인에게";
+  "※ 시장 관찰용 정보 · 매수·매도 추천 아님 · 판단과 책임은 본인에게";
+// 정본(threads-voice-canonical) — 은근한 CTA. 노골적 텔레그램·👇 금지.
+const CTA = "실시간 기준은 채널에서 따로 이어갑니다.";
 
 /* ───────── 픽 노트 붙여넣기 → 자동 파싱 ───────── */
 
@@ -129,8 +131,8 @@ function join(lines: string[]): string {
 /* ───────── 페르소나별 풀 ───────── */
 
 const SIGNAL_OPEN = (s: string, st: string) => [
-  `${s}, ${st} 자리 포착.`,
-  `${s}, 장중 ${st} 신호.`,
+  `${s}, ${st} 강하게 움직이는 자리입니다.`,
+  `${s}, 장중 ${st} 기준부터 봅니다.`,
   `${s} 봅니다. ${st} 자리.`,
   `${s} — ${st} 자리 잡혔습니다.`,
   `${s}, 오늘 ${st} 흐름.`,
@@ -306,7 +308,7 @@ export function pickCaptionByPersona(
   // ★ 트래픽 후킹형 — 첫 줄 호기심 갭 + 댓글 유발(가격 항상 게이팅).
   if (hookMode && persona !== "단타Pick") {
     const hb = pickHookBody(persona, subj, strategy, note, mmdd, variant);
-    return withDisc ? `${hb}\n\n${DISCLAIMER}` : hb;
+    return `${hb}\n${CTA}\n${DISCLAIMER}`;
   }
 
   // 가격 라인은 withPrices일 때만. 게이팅(기본) 땐 빈 문자열 → 가격 줄이 자동으로 빠진다.
@@ -401,5 +403,5 @@ export function pickCaptionByPersona(
       break;
   }
 
-  return withDisc ? `${body}\n\n${DISCLAIMER}` : body;
+  return `${body}\n${CTA}\n${DISCLAIMER}`;
 }
