@@ -59,16 +59,35 @@ export const KEYWORDS: Keyword[] = [
     relatedStocks: ["한화에어로스페이스", "HD현대중공업", "한화오션"],
   },
 
-  // ── 롱테일 섹터(Tier-3) — 앵커는 아니지만 검색 유입용 페이지 유지 ──
+  {
+    slug: "kosdaq",
+    label: "코스닥",
+    tier: 1,
+    category: "지수",
+    description:
+      "코스닥 지수 — 단타 개별주의 본진. 급등주·테마주가 가장 활발히 도는 시장으로, 코스피와 따로 흐름을 추적합니다.",
+    relatedStocks: ["에코프로비엠", "알테오젠", "레인보우로보틱스"],
+  },
+  {
+    slug: "ai-datacenter",
+    label: "AI·데이터센터",
+    tier: 1,
+    category: "AI 인프라",
+    description:
+      "AI·데이터센터 — 반도체·전력·HBM·냉각까지 다 엮이는 메가 테마. 엔비디아 수요와 국내 인프라 수혜주를 짚습니다.",
+    relatedStocks: ["SK하이닉스", "삼성전자", "HD현대일렉트릭"],
+  },
   {
     slug: "battery",
     label: "2차전지",
-    tier: 3,
+    tier: 1,
     category: "2차전지",
     description:
-      "2차전지·배터리 — 전기차 수요, 미국 IRA, ESS·전고체 모멘텀. 조정 구간이라 단타는 선별 접근하는 섹터입니다.",
+      "2차전지·배터리 — 전기차 수요, 미국 IRA, ESS·전고체 모멘텀. 검색량 큰 대형 단타 섹터입니다.",
     relatedStocks: ["LG에너지솔루션", "삼성SDI", "에코프로비엠"],
   },
+
+  // ── 롱테일 섹터(Tier-3) ──
   {
     slug: "bio",
     label: "바이오",
@@ -83,7 +102,7 @@ export const KEYWORDS: Keyword[] = [
   {
     slug: "humanoid",
     label: "휴머노이드",
-    tier: 2,
+    tier: 1,
     category: "테마",
     description:
       "휴머노이드 로봇 테마 — 보스턴다이나믹스 아틀라스 공급망, 부품주 상한가 행진. 오늘 누가 공급망에 엮였는지 정리합니다.",
@@ -92,7 +111,7 @@ export const KEYWORDS: Keyword[] = [
   {
     slug: "robot",
     label: "로봇",
-    tier: 2,
+    tier: 1,
     category: "테마",
     description:
       "로봇·피지컬 AI 테마 — 국책과제, 데이터·부품·구동계 수혜주. 휴머노이드 모멘텀과 함께 도는 단타 라인.",
