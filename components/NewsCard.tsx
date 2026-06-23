@@ -1,8 +1,18 @@
 import type { NewsItem } from "@/lib/news-mock";
 
-export function NewsCard({ news }: { news: NewsItem }) {
+export function NewsCard({ news }: { news: NewsItem & { imageUrl?: string } }) {
   return (
     <article className="group relative bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-5 transition-all duration-200 hover:border-[var(--accent)]/50 hover:-translate-y-0.5 hover:shadow-[0_0_32px_rgba(62,106,225,0.18)]">
+      {news.imageUrl && (
+        <div className="-mx-5 -mt-5 mb-4 h-40 overflow-hidden rounded-t-xl bg-[var(--bg-subtle)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={news.imageUrl}
+            alt=""
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+      )}
       <div className="flex items-center gap-2 mb-3">
         <span className="mono text-[11px] text-[var(--text-caption)]">
           {news.date}

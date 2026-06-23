@@ -324,7 +324,9 @@ export async function getNewsByKeywordUnified(
     n.keywords.some(
       (k) => k.toLowerCase() === keywordLabel.toLowerCase() || k.includes(keywordLabel),
     ),
-  ).map(newsMockToUnified);
+  )
+    .map(newsMockToUnified)
+    .filter(isFreshMock);
 
   const [supabaseRows, naverItems, rssItems] = await Promise.all([
     fetchSupabaseByKeyword(keywordLabel, 20),
@@ -354,6 +356,12 @@ export async function getNewsByKeywordUnified(
   return enrichWithSummaryAndImages(filtered, 12);
 }
 
+/** 정적 mock 큐레이션이 오래되면 방문자 피드에서 제외(라이브만 신선하게). 최근 4일만. */
+function isFreshMock(n: UnifiedNewsItem): boolean {
+  const t = new Date(n.publishedAt ?? `${n.date}T00:00:00+09:00`).getTime();
+  return Number.isFinite(t) && Date.now() - t < 4 * 86400000;
+}
+
 export async function getRecentNewsUnified(
   limit = 10,
   keywords?: string[],
@@ -372,7 +380,7 @@ export async function getRecentNewsUnified(
       "연기금 매수",
       ...FETCH_KEYWORDS_EXTRA,
     ];
-  const mockUnified = NEWS_MOCK.map(newsMockToUnified);
+  const mockUnified = NEWS_MOCK.map(newsMockToUnified).filter(isFreshMock);
 
   const supabaseRows = await fetchSupabaseRecent(30);
   const supabaseUnified = supabaseRows.map(supabaseToUnified);

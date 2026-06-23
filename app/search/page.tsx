@@ -149,6 +149,7 @@ export default async function SearchPage({
                   sourceUrl: n.sourceUrl,
                   keywords: n.keywords,
                   stocks: n.stocks,
+                  imageUrl: n.imageUrl,
                   personaComments: {},
                 }}
               />
