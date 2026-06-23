@@ -26,6 +26,24 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-06-23",
+    totalReturn: 3.4,
+    summary:
+      "제이앤티씨 1차(+1.4%)·2차(+3.4%) 목표 구간 도달. 다만 2차 이후 되돌림이 커, 목표 달성 후 구간별 대응이 중요했던 하루. 적중·되돌림 모두 공개.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "제이앤티씨",
+        ticker: "204270",
+        entryPrice: 24300,
+        targetReached: 2,
+        resultPercent: 3.4,
+        status: "hit",
+        note: "1차(+1.4%)·2차(+3.4%) 달성. 2차 이후 되돌림 큼.",
+      },
+    ],
+  },
+  {
     date: "2026-06-22",
     totalReturn: 4.5,
     summary:
@@ -155,10 +173,10 @@ export const DAILY_RESULTS: DailyResult[] = [
 
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
-  hitCount: 10,
+  hitCount: 11,
   missCount: 3,
-  winRate: 76.9,
-  cumulativeReturn: 30.04,
+  winRate: 78.6,
+  cumulativeReturn: 33.44,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
