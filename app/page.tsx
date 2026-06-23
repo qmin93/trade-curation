@@ -21,13 +21,15 @@ export const revalidate = 600;
 
 export default async function Home() {
   // 오늘 급등 TOP 종목 + Tier1 키워드 뉴스를 홈 메인에 바로 노출 (이미지 포함).
-  const gainers = await fetchTopGainers(8);
+  const gainers = await fetchTopGainers(12);
   const feedKeywords = [
     ...gainers.map((g) => g.name),
     ...KEYWORDS.filter((k) => k.tier === 1).map((k) => k.label),
     "연기금 매수",
     ...FETCH_KEYWORDS_EXTRA,
-  ].filter((v, i, a) => a.indexOf(v) === i);
+  ]
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .slice(0, 18); // 네이버 API rate limit(429) 방지 — 급등 종목 우선, 상위 18개만 라이브 fetch
   const news = await getRecentNewsUnified(40, feedKeywords);
   // 최신순 정렬(게시시각 우선, 없으면 날짜) → 히어로가 항상 최신 반영.
   const sorted = [...news].sort((a, b) => {
@@ -45,7 +47,7 @@ export default async function Home() {
         n.headline?.includes(gn) ||
         n.keywords?.some((k) => k.includes(gn)),
     );
-  const gainersNews = rest.filter(isGainerNews).slice(0, 5);
+  const gainersNews = rest.filter(isGainerNews).slice(0, 12);
   const gainerIds = new Set(gainersNews.map((n) => n.id));
   // 시간대별 정렬: 장중=급등·수급 먼저, 장전·마감=미국·매크로 먼저.
   const status = getMarketStatus(new Date());
