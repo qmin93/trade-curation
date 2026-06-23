@@ -2,7 +2,6 @@ import { KEYWORDS, FETCH_KEYWORDS_EXTRA } from "@/lib/keywords";
 import { getRecentNewsUnified } from "@/lib/news-fetcher";
 import { fetchTopGainers } from "@/lib/naver-trending";
 import { IndexBoard } from "@/components/dashboard/IndexBoard";
-import { LiveGainersNews } from "@/components/LiveGainersNews";
 import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
 import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
 import { HeroNews } from "@/components/HeroNews";
@@ -47,9 +46,6 @@ export default async function Home() {
 
       {/* 운영자 전용 — 콘솔 팝업(픽+포맷). 방문자에겐 버튼 안 보임 */}
       <ConsolePopup />
-
-      {/* 🔥 오늘 급등 TOP + 한 줄 뉴스 (인기검색·급등 밴드 통합) */}
-      <LiveGainersNews news={news} />
 
       {/* 오늘 마감 리포트 — 검증(끝난 결과) 프루프, 홈에서 바로 */}
       <LatestResultCard />
