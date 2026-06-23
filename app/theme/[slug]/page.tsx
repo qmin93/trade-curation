@@ -9,10 +9,11 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd } from "@/lib/seo";
 
-export const revalidate = 600;
+export const revalidate = 1800;
 
+// 빌드때 미리 생성 X → 방문 시 on-demand ISR. 네이버 API burst·쿼터 절약.
 export function generateStaticParams() {
-  return THEMES.map((t) => ({ slug: t.slug }));
+  return [];
 }
 
 export async function generateMetadata({
