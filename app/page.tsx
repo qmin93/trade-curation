@@ -6,7 +6,7 @@ import { CompactAlerts } from "@/components/dashboard/CompactAlerts";
 import { CompactCalendar } from "@/components/dashboard/CompactCalendar";
 import { HeroNews } from "@/components/HeroNews";
 import { NewsFeed } from "@/components/NewsFeed";
-import { KeywordChip } from "@/components/KeywordChip";
+import { NewsListItem } from "@/components/NewsListItem";
 import { TelegramCTA } from "@/components/TelegramCTA";
 import { PickPopup } from "@/components/PickPopup";
 import { ConsolePopup } from "@/components/ConsolePopup";
@@ -36,9 +36,23 @@ export default async function Home() {
     return tb - ta;
   });
   const [hero, ...rest] = sorted;
+  // 🔥 오늘 급등 종목 뉴스 — 거래대금 상위 급등주 기사만 따로 (히어로 아래 이미지 섹션).
+  const gainerNames = gainers.map((g) => g.name);
+  const isGainerNews = (n: (typeof rest)[number]) =>
+    gainerNames.some(
+      (gn) =>
+        n.stocks?.some((s) => s.includes(gn) || gn.includes(s)) ||
+        n.headline?.includes(gn) ||
+        n.keywords?.some((k) => k.includes(gn)),
+    );
+  const gainersNews = rest.filter(isGainerNews).slice(0, 5);
+  const gainerIds = new Set(gainersNews.map((n) => n.id));
   // 시간대별 정렬: 장중=급등·수급 먼저, 장전·마감=미국·매크로 먼저.
   const status = getMarketStatus(new Date());
-  const ranked = rankNewsByPhase(rest, status.phase);
+  const ranked = rankNewsByPhase(
+    rest.filter((n) => !gainerIds.has(n.id)),
+    status.phase,
+  );
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-6">
       {/* 진입 광고 팝업 — 검증 성과 + 오늘 픽 + 텔레그램 (인라인 픽/성과 섹션 대체) */}
@@ -63,15 +77,29 @@ export default async function Home() {
             {status.badge} · {new Date().toISOString().slice(0, 10)}
           </span>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          {KEYWORDS.map((k) => (
-            <KeywordChip key={k.slug} keyword={k} />
-          ))}
-        </div>
       </div>
 
       {/* Hero news */}
       {hero && <HeroNews news={hero} />}
+
+      {/* 🔥 오늘 급등 종목 뉴스 — 거래대금 상위 급등주, 왜 올랐나 (이미지) */}
+      {gainersNews.length > 0 && (
+        <section className="mt-8">
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-[var(--border)]">
+            <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">
+              🔥 오늘 급등 종목 뉴스
+            </h2>
+            <span className="mono text-[10px] uppercase tracking-widest text-[var(--text-caption)]">
+              거래대금 상위 · 왜 올랐나
+            </span>
+          </div>
+          <div className="space-y-3">
+            {gainersNews.map((n) => (
+              <NewsListItem key={n.id} news={n} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 2-column body */}
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8 mt-10">
