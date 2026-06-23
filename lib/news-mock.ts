@@ -15,6 +15,86 @@ export interface NewsItem {
 }
 
 export const NEWS_MOCK: NewsItem[] = [
+  // ── 2026-06-23 큐레이션 (사이트 라이브 발굴 → 원본 기사 중립 요약) ──
+  {
+    id: "20260623-chaai-healthcare-limit",
+    date: "2026-06-23",
+    publishedAt: "2026-06-23T09:30:00+09:00",
+    headline: "차AI헬스케어, 526억 공급계약에 상한가 직행",
+    summary:
+      "차AI헬스케어(025620)가 526억원 규모 상품 공급계약 체결 소식에 개장 직후 +29.98% 상한가까지 올라 7,500원을 기록했습니다. 단일 계약 규모가 단기 모멘텀으로 강하게 작동한 자리로 봅니다.",
+    source: "edaily.co.kr",
+    sourceUrl: "https://www.edaily.co.kr/news/newspath.asp?newsid=03125846645484672",
+    keywords: ["차AI헬스케어", "공급계약", "상한가"],
+    stocks: ["차AI헬스케어"],
+    personaComments: {},
+  },
+  {
+    id: "20260623-hanwool-semicon-mlcc",
+    date: "2026-06-23",
+    publishedAt: "2026-06-23T09:40:00+09:00",
+    headline: "한울반도체, MLCC 업사이클 기대에 4거래일 연속 상한가",
+    summary:
+      "한울반도체가 MLCC 업황 개선 기대와 무라타 협력 소식에 4거래일 연속 상한가를 기록했습니다. AI 검사장비 고도화 모멘텀까지 겹쳤으나, 연속 상한가인 만큼 과열 부담도 함께 봐야 할 자리입니다.",
+    source: "edaily.co.kr",
+    sourceUrl: "https://www.edaily.co.kr/news/newspath.asp?newsid=03102886645484672",
+    keywords: ["한울반도체", "MLCC", "상한가"],
+    stocks: ["한울반도체"],
+    personaComments: {},
+  },
+  {
+    id: "20260623-genitix-humanoid-sensor",
+    date: "2026-06-23",
+    publishedAt: "2026-06-23T09:45:00+09:00",
+    headline: "지니틱스, 휴머노이드 센서 IC 개발 소식에 상한가",
+    summary:
+      "지니틱스(303030)가 휴머노이드 로봇용 핵심 센서 IC 개발 발표로 상한가를 돌파했습니다. 로봇핸드·관절용 엔코더와 전류센서 ROIC 개발로 신성장동력 확보가 평가됐습니다.",
+    source: "edaily.co.kr",
+    sourceUrl: "https://www.edaily.co.kr/news/newspath.asp?newsid=03132406645484672",
+    keywords: ["지니틱스", "휴머노이드", "로봇", "상한가"],
+    stocks: ["지니틱스"],
+    personaComments: {},
+  },
+  {
+    id: "20260623-samsunglife-stake",
+    date: "2026-06-23",
+    publishedAt: "2026-06-23T09:20:00+09:00",
+    headline: "삼성생명, 삼성전자 지분가치 재평가 기대에 약 10% 급등",
+    summary:
+      "삼성생명이 보유한 삼성전자 지분가치 재평가 기대로 +9.99% 급등해 49만5,500원까지 올랐습니다. 삼성전자 강세가 이를 보유한 계열사 가치로 번지는 '지분가치 테마' 흐름입니다.",
+    source: "etoday.co.kr",
+    sourceUrl: "https://www.etoday.co.kr/news/view/2596196",
+    keywords: ["삼성생명", "삼성전자", "지분가치"],
+    stocks: ["삼성생명", "삼성전자"],
+    personaComments: {},
+  },
+  {
+    id: "20260623-skhynix-mktcap-1st",
+    date: "2026-06-23",
+    publishedAt: "2026-06-23T09:10:00+09:00",
+    headline: "SK하이닉스, 코스피 시총 1위 등극…SK스퀘어 신고가",
+    summary:
+      "SK하이닉스가 코스피 시가총액 1위로 올라섰고, 지분을 보유한 SK스퀘어도 신고가를 경신했습니다. JW신약·SM C&C 등도 52주 신고가를 돌파하며 반도체·지분가치 쪽으로 수급이 쏠렸습니다.",
+    source: "mk.co.kr",
+    sourceUrl: "https://www.mk.co.kr/article/12080071",
+    keywords: ["SK하이닉스", "SK스퀘어", "시총 1위", "반도체"],
+    stocks: ["SK하이닉스", "SK스퀘어"],
+    personaComments: {},
+  },
+  {
+    id: "20260623-kospi-9000-foreign-sell",
+    date: "2026-06-23",
+    publishedAt: "2026-06-23T10:00:00+09:00",
+    headline: "코스피 9000선 공방…외국인 1.3조 순매도 vs 개인 1.3조 순매수",
+    summary:
+      "코스피가 9000선을 두고 공방하며 삼성전자·SK하이닉스 대형주가 약세를 주도했습니다. 외국인이 1조3,196억원 순매도한 반면 개인이 1조3,757억원 순매수로 맞서는 수급 구도였습니다.",
+    source: "etoday.co.kr",
+    sourceUrl: "https://www.etoday.co.kr/news/view/2596204",
+    keywords: ["코스피", "외국인", "수급"],
+    stocks: ["삼성전자", "SK하이닉스"],
+    personaComments: {},
+  },
+
   // ── 2026-06-17 큐레이션 (텔방 발굴 → 원본 기사 직접 읽고 중립 요약) ──
   {
     id: "20260617-skhynix-buyback-denial",
