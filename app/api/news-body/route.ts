@@ -5,6 +5,7 @@
  */
 import { NextResponse } from "next/server";
 import { NEWS_TEMPLATES } from "@/lib/persona-templates";
+import { PERSONA_IDENTITY, FIVE_ELEMENT_RULE } from "@/lib/persona-voice";
 
 export const runtime = "nodejs";
 
@@ -52,6 +53,7 @@ const CLOSE: Record<string, string> = {
 function systemPrompt(persona: string, fmt: string, withCTA: boolean, withDisc: boolean): string {
   const tone = TONE[persona] ?? "단타 트레이더의 자연스러운 톤.";
   const close = CLOSE[persona] ?? "";
+  const identity = PERSONA_IDENTITY[persona] ?? "";
   const examples = fmt === "news" ? structureExamples(persona) : "";
   const formatLine =
     fmt === "question"
@@ -61,12 +63,15 @@ function systemPrompt(persona: string, fmt: string, withCTA: boolean, withDisc: 
   const lengthRule =
     persona === "스캘퍼"
       ? "- ★길이: 스캘퍼는 길이 제한 없음. 🔻 이슈·📍 자리 아래에 설명을 여러 줄로 충분히 풀어라(짧게 끊지 말 것). 단 군더더기·중복·미사여구는 빼고 정보 밀도는 높게. 해시태그·따옴표 감싸기 금지."
-      : "- ★★최우선 길이 규칙(구조 예시보다 우선): 핵심 포인트만, 내용 줄 **최대 5줄**(빈 줄 제외). 절대 초과 금지. 더 짧으면 더 좋다. 길어지면 무조건 압축해라 — Lab도 '통념 1줄 + 반전 1줄 + 마무리 1줄'처럼 5줄 안에. 한 줄에 한 포인트, 군더더기·부연·중복 전부 삭제. 해시태그·따옴표 감싸기·설명 추가 금지.";
+      : "- ★길이 규칙: 5요소 중 '썰·공감 설명' 부분만 **최대 3~4줄**로 압축(후크 첫 줄·열린 질문·정체성·면책은 별도 줄이라 카운트 제외). 설명은 핵심만, 한 줄 한 포인트, 군더더기·부연·중복 삭제. 해시태그·따옴표 감싸기 금지.";
   return `너는 한국 단타 주식 Threads 계정 '${persona}' 운영자다. 주어진 기사를 읽고 이 계정 톤으로 본문을 쓴다.
 
 페르소나 톤: ${tone}
 ${formatLine}
 ${close ? `마무리 시그니처(필수): ${close} (면책·CTA는 그 아래)` : ""}
+
+${FIVE_ELEMENT_RULE}
+${identity ? `- 4번 정체성 줄은 이 계정 기준으로(문구 변주 OK): "${identity}"` : ""}
 ${examples ? `\n★구조 예시(이 계정의 '틀' — 줄 구성·불릿/번호/이모지 위치·마무리 형식을 똑같이 따라라. 단 내용은 ○○·△△ 말고 주어진 기사로 새로 채운다):\n${examples}\n위 틀을 절대 벗어나지 마라. 자유 산문으로 풀어쓰지 마라. 단 '(예시1)'·'(예시2)'·'---' 같은 메타 표기·구분선은 출력에 절대 넣지 마라.\n` : ""}
 절대 규칙:
 - ★전문가 느낌(최우선): 짧게 써도 시장 전체를 꿰뚫은 10년차 고수처럼. 수급 주체(외인·기관·연기금)·거래대금 강도·매물대·추세 위치(이평/VWAP)·섹터 순환·시초가 갭 같은 핵심을 정확한 용어로 자연스럽게 한두 개 짚어, "이 사람 상황 다 알고 있다"는 인상을 줘라. 두루뭉술·초보 설명조 절대 X. (단 관찰·해설 톤 유지, 단정·추천 X)
