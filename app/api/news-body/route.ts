@@ -5,7 +5,7 @@
  */
 import { NextResponse } from "next/server";
 import { NEWS_TEMPLATES } from "@/lib/persona-templates";
-import { PERSONA_IDENTITY, FIVE_ELEMENT_RULE } from "@/lib/persona-voice";
+import { PERSONA_IDENTITY, FIVE_ELEMENT_RULE, CANON_MANDATE, PERSONA_BENCH } from "@/lib/persona-voice";
 
 export const runtime = "nodejs";
 
@@ -66,7 +66,9 @@ function systemPrompt(persona: string, fmt: string, withCTA: boolean, withDisc: 
       : "- ★길이 규칙: 5요소 중 '썰·공감 설명' 부분만 **최대 3~4줄**로 압축(후크 첫 줄·열린 질문·정체성·면책은 별도 줄이라 카운트 제외). 설명은 핵심만, 한 줄 한 포인트, 군더더기·부연·중복 삭제. 해시태그·따옴표 감싸기 금지.";
   return `너는 한국 단타 주식 Threads 계정 '${persona}' 운영자다. 주어진 기사를 읽고 이 계정 톤으로 본문을 쓴다.
 
-페르소나 톤: ${tone}
+${CANON_MANDATE}
+
+페르소나 톤: ${tone} (벤치: ${PERSONA_BENCH[persona] ?? "단타 트레이더"} — 이 벤치처럼 손으로 쓴 듯)
 ${formatLine}
 ${close ? `마무리 시그니처(필수): ${close} (면책·CTA는 그 아래)` : ""}
 
