@@ -28,6 +28,22 @@ const DISCLAIMER =
 // 정본(threads-voice-canonical) — 은근한 CTA. 노골적 텔레그램·👇 금지.
 const CTA = "실시간 기준은 채널에서 따로 이어갑니다.";
 
+// 본문 5요소 — 열린 질문(댓글 유도) + 정체성(팔로우 유도)
+const QUESTIONS = [
+  "여러분은 이 자리, 관심 가시나요 아니면 패스인가요? 댓글로요.",
+  "이거 들어가실 자리로 보세요, 지켜볼 자리로 보세요? 댓글로 의견 주세요.",
+  "오늘 이 종목 보신 분, 어떻게 보셨어요? 댓글로 같이 봐요.",
+  "지금 더 강하다고 보는 종목 있으면 댓글로 적어주세요.",
+];
+const IDENTITY: Record<string, string> = {
+  단타시그널: "매일 자리만 짧게 짚어드려요. 놓치기 싫으면 팔로우.",
+  단타이스트: "매일 시장 한 장면을 같이 곱씹습니다. 도움 되면 팔로우해 주세요.",
+  단타데일리: "매일 장 흐름을 차분히 정리해드립니다. 놓치기 싫으면 팔로우.",
+  단타Lab: "매일 '오늘 왜 이렇게 움직였나'를 한 편씩 쉽게 풀어드려요. 팔로우하면 같이 봐요.",
+  스캘퍼: "장중 '지금 위험한 자리'만 빠르게 짚어드려요. 팔로우하면 실시간으로요.",
+  단타Pick: "",
+};
+
 /* ───────── 픽 노트 붙여넣기 → 자동 파싱 ───────── */
 
 export function parsePickNote(raw: string): PickInput {
@@ -308,7 +324,9 @@ export function pickCaptionByPersona(
   // ★ 트래픽 후킹형 — 첫 줄 호기심 갭 + 댓글 유발(가격 항상 게이팅).
   if (hookMode && persona !== "단타Pick") {
     const hb = pickHookBody(persona, subj, strategy, note, mmdd, variant);
-    return `${hb}\n${CTA}\n${DISCLAIMER}`;
+    return [hb, at(QUESTIONS, variant), IDENTITY[persona] || CTA, DISCLAIMER]
+      .filter(Boolean)
+      .join("\n");
   }
 
   // 가격 라인은 withPrices일 때만. 게이팅(기본) 땐 빈 문자열 → 가격 줄이 자동으로 빠진다.
@@ -403,5 +421,7 @@ export function pickCaptionByPersona(
       break;
   }
 
-  return `${body}\n${CTA}\n${DISCLAIMER}`;
+  return [body, at(QUESTIONS, variant), IDENTITY[persona] || CTA, DISCLAIMER]
+    .filter(Boolean)
+    .join("\n");
 }
