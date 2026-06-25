@@ -5,7 +5,7 @@
  */
 import { NextResponse } from "next/server";
 import { NEWS_TEMPLATES } from "@/lib/persona-templates";
-import { PERSONA_IDENTITY, FIVE_ELEMENT_RULE, CANON_MANDATE, PERSONA_BENCH } from "@/lib/persona-voice";
+import { PERSONA_IDENTITY, FIVE_ELEMENT_RULE, CANON_MANDATE, PERSONA_BENCH, PERSONA_CHARACTER } from "@/lib/persona-voice";
 
 export const runtime = "nodejs";
 
@@ -68,6 +68,7 @@ function systemPrompt(persona: string, fmt: string, withCTA: boolean, withDisc: 
 
 ${CANON_MANDATE}
 
+이 계정 캐릭터(다른 계정과 확실히 다른 사람처럼): ${PERSONA_CHARACTER[persona] ?? ""}
 페르소나 톤: ${tone} (벤치: ${PERSONA_BENCH[persona] ?? "단타 트레이더"} — 이 벤치처럼 손으로 쓴 듯)
 ${formatLine}
 ${close ? `마무리 시그니처(필수): ${close} (면책·CTA는 그 아래)` : ""}
