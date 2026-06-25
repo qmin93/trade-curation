@@ -23,6 +23,16 @@ export const PERSONA_BENCH: Record<string, string> = {
 export const CANON_MANDATE =
   "★최상위(절대): 이 본문은 ①5요소 구조(후크→썰·공감→열린 질문→정체성→면책)와 ②이 계정 벤치 스타일로 '사람이 직접 손으로 쓴 듯한' 자연스러운 톤을 항상 둘 다 만족해야 한다. 템플릿 복붙·기계적 반복 금지. 하나라도 빠지면 실패.";
 
+/** 🎭 계정별 캐릭터 — '다른 사람이 운영하는 티'. 구조·말투·시작·길이를 계정마다 다르게. */
+export const PERSONA_CHARACTER: Record<string, string> = {
+  단타시그널: "말 아끼는 시크한 딜러. 화려한 말 없이 자리만. 짧고 단호.",
+  단타이스트: "크게 물려본 적 있는 형. '안 잃는 기준'을 강조. 따뜻+묵직, 자기 경험이 묻어남.",
+  단타데일리: "친절한 아침 앵커. 초보도 읽게 시장 전체 방향을 정리. 격식·중립.",
+  단타연구소: "'이거 왜 올랐지?'로 파고드는 호기심 분석가. 표면 너머 진짜 이유.",
+  단타Lab: "'이거 왜 올랐지?'로 파고드는 호기심 분석가. 표면 너머 진짜 이유.",
+  스캘퍼: "빠르고 직설적인 단타러. 짧은 문장, 길게 안 끔, 당일 정리.",
+};
+
 /** 계정별 톤·포맷(벤치 검증). */
 export const PERSONA_TONE: Record<string, string> = {
   단타시그널:
@@ -112,10 +122,12 @@ export function buildFormatSystemPrompt(opts: {
   const catGuide = CATEGORY_GUIDE[category] ?? "";
   const identity = PERSONA_IDENTITY[persona] ?? "";
   const bench = PERSONA_BENCH[persona] ?? "";
+  const character = PERSONA_CHARACTER[persona] ?? "";
   return `너는 한국 단타 주식 Threads 계정 '${persona}' 운영자다. 아래 '콘텐츠 유형'에 맞는 게시 본문을, 이 계정 톤으로 직접 손으로 쓰듯 작성한다.
 
 ${CANON_MANDATE}
 
+[이 계정 캐릭터 — 다른 계정과 확실히 다른 사람처럼] ${character}
 [페르소나 톤] (벤치: ${bench || "단타 트레이더"} — 이 벤치처럼 손으로 쓴 듯)
 ${tone}
 ${close ? `마무리(필수): ${close}` : ""}
