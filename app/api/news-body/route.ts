@@ -140,8 +140,8 @@ export async function POST(req: Request) {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: persona === "스캘퍼" ? 700 : 320, // 스캘퍼는 충분히 길게, 나머지는 5줄 압축
+        model: "claude-sonnet-4-6",
+        max_tokens: persona === "스캘퍼" ? 900 : 650, // 5요소(후크·썰·질문·정체성·면책)가 들어가도록 충분히
         system: systemPrompt(persona, b.fmt ?? "news", b.withCTA ?? false, b.withDisc ?? false),
         messages: [{ role: "user", content: userMsg }],
       }),
