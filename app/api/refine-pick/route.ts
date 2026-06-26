@@ -4,6 +4,7 @@
  * ANTHROPIC_API_KEY 필요. 키 없거나 호출 실패 시 원문(draft) 그대로 반환 + ok:false.
  */
 import { NextResponse } from "next/server";
+import { PERSONA_CHARACTER, PERSONA_BENCH } from "@/lib/persona-voice";
 
 export const runtime = "nodejs";
 
@@ -58,6 +59,8 @@ export async function POST(req: Request) {
   }
 
   const tone = PERSONA_TONE[persona] ?? "단타 트레이더의 자연스러운 톤.";
+  const character = PERSONA_CHARACTER[persona] ?? "";
+  const bench = PERSONA_BENCH[persona] ?? "";
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -68,13 +71,13 @@ export async function POST(req: Request) {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 512,
+        model: "claude-sonnet-4-6",
+        max_tokens: 900,
         system: SYSTEM,
         messages: [
           {
             role: "user",
-            content: `페르소나: ${persona}\n페르소나 톤: ${tone}\n\n초안:\n${draft}\n\n위 초안을 이 페르소나 말투로 자연스럽게 다듬어줘. 가격·면책은 보존.`,
+            content: `페르소나: ${persona}\n이 계정 캐릭터(다른 계정과 확실히 다른 사람처럼): ${character}\n페르소나 톤: ${tone}\n벤치(이 벤치처럼 손으로 쓴 듯): ${bench}\n\n초안:\n${draft}\n\n위 초안의 사실(종목·가격·근거)만 가져와, 이 계정 캐릭터로 '사람이 직접 손으로 쓴 듯' 자연스럽게 다시 써줘. 템플릿 티 빼고. 5요소(후크→썰·공감→열린 질문→정체성→면책)는 모두 갖추고, 종목·가격·면책은 보존.`,
           },
         ],
       }),
