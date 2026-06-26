@@ -26,6 +26,23 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-06-26",
+    totalReturn: 7.0,
+    summary:
+      "코스피 -7%대 급락(서킷브레이커) 속에서도 키스트론이 1~4차 목표를 모두 달성(장중 고점 +11.71%). 추격 없이 기다린 자리에서 나온 결과로, 시장 방향과 별개의 개별 흐름. 급락장일수록 살아있는 소수 종목으로 수급이 집중됨을 보여준 하루.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "키스트론",
+        ticker: "475430",
+        targetReached: 4,
+        resultPercent: 7.0,
+        status: "hit",
+        note: "1차(+1.0%)·2차(+2.5%)·3차(+4.5%)·4차(+7.0%) 전부 달성, 장중 고점 +11.71%. 코스피 -7%대 급락장에서 나온 자리.",
+      },
+    ],
+  },
+  {
     date: "2026-06-23",
     totalReturn: 3.4,
     summary:
@@ -173,10 +190,10 @@ export const DAILY_RESULTS: DailyResult[] = [
 
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
-  hitCount: 11,
+  hitCount: 12,
   missCount: 3,
-  winRate: 78.6,
-  cumulativeReturn: 33.44,
+  winRate: 80.0,
+  cumulativeReturn: 40.44,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
