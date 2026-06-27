@@ -10,6 +10,7 @@
  */
 
 const NAVER = "https://m.stock.naver.com/api/stock";
+const YAHOO = "https://query1.finance.yahoo.com/v8/finance/chart/";
 
 // 기초자산 vs SOX 동조 계수(근사). 삼성은 가전·디스플레이 포함이라 1보다 낮게, 하이닉스는 순수 메모리라 높게.
 const SAMSUNG_BETA = 0.9;
@@ -87,4 +88,24 @@ export async function fetchLeverageEtfEstimates(
     hynixPct: soxPct * HYNIX_BETA,
     etfs,
   };
+}
+
+/** SOX(^SOX) 변동률을 직접 가져와 레버리지 ETF 예상을 계산(자동). */
+async function fetchSoxPct(): Promise<number | null> {
+  try {
+    const res = await fetch(`${YAHOO}%5ESOX`, {
+      headers: { "User-Agent": "Mozilla/5.0" },
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return null;
+    const m = (await res.json())?.chart?.result?.[0]?.meta;
+    if (!m?.regularMarketPrice || !m?.chartPreviousClose) return null;
+    return (m.regularMarketPrice / m.chartPreviousClose - 1) * 100;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchLeverageEtfAuto(): Promise<LeverageEtfData | null> {
+  return fetchLeverageEtfEstimates(await fetchSoxPct());
 }
