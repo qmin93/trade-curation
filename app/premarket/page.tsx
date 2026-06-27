@@ -94,6 +94,31 @@ export default async function PremarketPage() {
         </div>
       )}
 
+      {/* 레버리지 ETF 예상 시초가 */}
+      {data.leverageEtfs && (
+        <div className="rounded-2xl border border-[var(--red)]/30 bg-[var(--red)]/[0.05] p-6 mb-8">
+          <div className="mono text-[10px] uppercase tracking-widest text-[var(--red)] mb-1">
+            삼성전자 레버리지 ETF 예상 시초가 (SOX 프록시 · 참고용)
+          </div>
+          <div className="text-xs text-[var(--text-caption)] mb-4">
+            필라델피아 반도체(SOX) {fmtPct(data.leverageEtfs.soxPct)} 기준 · 삼성전자 예상 {fmtPct(data.leverageEtfs.underlyingPct)} → 2배 추종
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {data.leverageEtfs.etfs.map((e) => (
+              <div key={e.ticker} className="rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-4">
+                <div className="text-xs text-[var(--text-caption)] mb-1.5 truncate">{e.name}</div>
+                <div className="mono text-xl font-bold text-[var(--text)] tabular-nums">{fmtNum(e.estPrice)}</div>
+                <div className={`mono text-sm font-semibold tabular-nums mt-0.5 ${pctClass(e.estPct)}`}>{fmtPct(e.estPct)}</div>
+                <div className="mono text-[10px] text-[var(--text-caption)] mt-1.5">전일 {fmtNum(e.prevClose)}</div>
+              </div>
+            ))}
+          </div>
+          <p className="mono text-[10px] text-[var(--text-caption)] mt-4 leading-relaxed">
+            SOX 변동률을 삼성전자에 근사 적용 후 2배로 환산한 추정치입니다. 레버리지는 일일복리·추적오차로 실제와 다를 수 있습니다. 투자 권유 아님 · 참고용.
+          </p>
+        </div>
+      )}
+
       {/* 미국 증시 마감 */}
       <Section title="미국 증시 마감" desc="간밤 뉴욕 증시 종가">
         {data.usClose.map((q) => (

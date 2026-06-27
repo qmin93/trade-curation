@@ -7,6 +7,8 @@
 
 const YAHOO = "https://query1.finance.yahoo.com/v8/finance/chart/";
 
+import { fetchLeverageEtfEstimates, type LeverageEtfData } from "./leverage-etf";
+
 export interface Quote {
   label: string;
   symbol: string;
@@ -25,6 +27,7 @@ export interface PremarketData {
     estimatedChangePercent: number;
     estimatedOpen: number;
   } | null;
+  leverageEtfs: LeverageEtfData | null;
   fetchedAt: string;
 }
 
@@ -99,6 +102,9 @@ export async function fetchPremarket(): Promise<PremarketData> {
   const usdkrw = krw?.price ?? null;
   const kimchi = await fetchKimchi(usdkrw);
 
+  // 레버리지 ETF 예상 시초가 — SOX 프록시 자동 추정(참고용).
+  const leverageEtfs = await fetchLeverageEtfEstimates(sox?.changePercent);
+
   // 코스피 예상 시초가 — 나스닥100 선물 등락률에 단순 가중(참고용 추정).
   let kospiEst: PremarketData["kospi"] = null;
   if (kospi && nqF) {
@@ -116,6 +122,7 @@ export async function fetchPremarket(): Promise<PremarketData> {
     usdkrw: krw,
     kimchi,
     kospi: kospiEst,
+    leverageEtfs,
     fetchedAt: new Date().toISOString(),
   };
 }
