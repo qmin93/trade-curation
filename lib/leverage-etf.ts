@@ -11,8 +11,9 @@
 
 const NAVER = "https://m.stock.naver.com/api/stock";
 
-// 삼성전자 vs SOX 동조 계수(근사). 삼성전자는 반도체지만 가전·디스플레이 포함이라 1보다 낮게.
+// 기초자산 vs SOX 동조 계수(근사). 삼성은 가전·디스플레이 포함이라 1보다 낮게, 하이닉스는 순수 메모리라 높게.
 const SAMSUNG_BETA = 0.9;
+const HYNIX_BETA = 1.15;
 
 interface LevEtfDef {
   ticker: string;
@@ -22,12 +23,15 @@ interface LevEtfDef {
   beta: number; // 기초자산 vs SOX
 }
 
-// 삼성전자 단일종목 레버리지 ETF(2X) — 티커는 네이버 기준 확인됨.
+// 삼전닉스 단일종목 레버리지 ETF(2X) — 티커는 네이버 기준 확인됨.
 const LEV_ETFS: LevEtfDef[] = [
   { ticker: "0193W0", name: "KODEX 삼성전자레버리지", lev: 2, underlying: "삼성전자", beta: SAMSUNG_BETA },
   { ticker: "0195R0", name: "TIGER 삼성전자레버리지", lev: 2, underlying: "삼성전자", beta: SAMSUNG_BETA },
   { ticker: "0192M0", name: "RISE 삼성전자레버리지", lev: 2, underlying: "삼성전자", beta: SAMSUNG_BETA },
   { ticker: "0194M0", name: "ACE 삼성전자레버리지", lev: 2, underlying: "삼성전자", beta: SAMSUNG_BETA },
+  { ticker: "0193T0", name: "KODEX SK하이닉스레버리지", lev: 2, underlying: "SK하이닉스", beta: HYNIX_BETA },
+  { ticker: "0195S0", name: "TIGER SK하이닉스레버리지", lev: 2, underlying: "SK하이닉스", beta: HYNIX_BETA },
+  { ticker: "0194T0", name: "ACE SK하이닉스레버리지", lev: 2, underlying: "SK하이닉스", beta: HYNIX_BETA },
 ];
 
 export interface LevEtfEstimate {
@@ -41,7 +45,8 @@ export interface LevEtfEstimate {
 
 export interface LeverageEtfData {
   soxPct: number;
-  underlyingPct: number; // 기초자산(삼성전자) 예상 변동률
+  samsungPct: number; // 삼성전자 예상 변동률
+  hynixPct: number; // SK하이닉스 예상 변동률
   etfs: LevEtfEstimate[];
 }
 
@@ -65,7 +70,6 @@ export async function fetchLeverageEtfEstimates(
   soxPct: number | null | undefined,
 ): Promise<LeverageEtfData | null> {
   if (soxPct == null || !Number.isFinite(soxPct)) return null;
-  const underlyingPct = soxPct * SAMSUNG_BETA;
   const results = await Promise.all(
     LEV_ETFS.map(async (e) => {
       const prevClose = await fetchPrevClose(e.ticker);
@@ -77,5 +81,10 @@ export async function fetchLeverageEtfEstimates(
   );
   const etfs = results.filter(Boolean) as LevEtfEstimate[];
   if (etfs.length === 0) return null;
-  return { soxPct, underlyingPct, etfs };
+  return {
+    soxPct,
+    samsungPct: soxPct * SAMSUNG_BETA,
+    hynixPct: soxPct * HYNIX_BETA,
+    etfs,
+  };
 }
