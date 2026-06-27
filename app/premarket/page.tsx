@@ -98,10 +98,10 @@ export default async function PremarketPage() {
       {data.leverageEtfs && (
         <div className="rounded-2xl border border-[var(--red)]/30 bg-[var(--red)]/[0.05] p-6 mb-8">
           <div className="mono text-[10px] uppercase tracking-widest text-[var(--red)] mb-1">
-            삼성전자 레버리지 ETF 예상 시초가 (SOX 프록시 · 참고용)
+            삼전닉스 레버리지 ETF 예상 시초가 (SOX 프록시 · 참고용)
           </div>
           <div className="text-xs text-[var(--text-caption)] mb-4">
-            필라델피아 반도체(SOX) {fmtPct(data.leverageEtfs.soxPct)} 기준 · 삼성전자 예상 {fmtPct(data.leverageEtfs.underlyingPct)} → 2배 추종
+            필라델피아 반도체(SOX) {fmtPct(data.leverageEtfs.soxPct)} 기준 · 삼성전자 {fmtPct(data.leverageEtfs.samsungPct)} · SK하이닉스 {fmtPct(data.leverageEtfs.hynixPct)} → 각 2배 추종
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {data.leverageEtfs.etfs.map((e) => (
