@@ -13,6 +13,7 @@ import { ConsolePopup } from "@/components/ConsolePopup";
 import { HeroFunnel } from "@/components/HeroFunnel";
 import { LatestResultCard } from "@/components/LatestResultCard";
 import { MarketNowBand } from "@/components/MarketNowBand";
+import { LeverageEtfCard } from "@/components/LeverageEtfCard";
 import { getMarketStatus } from "@/lib/market-status";
 import { rankNewsByPhase } from "@/lib/news-rank";
 
@@ -68,6 +69,9 @@ export default async function Home() {
 
       {/* 지금 장 상태 + 시간대 맞춤 데이터 (밤=장전, 장중=테마 주도주) */}
       <MarketNowBand />
+
+      {/* 삼전닉스 레버리지 ETF 예상 시초가 — 장중 외(밤·장전·마감)에만 메인 노출 */}
+      {!status.isLive && <LeverageEtfCard />}
 
       {/* Headline strip */}
       <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
