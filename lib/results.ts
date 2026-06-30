@@ -26,6 +26,23 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-06-29",
+    totalReturn: 1.0,
+    summary:
+      "코스피 -1.7%·코스닥 +6.9%로 돈이 갈린 변동성 장에서 HPSP가 09:16 포착 자리에서 1차 목표(+1.0%)를 달성. 추격 없이 기다린 자리에서 작게 챙기고 정리. 출렁이는 장일수록 1차 확보 후 물러서는 기준이 유효했던 하루.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "HPSP",
+        ticker: "403870",
+        targetReached: 1,
+        resultPercent: 1.0,
+        status: "hit",
+        note: "1차 목표(+1.0%) 달성. 09:16 포착 자리, 변동성 장이라 1차에서 정리.",
+      },
+    ],
+  },
+  {
     date: "2026-06-26",
     totalReturn: 7.0,
     summary:
@@ -190,10 +207,10 @@ export const DAILY_RESULTS: DailyResult[] = [
 
 export const MONTHLY_STATS: MonthlyStats = {
   month: "2026-06",
-  hitCount: 12,
+  hitCount: 13,
   missCount: 3,
-  winRate: 80.0,
-  cumulativeReturn: 40.44,
+  winRate: 81.2,
+  cumulativeReturn: 41.44,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {
