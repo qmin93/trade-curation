@@ -18,8 +18,8 @@ export function PerformanceStrip() {
         </Link>
       </div>
       <div className="grid grid-cols-4 gap-2">
-        <Stat label="6월 누적" value={`+${monthly.cumulativeReturn}%`} positive />
-        <Stat label="6월 승률" value={`${monthly.winRate}%`} />
+        <Stat label="누적 수익" value={`+${monthly.cumulativeReturn}%`} positive />
+        <Stat label="누적 승률" value={`${monthly.winRate}%`} />
         <Stat label="백테스트" value={`+${backtest.cumulativeReturn}%`} positive />
         <Stat
           label={recent ? recent.date.slice(5) : "최근"}

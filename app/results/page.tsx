@@ -12,7 +12,7 @@ import { FAQ } from "@/components/FAQ";
 export const metadata = {
   title: "추천 결과 · 누적 성과",
   description:
-    "단타 트레이드 일자별 추천 결과 + 6월 누적 적중·실패·승률·수익률 정리.",
+    "단타 트레이드 일자별 추천 결과 + 누적 적중·실패·승률·수익률 정리.",
 };
 
 export const revalidate = 1800;
@@ -34,8 +34,8 @@ export default function ResultsPage() {
 
         <section>
           <SectionHeader
-            label="02 · Monthly Stats"
-            title={`${MONTHLY_STATS.month} 누적 성과`}
+            label="02 · Track Record"
+            title="누적 검증 성과"
           />
           <PerformanceStats stats={MONTHLY_STATS} />
         </section>

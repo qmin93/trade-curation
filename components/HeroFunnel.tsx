@@ -23,7 +23,7 @@ export function HeroFunnel({ variant = "side" }: { variant?: "side" | "hero" }) 
         <p className="mt-2.5 text-xs leading-relaxed text-[var(--text-muted)]">
           어려운 용어 없이, 초보 막 뗀 분도 5분이면 한눈에.{" "}
           <span className="font-semibold text-[var(--text)]">
-            6월 승률 <span className="text-[var(--red)] tabular-nums">{win}%</span>
+            누적 승률 <span className="text-[var(--red)] tabular-nums">{win}%</span>
           </span>
         </p>
         <a
@@ -53,7 +53,7 @@ export function HeroFunnel({ variant = "side" }: { variant?: "side" | "hero" }) 
         <p className="mt-4 max-w-2xl text-sm md:text-base leading-relaxed text-[var(--text-muted)]">
           매경·연합·한경 뉴스를 쉽게 풀어, 초보 막 뗀 분도 시초가 직전 한 화면에.{" "}
           <span className="font-semibold text-[var(--text)]">
-            6월 승률 <span className="text-[var(--red)] tabular-nums">{win}%</span> · 손절까지 전부 공개
+            누적 승률 <span className="text-[var(--red)] tabular-nums">{win}%</span> · 손절까지 전부 공개
           </span>
           합니다.
         </p>

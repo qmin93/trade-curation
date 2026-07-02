@@ -58,7 +58,6 @@ export function PickPopup() {
 
   // 오늘 픽 한 줄 — 장중 live면 🔴진행 중, 마감이면 종목명(결과%는 우측 별도), 없으면 텔레그램 안내.
   const status = getMarketStatus(new Date());
-  const monthLabel = `${Number(MONTHLY_STATS.month.split("-")[1])}월`;
   let pickLine: string;
   if (ACTIVE_PICK && ACTIVE_PICK.status === "live") {
     pickLine = status.isLive
@@ -97,7 +96,7 @@ export function PickPopup() {
             검증된 기록 공개
           </div>
           <div className="text-sm font-semibold uppercase tracking-wider text-[var(--text-caption)]">
-            {monthLabel} 검증 성과
+            누적 검증 성과
           </div>
           <div className="mt-1.5 text-5xl font-bold tabular-nums leading-none text-[var(--red)]">
             +{MONTHLY_STATS.cumulativeReturn.toFixed(1)}%

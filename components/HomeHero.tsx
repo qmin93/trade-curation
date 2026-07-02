@@ -8,7 +8,6 @@ import { ACTIVE_PICK } from "@/lib/picks";
  */
 export function HomeHero() {
   const s = MONTHLY_STATS;
-  const monthLabel = `${Number(s.month.split("-")[1])}월`;
   const pos = s.cumulativeReturn >= 0;
   return (
     <section className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-12 md:px-12 md:py-16 mb-8 shadow-[var(--shadow-card)]">
@@ -50,7 +49,7 @@ export function HomeHero() {
         {/* 우: 검증 성과 카드 */}
         <div className="card-surface p-7 md:p-9">
           <div className="text-sm font-semibold uppercase tracking-wider text-[var(--text-caption)]">
-            {monthLabel} 검증 성과
+            누적 검증 성과
           </div>
           <div
             className={`mt-2 text-6xl font-bold tabular-nums leading-none ${pos ? "text-[var(--red)]" : "text-[var(--accent)]"}`}

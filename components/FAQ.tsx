@@ -19,7 +19,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: `승률이 어떻게 되나요?`,
-    a: `${MONTHLY_STATS.month} 기준 누적 승률 ${MONTHLY_STATS.winRate}% (적중 ${MONTHLY_STATS.hitCount}건·손절 ${MONTHLY_STATS.missCount}건), 누적 수익률 +${MONTHLY_STATS.cumulativeReturn}%입니다. 매일 갱신되며 성과 페이지에서 확인할 수 있습니다.`,
+    a: `누적(전체 기간) 승률 ${MONTHLY_STATS.winRate}% (적중 ${MONTHLY_STATS.hitCount}건·손절 ${MONTHLY_STATS.missCount}건), 누적 수익률 +${MONTHLY_STATS.cumulativeReturn}%입니다. 매일 갱신되며 성과 페이지에서 확인할 수 있습니다.`,
   },
   {
     q: "종목 추천인가요?",
