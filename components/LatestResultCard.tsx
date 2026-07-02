@@ -48,7 +48,7 @@ export function LatestResultCard() {
       </div>
 
       <div className="mt-3 mono text-[10px] tabular-nums text-[var(--text-caption)]">
-        6월 승률 {MONTHLY_STATS.winRate}% · 누적 +{MONTHLY_STATS.cumulativeReturn}% · 적중 {MONTHLY_STATS.hitCount}·손절 {MONTHLY_STATS.missCount}
+        누적 승률 {MONTHLY_STATS.winRate}% · 누적 +{MONTHLY_STATS.cumulativeReturn}% · 적중 {MONTHLY_STATS.hitCount}·손절 {MONTHLY_STATS.missCount}
       </div>
     </Link>
   );

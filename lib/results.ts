@@ -26,6 +26,23 @@ export interface MonthlyStats {
 
 export const DAILY_RESULTS: DailyResult[] = [
   {
+    date: "2026-07-01",
+    totalReturn: 7.0,
+    summary:
+      "겉과 속이 갈린 양극화 장(코스피 -1.9%·코스닥 +1.6%)에서 SK이터닉스가 09:06 포착 후 눌림에서 거래량이 다시 붙으며 1~4차 목표를 모두 달성(+7.0%), 장중 고점 +15.03%. 초반 급등을 추격하지 않고 눌림에서 거래량 재유입을 확인한 자리에서 나온 결과. 7월 첫 픽.",
+    picks: [
+      {
+        rank: 1,
+        stockName: "SK이터닉스",
+        ticker: "475150",
+        targetReached: 4,
+        resultPercent: 7.0,
+        status: "hit",
+        note: "1차(+1.0%)·2차(+2.5%)·3차(+4.5%)·4차(+7.0%) 전부 달성, 장중 고점 +15.03%. 09:06 포착 후 눌림에서 거래량 재유입 확인 자리.",
+      },
+    ],
+  },
+  {
     date: "2026-06-29",
     totalReturn: 1.0,
     summary:
@@ -205,12 +222,13 @@ export const DAILY_RESULTS: DailyResult[] = [
   },
 ];
 
+// 누적(전체 기간) 검증 성과 — 매월 이어서 누적. (2026-06 +41.44%·13적중 → 2026-07 SK이터닉스 +7.00% 반영)
 export const MONTHLY_STATS: MonthlyStats = {
-  month: "2026-06",
-  hitCount: 13,
+  month: "2026-07",
+  hitCount: 14,
   missCount: 3,
-  winRate: 81.2,
-  cumulativeReturn: 41.44,
+  winRate: 82.4,
+  cumulativeReturn: 48.44,
 };
 
 export function getResultByDate(date: string): DailyResult | undefined {

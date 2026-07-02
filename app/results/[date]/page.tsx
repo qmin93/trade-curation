@@ -148,8 +148,8 @@ export default async function ResultDetailPage({
 
         <section>
           <SectionHeader
-            label="02 · Monthly Snapshot"
-            title={`${MONTHLY_STATS.month} 누적`}
+            label="02 · Track Record"
+            title="누적 검증 성과"
           />
           <PerformanceStats stats={MONTHLY_STATS} />
         </section>
